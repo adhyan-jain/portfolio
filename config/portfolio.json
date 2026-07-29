@@ -1,0 +1,152 @@
+{
+  "meta": {
+    "title": "",
+    "description": "",
+    "faviconEmoji": "",
+    "siteUrl": "",
+    "ogImage": ""
+  },
+
+  "profile": {
+    "initials": "",
+    "name": "",
+    "greeting": "",
+    "headline": "",
+    "tagline": "",
+    "quote": {
+      "text": "",
+      "author": ""
+    },
+    "avatar": "",
+    "location": "",
+    "availability": ""
+  },
+
+  "nav": [
+    { "label": "About", "href": "#about" },
+    { "label": "Experience", "href": "#experience" },
+    { "label": "Education", "href": "#education" },
+    { "label": "Skills", "href": "#skills" },
+    { "label": "Projects", "href": "#projects" },
+    { "label": "Contact", "href": "#contact" }
+  ],
+
+  "hero": {
+    "primaryCta": { "label": "", "href": "" },
+    "secondaryCta": { "label": "", "href": "" }
+  },
+
+  "about": {
+    "heading": "About",
+    "subheading": "",
+    "paragraphs": ["", ""],
+    "highlights": [
+      { "label": "", "value": "" },
+      { "label": "", "value": "" },
+      { "label": "", "value": "" }
+    ]
+  },
+
+  "technologies": {
+    "heading": "Technologies",
+    "subheading": "",
+    "groups": [
+      { "category": "Languages", "items": [""] },
+      { "category": "Frontend", "items": [""] },
+      { "category": "Backend", "items": [""] },
+      { "category": "Infrastructure", "items": [""] },
+      { "category": "Databases", "items": [""] }
+    ]
+  },
+
+  "skills": {
+    "heading": "What I Do",
+    "subheading": "",
+    "items": [
+      { "icon": "", "title": "", "description": "" },
+      { "icon": "", "title": "", "description": "" },
+      { "icon": "", "title": "", "description": "" },
+      { "icon": "", "title": "", "description": "" }
+    ]
+  },
+
+  "experience": {
+    "heading": "Experience",
+    "subheading": "",
+    "items": [
+      {
+        "role": "",
+        "company": "",
+        "companyUrl": "",
+        "location": "",
+        "start": "",
+        "end": "",
+        "description": "",
+        "bullets": [""],
+        "tech": [""]
+      }
+    ]
+  },
+
+  "education": {
+    "heading": "Education",
+    "subheading": "",
+    "items": [
+      {
+        "degree": "",
+        "institution": "",
+        "institutionUrl": "",
+        "location": "",
+        "start": "",
+        "end": "",
+        "score": "",
+        "details": ""
+      }
+    ]
+  },
+
+  "projects": {
+    "heading": "Projects",
+    "subheading": "",
+    "items": [
+      {
+        "name": "",
+        "description": "",
+        "tech": [""],
+        "image": "",
+        "repoUrl": "",
+        "liveUrl": "",
+        "featured": false
+      }
+    ]
+  },
+
+  "interests": {
+    "heading": "Beyond Code",
+    "subheading": "",
+    "items": [
+      { "icon": "", "label": "" },
+      { "icon": "", "label": "" },
+      { "icon": "", "label": "" }
+    ]
+  },
+
+  "contact": {
+    "heading": "Get In Touch",
+    "subheading": "",
+    "email": "",
+    "ctaLabel": ""
+  },
+
+  "socials": [
+    { "label": "Resume", "href": "", "icon": "resume" },
+    { "label": "GitHub", "href": "", "icon": "github" },
+    { "label": "LinkedIn", "href": "", "icon": "linkedin" },
+    { "label": "X", "href": "", "icon": "x" }
+  ],
+
+  "footer": {
+    "note": "",
+    "copyright": ""
+  }
+}
