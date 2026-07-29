@@ -2,15 +2,15 @@
   "meta": {
     "title": "",
     "description": "",
-    "faviconEmoji": "",
+    "faviconEmoji": "👨‍💻",
     "siteUrl": "",
     "ogImage": ""
   },
 
   "profile": {
     "initials": "",
-    "name": "",
-    "greeting": "",
+    "name": "Adhyan Jain",
+    "greeting": "Hi, I'm",
     "headline": "",
     "tagline": "",
     "quote": {
@@ -32,46 +32,47 @@
   ],
 
   "hero": {
-    "primaryCta": { "label": "", "href": "" },
-    "secondaryCta": { "label": "", "href": "" }
+    "primaryCta": { "label": "View Projects", "href": "#projects" },
+    "secondaryCta": { "label": "Get In Touch", "href": "#contact" }
   },
 
   "about": {
-    "heading": "About",
+    "heading": "👋 About Me",
     "subheading": "",
     "paragraphs": ["", ""],
     "highlights": [
-      { "label": "", "value": "" },
-      { "label": "", "value": "" },
-      { "label": "", "value": "" }
+      { "label": "Focus", "value": "" },
+      { "label": "Currently", "value": "" },
+      { "label": "Based in", "value": "" }
     ]
   },
 
   "technologies": {
-    "heading": "Technologies",
+    "heading": "⚡ Favorite Technologies",
     "subheading": "",
     "groups": [
       { "category": "Languages", "items": [""] },
       { "category": "Frontend", "items": [""] },
       { "category": "Backend", "items": [""] },
-      { "category": "Infrastructure", "items": [""] },
-      { "category": "Databases", "items": [""] }
+      { "category": "Databases", "items": [""] },
+      { "category": "Cloud", "items": [""] },
+      { "category": "Tooling", "items": [""] }
     ]
   },
 
   "skills": {
-    "heading": "What I Do",
+    "heading": "🛠️ What I Do",
     "subheading": "",
     "items": [
-      { "icon": "", "title": "", "description": "" },
-      { "icon": "", "title": "", "description": "" },
-      { "icon": "", "title": "", "description": "" },
-      { "icon": "", "title": "", "description": "" }
+      { "icon": "💻", "title": "Full-Stack Development", "description": "" },
+      { "icon": "🔌", "title": "API Design", "description": "" },
+      { "icon": "🗄️", "title": "Databases", "description": "" },
+      { "icon": "☁️", "title": "Cloud & Infrastructure", "description": "" }
     ]
   },
 
   "experience": {
-    "heading": "Experience",
+    "heading": "💼 Experience",
     "subheading": "",
     "items": [
       {
@@ -89,7 +90,7 @@
   },
 
   "education": {
-    "heading": "Education",
+    "heading": "🎓 Education",
     "subheading": "",
     "items": [
       {
@@ -106,7 +107,7 @@
   },
 
   "projects": {
-    "heading": "Projects",
+    "heading": "🚀 Projects",
     "subheading": "",
     "items": [
       {
@@ -122,7 +123,7 @@
   },
 
   "interests": {
-    "heading": "Beyond Code",
+    "heading": "🎯 Beyond Code",
     "subheading": "",
     "items": [
       { "icon": "", "label": "" },
@@ -132,10 +133,10 @@
   },
 
   "contact": {
-    "heading": "Get In Touch",
+    "heading": "📬 Get In Touch",
     "subheading": "",
     "email": "",
-    "ctaLabel": ""
+    "ctaLabel": "Say Hello"
   },
 
   "socials": [
@@ -146,7 +147,7 @@
   ],
 
   "footer": {
-    "note": "",
+    "note": "Built with Next.js & Tailwind CSS",
     "copyright": ""
   }
 }
