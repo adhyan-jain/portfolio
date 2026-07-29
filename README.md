@@ -1,89 +1,59 @@
 # Portfolio
 
-Config-driven personal portfolio. Next.js App Router, Tailwind CSS, TypeScript. Frontend only — no backend, no CMS.
+Personal portfolio built on the [magicuidesign/portfolio](https://github.com/magicuidesign/portfolio) template (MIT). Next.js App Router, Tailwind CSS v4, TypeScript.
 
-All content lives in one JSON file. Edit it and the page updates; you never touch a component to change your own details.
+The one change from upstream: all person-specific content is pulled out of `src/data/resume.tsx` and into [config/portfolio.json](config/portfolio.json), so you edit one JSON file instead of a TSX file.
 
 ## Run
 
 ```bash
 npm install
 npm run dev     # http://localhost:3000
-npm run build   # production build
+npm run build
 ```
 
 ## Fill it in
 
-Everything person-specific lives in [config/portfolio.json](config/portfolio.json), currently blank.
+Everything lives in [config/portfolio.json](config/portfolio.json), currently blank apart from your name.
 
-Blank fields disappear rather than rendering empty shells:
-
-- an empty string hides that line
-- an empty array hides that list
-- a section whose entries are all empty is **not rendered at all** — no heading, no divider — and its nav entry is dropped too
-
-So a half-filled config still looks deliberate. Fill in what you have; add the rest later.
-
-### Config map
-
-| Key | Drives |
+| Key | What it is |
 | --- | --- |
-| `meta` | Page title, description, emoji favicon, canonical URL, OG image |
-| `profile` | Nav initials, name, greeting, headline, tagline, quote, avatar, location, availability |
-| `nav` | Menu entries; each `href` points at a section id |
-| `hero` | The two hero buttons |
-| `about` | Paragraphs plus the label/value highlight cards |
-| `technologies` | Grouped tool chips (`category` + `items`) |
-| `skills` | "What I do" cards; `icon` is any emoji |
-| `experience` | Timeline: role, company, dates, bullets, tech chips |
-| `education` | Timeline: degree, institution, dates, score |
-| `projects` | Cards; `featured: true` spans two columns |
-| `interests` | Emoji + label chips |
-| `contact` | Heading, blurb, mailto button |
-| `socials` | Resume / GitHub / LinkedIn / X — rendered in hero and contact |
-| `footer` | Note line; `copyright` auto-generates from name + year if blank |
+| `name`, `initials` | Shown in the hero and as the avatar fallback |
+| `url` | Canonical site URL. **Set this** — OG tags and the OG image need it |
+| `location`, `locationLink` | Hero location line |
+| `description` | One-line hero tagline, also the meta description |
+| `summary` | The About paragraph (supports Markdown links) |
+| `avatarUrl` | e.g. `/me.png` — put the file in `public/` |
+| `skills[]` | `{ name, icon }`; see icon keys below |
+| `contact.email`, `contact.tel` | Contact section |
+| `contact.social` | GitHub / LinkedIn / X / email. `navbar: true` puts it in the dock |
+| `resumeUrl` | Adds a resume button to the dock; omit and the button disappears |
+| `work[]` | company, href, badges, location, title, logoUrl, start, end, description |
+| `education[]` | school, href, degree, logoUrl, start, end |
+| `projects[]` | title, href, dates, active, description, technologies, links, image, video |
+| `hackathons[]` | title, dates, location, description, image, links — leave `[]` to hide the section |
 
-Array entries can be added or removed freely — lists render from whatever is present.
+Entries whose fields are all blank are dropped, and social links with no URL are hidden from the dock, so a partly-filled config still renders cleanly.
 
-If you add a config field, update the matching type in [lib/types.ts](lib/types.ts).
+### Icon keys
 
-## Design system
+Icons can't be expressed in JSON, so entries name one and [src/data/resume.tsx](src/data/resume.tsx) resolves it to a component.
 
-shadcn/ui token conventions on Tailwind v4. Colors are stored as bare HSL channels in [app/globals.css](app/globals.css) so utilities can layer opacity on them. `:root` is light, `.dark` is dark; `@theme inline` exposes both to Tailwind.
+- **`skills[].icon`** — `react`, `nextjs`, `typescript`, `nodejs`, `python`, `go`, `postgres`, `docker`, `kubernetes`, `java`, `csharp`
+- **social / project link `icon`** — `github`, `linkedin`, `x`, `youtube`, `email`, `globe`, `notion`, `whatsapp`, `googleDrive`
 
-To restyle, edit the token values — components reference semantic names (`bg-card`, `text-muted-foreground`, `border-border`), never raw colors.
+To add one, drop an SVG component in `src/components/ui/svgs/` and register it in the `SKILL_ICONS` map.
 
-The theme toggle sits in the nav and persists to `localStorage`; first visit follows the OS preference. An inline script in [app/layout.tsx](app/layout.tsx) applies the stored theme before first paint to avoid a white flash.
+## Layout
 
-## Structure
+A single narrow column (`max-w-2xl`) with a floating dock pinned to the bottom holding home, resume, socials, and the theme toggle. Sections: Hero → About → Work → Education → Skills → Projects → Hackathons → Contact.
 
-```
-app/
-  layout.tsx      fonts, metadata from config, no-flash theme script
-  page.tsx        composes the sections in order
-  globals.css     design tokens
-components/
-  Nav.tsx         fixed header, scroll-spy, mobile menu
-  ThemeToggle.tsx
-  Reveal.tsx      scroll-triggered entrance
-  ui.tsx          Container, Section, Card, Chip, ButtonLink
-  icons.tsx       inline SVGs
-  Footer.tsx
-  sections/       Hero, About, Technologies, Skills, Experience,
-                  Education, Projects, Interests, Contact, Timeline
-config/
-  portfolio.json  all content
-lib/
-  types.ts        config shape
-  config.ts       loader + blank-handling helpers
-```
+## Differences from upstream
 
-Experience and Education share [Timeline.tsx](components/sections/Timeline.tsx).
+- **Blog removed** — routes, MDX pipeline, and content-collections dependency all dropped.
+- **Content moved to JSON** as described above.
+- **Blank-safe guards** — `metadataBase` and the OG image skip `new URL()` when `url` is unset, which would otherwise throw at build time.
 
-## Deploying
+## Attribution
 
-Static-friendly. Vercel needs no configuration. For a plain static host, add `output: "export"` to [next.config.ts](next.config.ts) and serve `out/`.
-
-## Notes
-
-Images use plain `<img>` rather than `next/image` because paths come from user config and may be remote; `images.unoptimized` is set for the same reason.
+Template © 2024 Dillion Verma, MIT licensed — see [LICENSE](LICENSE). Company logos and the author's photo from the upstream `public/` folder are deliberately not included; only the two fonts the OG image route needs were kept.
