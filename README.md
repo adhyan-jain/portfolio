@@ -22,7 +22,12 @@ Everything lives in [config/portfolio.json](config/portfolio.json), currently bl
 | `url` | Canonical site URL. **Set this** — OG tags and the OG image need it |
 | `location`, `locationLink` | Hero location line |
 | `description` | One-line hero tagline, also the meta description |
-| `summary` | The About paragraph (supports Markdown links) |
+| `quote` | Italic line under the hero tagline; omit to hide |
+| `about.highlights[]` | `{ icon, text }` — the two-column emoji rows at the top of the About tab. Markdown-aware, so `**bold**` works |
+| `about.summary` | The About paragraph (Markdown-aware) |
+| `about.favoriteTechnologies[]` | Plain strings, rendered as badges |
+| `about.whatIDo[]` | Bullet list (Markdown-aware) |
+| `about.beyondTech` | `{ label, text }` callout at the foot of the About tab |
 | `avatarUrl` | e.g. `/me.png` — put the file in `public/` |
 | `skills[]` | `{ name, icon }`; see icon keys below |
 | `contact.email`, `contact.tel` | Contact section |
@@ -46,7 +51,11 @@ To add one, drop an SVG component in `src/components/ui/svgs/` and register it i
 
 ## Layout
 
-A single narrow column (`max-w-2xl`) with a floating dock pinned to the bottom holding home, resume, socials, and the theme toggle. Sections: Hero → About → Work → Education → Skills → Projects → Hackathons → Contact.
+A single narrow column (`max-w-2xl`) with a floating dock pinned to the bottom holding home, resume, socials, and the theme toggle.
+
+Below the hero, content sits in a **tab bar** — About / Experience / Education / Skills / Projects / Contact — rather than stacked sections. A tab with no data behind it is dropped, so empty config never renders an empty panel.
+
+Panel content stays server-rendered: [tabbed-sections.tsx](src/components/tabbed-sections.tsx) is a thin client wrapper that receives each panel as a `content` prop.
 
 ## Differences from upstream
 
