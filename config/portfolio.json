@@ -5,8 +5,19 @@
   "location": "",
   "locationLink": "",
   "description": "",
-  "summary": "",
+  "quote": "",
   "avatarUrl": "",
+
+  "about": {
+    "highlights": [
+      { "icon": "", "text": "" },
+      { "icon": "", "text": "" }
+    ],
+    "summary": "",
+    "favoriteTechnologies": [],
+    "whatIDo": [],
+    "beyondTech": { "label": "Beyond tech:", "text": "" }
+  },
 
   "skills": [{ "name": "", "icon": "" }],
 

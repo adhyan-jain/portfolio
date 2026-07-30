@@ -130,8 +130,21 @@ export const DATA = {
   location: data.location,
   locationLink: data.locationLink,
   description: data.description,
-  summary: data.summary,
+  quote: data.quote,
   avatarUrl: data.avatarUrl,
+  about: {
+    highlights: (data.about?.highlights ?? []).filter(
+      (item) => item.text.trim() !== "",
+    ),
+    summary: data.about?.summary ?? "",
+    favoriteTechnologies: (data.about?.favoriteTechnologies ?? []).filter(
+      (tech: string) => tech.trim() !== "",
+    ),
+    whatIDo: (data.about?.whatIDo ?? []).filter(
+      (item: string) => item.trim() !== "",
+    ),
+    beyondTech: data.about?.beyondTech ?? { label: "", text: "" },
+  },
   skills,
   navbar,
   contact: {
