@@ -8,7 +8,9 @@ import AboutSection from "@/components/section/about-section";
 import ContactSection from "@/components/section/contact-section";
 import ProjectsSection from "@/components/section/projects-section";
 import WorkSection from "@/components/section/work-section";
+import HackathonsSection from "@/components/section/hackathons-section";
 import TabbedSections, { type TabItem } from "@/components/tabbed-sections";
+import { SkillBadge } from "@/components/skill-badge";
 import { ArrowUpRight } from "lucide-react";
 
 const BLUR_FADE_DELAY = 0.04;
@@ -16,43 +18,44 @@ const BLUR_FADE_DELAY = 0.04;
 function EducationSection() {
   return (
     <div className="flex flex-col gap-8">
-      {DATA.education.map((education) => (
-        <Link
-          key={education.school}
-          href={education.href}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="group flex items-center justify-between gap-x-3"
-        >
-          <div className="flex min-w-0 flex-1 items-center gap-x-3">
-            {education.logoUrl ? (
-              <img
-                src={education.logoUrl}
-                alt={education.school}
-                className="size-8 flex-none overflow-hidden rounded-full border object-contain p-1 shadow ring-2 ring-border md:size-10"
-              />
-            ) : (
-              <div className="size-8 flex-none rounded-full border bg-muted p-1 shadow ring-2 ring-border md:size-10" />
-            )}
-            <div className="flex min-w-0 flex-1 flex-col gap-0.5">
-              <div className="flex items-center gap-2 font-semibold leading-none">
-                {education.school}
-                <ArrowUpRight
-                  className="h-3.5 w-3.5 -translate-x-2 text-muted-foreground opacity-0 transition-all duration-200 group-hover:translate-x-0 group-hover:opacity-100"
-                  aria-hidden
+      {DATA.education.map((education, index) => (
+        <BlurFade key={education.school} delay={BLUR_FADE_DELAY + index * 0.05}>
+          <Link
+            href={education.href}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="group flex items-center justify-between gap-x-3"
+          >
+            <div className="flex min-w-0 flex-1 items-center gap-x-3">
+              {education.logoUrl ? (
+                <img
+                  src={education.logoUrl}
+                  alt={education.school}
+                  className="size-8 flex-none overflow-hidden rounded-full border object-contain p-1 shadow ring-2 ring-border md:size-10 bg-white"
                 />
-              </div>
-              <div className="font-sans text-sm text-muted-foreground">
-                {education.degree}
+              ) : (
+                <div className="size-8 flex-none rounded-full border bg-muted p-1 shadow ring-2 ring-border md:size-10" />
+              )}
+              <div className="flex min-w-0 flex-1 flex-col gap-0.5">
+                <div className="flex items-center gap-2 font-semibold leading-none">
+                  {education.school}
+                  <ArrowUpRight
+                    className="h-3.5 w-3.5 -translate-x-2 text-muted-foreground opacity-0 transition-all duration-200 group-hover:translate-x-0 group-hover:opacity-100"
+                    aria-hidden
+                  />
+                </div>
+                <div className="font-sans text-sm text-muted-foreground">
+                  {education.degree}
+                </div>
               </div>
             </div>
-          </div>
-          <div className="flex flex-none items-center gap-1 text-right text-xs tabular-nums text-muted-foreground">
-            <span>
-              {education.start} - {education.end}
-            </span>
-          </div>
-        </Link>
+            <div className="flex flex-none items-center gap-1 text-right text-xs tabular-nums text-muted-foreground">
+              <span>
+                {education.start} - {education.end}
+              </span>
+            </div>
+          </Link>
+        </BlurFade>
       ))}
     </div>
   );
@@ -61,18 +64,15 @@ function EducationSection() {
 function SkillsSection() {
   return (
     <div className="flex flex-wrap gap-2">
-      {DATA.skills.map((skill) => (
-        <div
-          key={skill.name}
-          className="flex h-8 w-fit items-center gap-2 rounded-xl border border-border bg-background px-4 ring-2 ring-border/20"
-        >
+      {DATA.skills.map((skill, index) => (
+        <SkillBadge key={skill.name} delay={index * 0.015}>
           {skill.icon && (
             <skill.icon className="size-4 overflow-hidden rounded object-contain" />
           )}
           <span className="text-sm font-medium text-foreground">
             {skill.name}
           </span>
-        </div>
+        </SkillBadge>
       ))}
     </div>
   );
@@ -85,7 +85,12 @@ export default function Page() {
     {
       value: "experience",
       label: "Experience",
-      content: <WorkSection />,
+      content: (
+        <div className="flex flex-col gap-12">
+          <WorkSection />
+          {DATA.hackathons.length > 0 && <HackathonsSection />}
+        </div>
+      ),
       show: DATA.work.length > 0,
     },
     {

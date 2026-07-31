@@ -7,6 +7,7 @@ import { ArrowUpRight } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 import Markdown from "react-markdown";
+import { motion } from "motion/react";
 
 function ProjectImage({ src, alt }: { src: string; alt: string }) {
   const [imageError, setImageError] = useState(false);
@@ -55,18 +56,21 @@ export function ProjectCard({
   className,
 }: Props) {
   return (
-    <div
+    <motion.div
+      whileHover={{ y: -4 }}
+      whileTap={{ scale: 0.98 }}
+      transition={{ duration: 0.2, ease: "easeOut" }}
       className={cn(
         "flex flex-col h-full border border-border rounded-xl overflow-hidden hover:ring-2 cursor-pointer hover:ring-muted transition-all duration-200",
         className
       )}
     >
-      <div className="relative shrink-0">
+      {(image || video) && (
         <Link
           href={href || "#"}
           target="_blank"
           rel="noopener noreferrer"
-          className="block"
+          className="block shrink-0"
         >
           {video ? (
             <video
@@ -77,39 +81,16 @@ export function ProjectCard({
               playsInline
               className="w-full h-48 object-cover"
             />
-          ) : image ? (
-            <ProjectImage src={image} alt={title} />
           ) : (
-            <div className="w-full h-48 bg-muted" />
+            <ProjectImage src={image!} alt={title} />
           )}
         </Link>
-        {links && links.length > 0 && (
-          <div className="absolute top-2 right-2 flex flex-wrap gap-2">
-            {links.map((link, idx) => (
-              <Link
-                href={link.href}
-                key={idx}
-                target="_blank"
-                rel="noopener noreferrer"
-                onClick={(e) => e.stopPropagation()}
-              >
-                <Badge
-                  className="flex items-center gap-1.5 text-xs bg-black text-white hover:bg-black/90"
-                  variant="default"
-                >
-                  {link.icon}
-                  {link.type}
-                </Badge>
-              </Link>
-            ))}
-          </div>
-        )}
-      </div>
+      )}
       <div className="p-6 flex flex-col gap-3 flex-1">
         <div className="flex items-start justify-between gap-2">
           <div className="flex flex-col gap-1">
             <h3 className="font-semibold">{title}</h3>
-            <time className="text-xs text-muted-foreground">{dates}</time>
+            {dates && <time className="text-xs text-muted-foreground">{dates}</time>}
           </div>
           <Link
             href={href || "#"}
@@ -125,7 +106,7 @@ export function ProjectCard({
           <Markdown>{description}</Markdown>
         </div>
         {tags && tags.length > 0 && (
-          <div className="flex flex-wrap gap-1 mt-auto">
+          <div className="flex flex-wrap gap-1">
             {tags.map((tag) => (
               <Badge
                 key={tag}
@@ -137,7 +118,34 @@ export function ProjectCard({
             ))}
           </div>
         )}
+        {links && links.length > 0 && (
+          <div className="mt-auto flex flex-wrap gap-2 pt-1">
+            {links.map((link, idx) => (
+              <Link
+                href={link.href}
+                key={idx}
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <motion.div
+                  whileHover={{ scale: 1.06, y: -2 }}
+                  whileTap={{ scale: 0.96 }}
+                  transition={{ duration: 0.15, ease: "easeOut" }}
+                >
+                  <Badge
+                    className="flex items-center gap-1.5 text-xs bg-primary text-primary-foreground hover:bg-primary/90"
+                    variant="default"
+                  >
+                    {link.icon}
+                    {link.type}
+                  </Badge>
+                </motion.div>
+              </Link>
+            ))}
+          </div>
+        )}
       </div>
-    </div>
+    </motion.div>
   );
 }
