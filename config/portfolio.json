@@ -1,34 +1,74 @@
 {
   "name": "Adhyan Jain",
-  "initials": "",
-  "url": "",
-  "location": "",
-  "locationLink": "",
-  "description": "",
-  "quote": "",
-  "avatarUrl": "",
+  "initials": "AJ",
+  "url": "https://shadow-code-delta.vercel.app",
+  "location": "Vellore, Tamil Nadu, India",
+  "locationLink": "https://www.google.com/maps/place/Vellore",
+  "description": "AI & Full-Stack Engineer building scalable backend systems and LLM-powered products 🚀",
+  "quote": "Code with purpose, build with passion.",
+  "avatarUrl": "https://avatars.githubusercontent.com/u/71976554?v=4",
 
   "about": {
     "highlights": [
-      { "icon": "", "text": "" },
-      { "icon": "", "text": "" }
+      { "icon": "🎓", "text": "**CSE student @ VIT Vellore** (B.Tech – Computer Science and Engineering, CGPA: 8.83, Aug 2024 – Present)" },
+      { "icon": "💻", "text": "**AI & Full-Stack Engineer** with internship experience across AI automation and frontend engineering" }
     ],
-    "summary": "",
-    "favoriteTechnologies": [],
-    "whatIDo": [],
-    "beyondTech": { "label": "Beyond tech:", "text": "" }
+    "summary": "I build **end-to-end systems** spanning LLM-powered automation pipelines, distributed backend infrastructure, and full-stack web applications. From serverless AI pipelines on **AWS** to real-time platforms serving thousands of concurrent users, I enjoy solving problems that combine **AI**, **scale**, and **reliability**.",
+    "favoriteTechnologies": ["Go", "Python", "Next.js", "LangChain", "Docker", "PostgreSQL", "AWS", "gRPC"],
+    "whatIDo": [
+      "Build **AI-powered pipelines and agents** with **LangChain**, **LangGraph**, **RAG**, and **MCP**",
+      "Develop **distributed and microservices backends** with **Go**, **gRPC**, and **Redis**",
+      "Ship **full-stack web applications** with **Next.js**, **React**, and **Node.js/Express**",
+      "Work with **databases** like **PostgreSQL**, **MongoDB**, and **Redis** for robust data modeling",
+      "Deploy and manage infrastructure on **AWS (Lambda, S3, EC2)** with **Docker** and **CI/CD**"
+    ],
+    "beyondTech": { "label": "Beyond tech:", "text": "I'm a die-hard web novel fan — Lord of the Mysteries and Reverend Insanity live rent-free in my head." }
   },
 
-  "skills": [{ "name": "", "icon": "" }],
+  "skills": [
+    { "name": "Python", "icon": "python" },
+    { "name": "Go", "icon": "golang" },
+    { "name": "JavaScript/TypeScript", "icon": "typescript" },
+    { "name": "C++", "icon": "cplusplus" },
+    { "name": "Java", "icon": "java" },
+    { "name": "C#/.NET", "icon": "csharp" },
+    { "name": "LangChain", "icon": "langchain" },
+    { "name": "LangGraph", "icon": "" },
+    { "name": "MCP", "icon": "" },
+    { "name": "RAG", "icon": "" },
+    { "name": "Graph RAG", "icon": "" },
+    { "name": "LLM Agents", "icon": "" },
+    { "name": "Ollama", "icon": "ollama" },
+    { "name": "RAGAS", "icon": "" },
+    { "name": "TensorFlow", "icon": "tensorflow" },
+    { "name": "PyTorch", "icon": "pytorch" },
+    { "name": "scikit-learn", "icon": "scikitlearn" },
+    { "name": "Qdrant", "icon": "qdrant" },
+    { "name": "FAISS", "icon": "" },
+    { "name": "Pinecone", "icon": "" },
+    { "name": "React.js", "icon": "react" },
+    { "name": "Next.js", "icon": "nextjs" },
+    { "name": "Node.js", "icon": "nodejs" },
+    { "name": "Express.js", "icon": "express" },
+    { "name": "Flask", "icon": "flask" },
+    { "name": "PostgreSQL", "icon": "postgresql" },
+    { "name": "MongoDB", "icon": "mongodb" },
+    { "name": "Redis", "icon": "redis" },
+    { "name": "Firebase", "icon": "firebase" },
+    { "name": "Docker", "icon": "docker" },
+    { "name": "AWS (Lambda, S3, EC2)", "icon": "" },
+    { "name": "gRPC", "icon": "" },
+    { "name": "GitHub Actions", "icon": "githubactions" },
+    { "name": "CI/CD", "icon": "" }
+  ],
 
   "contact": {
-    "email": "",
-    "tel": "",
+    "email": "adhyanjain2006@gmail.com",
+    "tel": "+91 8766269971",
     "social": {
-      "GitHub": { "name": "GitHub", "url": "", "icon": "github", "navbar": true },
-      "LinkedIn": { "name": "LinkedIn", "url": "", "icon": "linkedin", "navbar": true },
-      "X": { "name": "X", "url": "", "icon": "x", "navbar": true },
-      "email": { "name": "Send Email", "url": "", "icon": "email", "navbar": false }
+      "GitHub": { "name": "GitHub", "url": "https://github.com/adhyan-jain", "icon": "github", "navbar": true },
+      "LinkedIn": { "name": "LinkedIn", "url": "https://www.linkedin.com/in/adhyan-jain-5703411b8/", "icon": "linkedin", "navbar": true },
+      "email": { "name": "Send Email", "url": "mailto:adhyanjain2006@gmail.com", "icon": "email", "navbar": false }
     }
   },
 
@@ -36,45 +76,166 @@
 
   "work": [
     {
-      "company": "",
+      "company": "Palni Pvt Ltd",
       "href": "",
       "badges": [],
-      "location": "",
-      "title": "",
-      "logoUrl": "",
-      "start": "",
-      "end": "",
-      "description": ""
+      "location": "Hyderabad, Telangana",
+      "title": "AI Engineer Intern",
+      "logoUrl": "/logos/palni.png",
+      "start": "May 2026",
+      "end": "Jul 2026",
+      "description": "SmartBots AI Division → Palnies Telecom Automation Team. Architected and deployed Hermes, a serverless email summarization pipeline on AWS Lambda and S3 with custom thread management and LLM-driven analysis. Enhanced an Outlook automation pipeline for telecom Pole Load Analysis with LLM-generated summaries across 160+ geographic areas, role-based notification routing, and S3 data migration. Developed an internal no-code flow builder — a customizable alternative to make.com/n8n — with email OTP auth, JSON/YAML flow export-import, and credential management. Engineered a workflow automation platform with LLM-integrated pipelines for enterprise AI service delivery, implementing cross-application session management with JWT across MACH Tool."
+    },
+    {
+      "company": "RxGPT",
+      "href": "",
+      "badges": [],
+      "location": "Remote",
+      "title": "Frontend Engineering Intern",
+      "logoUrl": "/logos/rxgpt.png",
+      "start": "Mar 2026",
+      "end": "Jun 2026",
+      "description": "Delivered React development across HireX and DigiX, taking ownership of additional pages under deadline pressure to ensure on-time release. Re-architected an internal AI chatbot from static user-guide lookup to live database querying with role-aware data masking — organizations can query applicant pools and filter by criteria, while the LLM enforces field-level authorization, redacting personal details the requesting role is not permitted to access."
+    },
+    {
+      "company": "Association for Computing Machinery (ACM VIT)",
+      "href": "https://github.com/ACM-VIT",
+      "badges": [],
+      "location": "VIT Vellore",
+      "title": "Senior Core Member",
+      "logoUrl": "/logos/acmvit.png",
+      "start": "Apr 2025",
+      "end": "Present",
+      "description": "Spearheaded backend for Code2Create, a 1,200-participant 36-hour hackathon, owning real-time submission infrastructure end-to-end. Drove technical execution of the Chapter Recruitment Platform — coordinated across a mixed technical/non-technical team and personally authored the majority of server-side logic."
     }
   ],
 
   "education": [
     {
-      "school": "",
-      "href": "",
-      "degree": "",
-      "logoUrl": "",
-      "start": "",
-      "end": ""
+      "school": "Vellore Institute of Technology (VIT)",
+      "href": "https://vit.ac.in",
+      "degree": "B.Tech in Computer Science and Engineering (CGPA: 8.83)",
+      "logoUrl": "/logos/vit.png",
+      "start": "Aug 2024",
+      "end": "Present"
     }
   ],
 
   "projects": [
     {
-      "title": "",
+      "title": "Shadow-Code",
+      "href": "https://shadow-code-delta.vercel.app",
+      "dates": "",
+      "active": true,
+      "description": "Java migration intelligence platform — parses repositories, builds dependency graphs, performs risk analysis, and converts source files to Go, Kotlin, or TypeScript via Gemini AI. Features AST parsing, cycle-detecting dependency graphs, a D3.js force-directed risk map, and side-by-side diffs of original vs. AI-converted code.",
+      "technologies": ["Java", "JavaParser", "Python", "Flask", "Gemini AI", "React", "TypeScript", "Vite", "D3.js", "Tailwind CSS"],
+      "links": [
+        { "type": "Website", "href": "https://shadow-code-delta.vercel.app", "icon": "globe" },
+        { "type": "Source", "href": "https://github.com/adhyan-jain/Shadow-Code", "icon": "github" }
+      ],
+      "image": "/projects/shadow-code.png",
+      "video": ""
+    },
+    {
+      "title": "Chapter Recruitment Platform",
+      "href": "https://explore.acmvit.in/",
+      "dates": "",
+      "active": true,
+      "description": "Co-led full-stack development of a multi-domain recruitment system with role-based auth, multi-stage candidate evaluation, and automated interview scheduling across 5 domains. Processed 1,100+ applications end-to-end through a 3-stage pipeline, streamlining chapter intake and increasing membership by 40%.",
+      "technologies": ["Next.js", "Server Actions", "MongoDB"],
+      "links": [
+        { "type": "Website", "href": "https://explore.acmvit.in/", "icon": "globe" }
+      ],
+      "image": "/projects/chapter-recruitment-platform.png",
+      "video": ""
+    },
+    {
+      "title": "Load & Stability Analyzer",
       "href": "",
       "dates": "",
       "active": true,
-      "description": "",
-      "technologies": [],
+      "description": "Full-stack load testing and API stability analysis tool. Fires concurrent requests at any HTTP endpoint via a Go worker-pool engine with optional ramp-up, then computes a weighted stability score from error rate, P95 latency, and retry amplification, with automatic collapse detection when the system starts to fall over.",
+      "technologies": ["Go", "React", "React Router", "Tailwind CSS", "Vite", "Recharts"],
       "links": [
-        { "type": "Website", "href": "", "icon": "globe" },
-        { "type": "Source", "href": "", "icon": "github" }
+        { "type": "Source", "href": "https://github.com/adhyan-jain/Load-and-Stability-Analyzer", "icon": "github" }
+      ],
+      "image": "/projects/load-stability-analyzer.png",
+      "video": ""
+    },
+    {
+      "title": "ComputeHive",
+      "href": "",
+      "dates": "",
+      "active": true,
+      "description": "A self-hosted distributed task runner — users package workloads as Docker images via a Tauri desktop client, which uploads artifacts and submits jobs to a Go coordinator that schedules execution across registered worker nodes. The coordinator persists job and worker state in Redis with per-worker heartbeat monitoring; failed jobs are automatically requeued within 10–13s, and workers pull jobs via gRPC, execute containers, and stream results back.",
+      "technologies": ["Go", "gRPC", "Docker", "Redis", "Rust/Tauri"],
+      "links": [
+        { "type": "Source", "href": "https://github.com/adhyan-jain/ComputeHive", "icon": "github" }
+      ],
+      "image": "",
+      "video": ""
+    },
+    {
+      "title": "Cryptic Hunt Backend",
+      "href": "",
+      "dates": "",
+      "active": true,
+      "description": "Refactored a monolithic legacy codebase into a microservices architecture in Go, enabling the platform to serve 600+ concurrent users across a high-stakes 36-hour live event. Structured a normalized PostgreSQL schema and shipped a real-time admin dashboard for live monitoring, processing 70,000+ API requests with zero downtime under sustained load.",
+      "technologies": ["Go", "PostgreSQL", "Microservices"],
+      "links": [
+        { "type": "Website", "href": "https://play.google.com/store/apps/details?id=com.acmvit.cryptic_hunt", "icon": "globe" }
+      ],
+      "image": "",
+      "video": ""
+    },
+    {
+      "title": "EchoTales",
+      "href": "",
+      "dates": "",
+      "active": true,
+      "description": "Advanced character analysis and voice generation — processes novels with BookNLP and custom pipelines to extract and merge characters, analyze personalities, and attribute dialogue. Supports reference-based voice cloning with emotion control for generating character audio.",
+      "technologies": ["Python", "BookNLP", "NLP", "Voice Cloning"],
+      "links": [
+        { "type": "Source", "href": "https://github.com/adhyan-jain/EchoTales-Models", "icon": "github" }
+      ],
+      "image": "",
+      "video": ""
+    },
+    {
+      "title": "WhatsApp Issue Tracker Bot",
+      "href": "",
+      "dates": "",
+      "active": false,
+      "description": "Built to make development of the Chapter Recruitment Platform easier — a WhatsApp bot for issue management and team coordination, letting the team create, assign, and track issues directly in a WhatsApp group. Supports multi-user assignment, completion tracking, group-wide `$everyone` mentions, and owner-only admin commands.",
+      "technologies": ["Node.js", "whatsapp-web.js", "Puppeteer", "Express", "Docker"],
+      "links": [
+        { "type": "Source", "href": "https://github.com/adhyan-jain/WhatsApp-Bot", "icon": "github" }
       ],
       "image": "",
       "video": ""
     }
   ],
 
-  "hackathons": []
+  "hackathons": [
+    {
+      "title": "Track Winner, DevSoc",
+      "dates": "Feb 2026",
+      "location": "CodeChef VIT, 1,200+ participants",
+      "description": "Built Shadow-Code in a 4-person team (2 backend/ML devs, 1 frontend, 1 designer).",
+      "image": "/logos/codechef.png",
+      "links": [
+        { "title": "Source", "href": "https://github.com/adhyan-jain/Shadow-Code", "icon": "github" }
+      ]
+    },
+    {
+      "title": "Finalist, DevJams",
+      "dates": "Sep 2025",
+      "location": "GDSC VIT, 2,000+ participants",
+      "description": "Built EchoTales in a 4-person team (myself as ML dev, 1 backend dev, 1 designer, 1 frontend dev).",
+      "image": "/logos/gdg.svg",
+      "links": [
+        { "title": "Source", "href": "https://github.com/adhyan-jain/EchoTales-Models", "icon": "github" }
+      ]
+    }
+  ]
 }
