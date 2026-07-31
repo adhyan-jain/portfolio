@@ -23,6 +23,15 @@ import { Csharp } from "@/components/ui/svgs/csharp";
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type AnyIcon = ComponentType<any>;
 
+/** Wraps a static logo file (public/logos/...) as an icon component. */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function imageIcon(src: string): AnyIcon {
+  // eslint-disable-next-line @next/next/no-img-element
+  return (props: { className?: string }) => (
+    <img src={src} alt="" className={props.className} />
+  );
+}
+
 const SKILL_ICONS: Record<string, AnyIcon> = {
   react: ReactLight,
   nextjs: NextjsIconDark,
@@ -37,6 +46,19 @@ const SKILL_ICONS: Record<string, AnyIcon> = {
   kubernetes: Kubernetes,
   java: Java,
   csharp: Csharp,
+  cplusplus: imageIcon("/logos/skills/cplusplus.svg"),
+  langchain: imageIcon("/logos/skills/langchain.svg"),
+  ollama: imageIcon("/logos/skills/ollama.svg"),
+  tensorflow: imageIcon("/logos/skills/tensorflow.svg"),
+  pytorch: imageIcon("/logos/skills/pytorch.svg"),
+  scikitlearn: imageIcon("/logos/skills/scikitlearn.svg"),
+  qdrant: imageIcon("/logos/skills/qdrant.svg"),
+  express: imageIcon("/logos/skills/express.svg"),
+  flask: imageIcon("/logos/skills/flask.svg"),
+  mongodb: imageIcon("/logos/skills/mongodb.svg"),
+  redis: imageIcon("/logos/skills/redis.svg"),
+  firebase: imageIcon("/logos/skills/firebase.svg"),
+  githubactions: imageIcon("/logos/skills/githubactions.svg"),
 };
 
 const SOCIAL_ICONS: Record<string, AnyIcon> = {
@@ -90,13 +112,13 @@ const skills = data.skills
     icon: SKILL_ICONS[skill.icon.toLowerCase()],
   }));
 
-type Hackathon = {
+type RawHackathon = {
   title: string;
   dates: string;
   location: string;
   description: string;
   image?: string;
-  links?: { title: string; href: string; icon?: ReactNode }[];
+  links?: { title: string; href: string; icon?: string }[];
 };
 
 /** Drops entries whose every string field is still blank. */
@@ -122,6 +144,19 @@ function iconNode(name: string): ReactNode {
   const Icon = socialIcon(name);
   return <Icon className="size-3" />;
 }
+
+const hackathons = present((data.hackathons ?? []) as RawHackathon[]).map(
+  (hackathon) => ({
+    ...hackathon,
+    links: (hackathon.links ?? [])
+      .filter((link) => link.href.trim() !== "")
+      .map((link) => ({
+        title: link.title,
+        href: link.href,
+        icon: link.icon ? iconNode(link.icon) : undefined,
+      })),
+  }),
+);
 
 export const DATA = {
   name: data.name,
@@ -155,5 +190,5 @@ export const DATA = {
   work: present(data.work),
   education: present(data.education),
   projects,
-  hackathons: present((data.hackathons ?? []) as Hackathon[]),
+  hackathons,
 } as const;
