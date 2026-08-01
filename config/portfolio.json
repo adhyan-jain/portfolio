@@ -123,6 +123,17 @@
 
   "projects": [
     {
+      "title": "FormSpace",
+      "href": "",
+      "dates": "",
+      "active": true,
+      "description": "A Google Forms–style platform built for teams, with a visual workflow layer on top. Users compose multi-section forms from eight question types (text, email, URL, date, MCQ, dropdown, linear scale, file upload) via a drag-and-drop canvas, then wire sections into branching paths that route respondents based on nested AND/OR conditions on their answers. Teams organize forms into workspaces with a six-level role hierarchy, email invites, and per-form sharing; responses can be filtered, analyzed, and exported to Excel, with file uploads handled through presigned S3 URLs.",
+      "technologies": ["Next.js 16", "React 19", "TypeScript", "Prisma", "MongoDB", "Better Auth", "Tailwind CSS v4", "dnd-kit", "AWS S3", "Zod"],
+      "links": [],
+      "image": "/projects/formspace.png",
+      "video": ""
+    },
+    {
       "title": "Shadow-Code",
       "href": "https://shadow-code-delta.vercel.app",
       "dates": "",
