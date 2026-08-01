@@ -123,14 +123,16 @@
 
   "projects": [
     {
-      "title": "FormSpace",
-      "href": "",
+      "title": "Chapter Recruitment Platform",
+      "href": "https://explore.acmvit.in/",
       "dates": "",
       "active": true,
-      "description": "A Google Forms–style platform built for teams, with a visual workflow layer on top. Users compose multi-section forms from eight question types (text, email, URL, date, MCQ, dropdown, linear scale, file upload) via a drag-and-drop canvas, then wire sections into branching paths that route respondents based on nested AND/OR conditions on their answers. Teams organize forms into workspaces with a six-level role hierarchy, email invites, and per-form sharing; responses can be filtered, analyzed, and exported to Excel, with file uploads handled through presigned S3 URLs.",
-      "technologies": ["Next.js 16", "React 19", "TypeScript", "Prisma", "MongoDB", "Better Auth", "Tailwind CSS v4", "dnd-kit", "AWS S3", "Zod"],
-      "links": [],
-      "image": "/projects/formspace.png",
+      "description": "Co-led full-stack development of a multi-domain recruitment system with role-based auth, multi-stage candidate evaluation, and automated interview scheduling across 5 domains. Processed 1,100+ applications end-to-end through a 3-stage pipeline, streamlining chapter intake and increasing membership by 40%.",
+      "technologies": ["Next.js", "Server Actions", "MongoDB"],
+      "links": [
+        { "type": "Website", "href": "https://explore.acmvit.in/", "icon": "globe" }
+      ],
+      "image": "/projects/chapter-recruitment-platform.png",
       "video": ""
     },
     {
@@ -148,16 +150,14 @@
       "video": ""
     },
     {
-      "title": "Chapter Recruitment Platform",
-      "href": "https://explore.acmvit.in/",
+      "title": "FormSpace",
+      "href": "",
       "dates": "",
       "active": true,
-      "description": "Co-led full-stack development of a multi-domain recruitment system with role-based auth, multi-stage candidate evaluation, and automated interview scheduling across 5 domains. Processed 1,100+ applications end-to-end through a 3-stage pipeline, streamlining chapter intake and increasing membership by 40%.",
-      "technologies": ["Next.js", "Server Actions", "MongoDB"],
-      "links": [
-        { "type": "Website", "href": "https://explore.acmvit.in/", "icon": "globe" }
-      ],
-      "image": "/projects/chapter-recruitment-platform.png",
+      "description": "A Google Forms–style platform built for teams, with a visual workflow layer on top. Users compose multi-section forms from eight question types (text, email, URL, date, MCQ, dropdown, linear scale, file upload) via a drag-and-drop canvas, then wire sections into branching paths that route respondents based on nested AND/OR conditions on their answers. Teams organize forms into workspaces with a six-level role hierarchy, email invites, and per-form sharing; responses can be filtered, analyzed, and exported to Excel, with file uploads handled through presigned S3 URLs.",
+      "technologies": ["Next.js 16", "React 19", "TypeScript", "Prisma", "MongoDB", "Better Auth", "Tailwind CSS v4", "dnd-kit", "AWS S3", "Zod"],
+      "links": [],
+      "image": "/projects/formspace.png",
       "video": ""
     },
     {

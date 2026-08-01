@@ -17,12 +17,14 @@ function ProjectImage({ src, alt }: { src: string; alt: string }) {
   }
 
   return (
-    <img
-      src={src}
-      alt={alt}
-      className="w-full h-48 object-cover"
-      onError={() => setImageError(true)}
-    />
+    <div className="w-full h-48 bg-muted flex items-center justify-center p-3">
+      <img
+        src={src}
+        alt={alt}
+        className="max-w-full max-h-full object-contain"
+        onError={() => setImageError(true)}
+      />
+    </div>
   );
 }
 
@@ -73,14 +75,16 @@ export function ProjectCard({
           className="block shrink-0"
         >
           {video ? (
-            <video
-              src={video}
-              autoPlay
-              loop
-              muted
-              playsInline
-              className="w-full h-48 object-cover"
-            />
+            <div className="w-full h-48 bg-muted flex items-center justify-center p-3">
+              <video
+                src={video}
+                autoPlay
+                loop
+                muted
+                playsInline
+                className="max-w-full max-h-full object-contain"
+              />
+            </div>
           ) : (
             <ProjectImage src={image!} alt={title} />
           )}
