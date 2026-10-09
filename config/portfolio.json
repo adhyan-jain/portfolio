@@ -150,16 +150,30 @@
       "video": ""
     },
     {
-      "title": "FormSpace",
-      "href": "https://form-2025-tarun.vercel.app/",
+      "title": "StoryTrace & SSR-Bench V2",
+      "href": "https://story-trace-psi.vercel.app",
       "dates": "",
       "active": true,
-      "description": "A Google Forms–style platform built for teams, with a visual workflow layer on top. Users compose multi-section forms from eight question types (text, email, URL, date, MCQ, dropdown, linear scale, file upload) via a drag-and-drop canvas, then wire sections into branching paths that route respondents based on nested AND/OR conditions on their answers. Teams organize forms into workspaces with a six-level role hierarchy, email invites, and per-form sharing; responses can be filtered, analyzed, and exported to Excel, with file uploads handled through presigned S3 URLs.",
-      "technologies": ["Next.js 16", "React 19", "TypeScript", "Prisma", "MongoDB", "Better Auth", "Tailwind CSS v4", "dnd-kit", "AWS S3", "Zod"],
+      "description": "An agentic narrative continuity engine paired with a research benchmark. The engine turns screenplays and novels into a temporal model of story state in ClickHouse, flags candidate continuity errors with SQL window functions, and verifies them with an investigation agent using ClickHouse MCP tools. SSR-Bench V2 tests how well LLMs revise state after a single pivot event, using leak-free matched story pairs. Story-blind attackers score 0.000 pair-both while the replay oracle scores 1.000.",
+      "technologies": ["Python", "ClickHouse", "MCP", "LLM Agents", "Benchmarking"],
       "links": [
-        { "type": "Website", "href": "https://form-2025-tarun.vercel.app/", "icon": "globe" }
+        { "type": "Website", "href": "https://story-trace-psi.vercel.app", "icon": "globe" },
+        { "type": "Source", "href": "https://github.com/adhyan-jain/StoryTrace", "icon": "github" }
       ],
-      "image": "/projects/formspace.png",
+      "image": "/projects/storytrace.png",
+      "video": ""
+    },
+    {
+      "title": "Verity",
+      "href": "https://github.com/adhyan-jain/Verity",
+      "dates": "",
+      "active": true,
+      "description": "Built for a hackathon: a financial-crime analyst workspace where card-fraud alerts and ledger account-risk feed a single case queue. Three detection engines (a SHAP-explained fraud model with split-conformal risk intervals, ledger anomaly detection, and FATF typology rules for structuring, round-tripping and rapid layering) sit behind a hand-rolled tool-calling agent with a grounding filter that investigates each case and can be questioned about its own reasoning live. Shared JSON-schema contracts and an 80-test suite keep the four services consistent.",
+      "technologies": ["Python", "FastAPI", "scikit-learn", "SHAP", "TanStack Start", "React"],
+      "links": [
+        { "type": "Source", "href": "https://github.com/adhyan-jain/Verity", "icon": "github" }
+      ],
+      "image": "/projects/verity.png",
       "video": ""
     },
     {
@@ -176,6 +190,45 @@
       "video": ""
     },
     {
+      "title": "FormSpace",
+      "href": "https://form-2025-tarun.vercel.app/",
+      "dates": "",
+      "active": true,
+      "description": "A Google Forms–style platform built for teams, with a visual workflow layer on top. Users compose multi-section forms from eight question types (text, email, URL, date, MCQ, dropdown, linear scale, file upload) via a drag-and-drop canvas, then wire sections into branching paths that route respondents based on nested AND/OR conditions on their answers. Teams organize forms into workspaces with a six-level role hierarchy, email invites, and per-form sharing; responses can be filtered, analyzed, and exported to Excel, with file uploads handled through presigned S3 URLs.",
+      "technologies": ["Next.js 16", "React 19", "TypeScript", "Prisma", "MongoDB", "Better Auth", "Tailwind CSS v4", "dnd-kit", "AWS S3", "Zod"],
+      "links": [
+        { "type": "Website", "href": "https://form-2025-tarun.vercel.app/", "icon": "globe" }
+      ],
+      "image": "/projects/formspace.png",
+      "video": ""
+    },
+    {
+      "title": "Cryptic Hunt Backend",
+      "href": "",
+      "dates": "",
+      "active": true,
+      "description": "Refactored a monolithic legacy codebase into a microservices architecture in Go, enabling the platform to serve 600+ concurrent users across a high-stakes 36-hour live event. Structured a normalized PostgreSQL schema and shipped a real-time admin dashboard for live monitoring, processing 70,000+ API requests with zero downtime under sustained load.",
+      "technologies": ["Go", "PostgreSQL", "Microservices"],
+      "links": [
+        { "type": "Website", "href": "https://play.google.com/store/apps/details?id=com.acmvit.cryptic_hunt", "icon": "globe" }
+      ],
+      "image": "",
+      "video": ""
+    },
+    {
+      "title": "LabTutor",
+      "href": "https://github.com/adhyan-jain/lab-tutor",
+      "dates": "",
+      "active": true,
+      "description": "Built for a research paper on how LLMs can be used in bachelor-level chemistry education, this is a learning-support system for VIT's Applied Chemistry Lab that catches student mistakes while they are still doing the experiment. Built on one rule: no LLM ever decides anything. Every pass/fail verdict and error classification is computed by deterministic Python from the lab manual's formulas, and models only phrase conclusions already reached. A Socratic mode verifies each step against the student's own data and gives graded hints, and an answer gate keeps the final value out of any model's context entirely, so there is nothing to extract.",
+      "technologies": ["Python", "RAG", "LLM Guardrails", "Deterministic Validation"],
+      "links": [
+        { "type": "Source", "href": "https://github.com/adhyan-jain/lab-tutor", "icon": "github" }
+      ],
+      "image": "",
+      "video": ""
+    },
+    {
       "title": "ComputeHive",
       "href": "",
       "dates": "",
@@ -189,15 +242,39 @@
       "video": ""
     },
     {
-      "title": "Cryptic Hunt Backend",
+      "title": "METIS-X",
+      "href": "https://github.com/adhyan-jain/Metis",
+      "dates": "",
+      "active": true,
+      "description": "A cache-conscious, header-only C++ symbol table for embedded toolchains and language runtimes, with an IEEE-format paper. After finding that prefix compression cut RAM 20% but regressed lookup tail latency 2.4x, I redesigned it around 32-byte cache-line inline slots, Robin Hood hashing and recyclable scope arenas. On Zephyr RTOS's 228k symbols this cuts RAM 40.2% and p95 lookup latency 45.7%, and the ablation shows an 89.1% memory reduction against a heap-allocating baseline.",
+      "technologies": ["C++", "Systems Programming", "Benchmarking", "LaTeX"],
+      "links": [
+        { "type": "Source", "href": "https://github.com/adhyan-jain/Metis", "icon": "github" }
+      ],
+      "image": "",
+      "video": ""
+    },
+    {
+      "title": "OS-Tutor-RAG & Reference-Choice Robustness",
+      "href": "https://github.com/adhyan-jain/OS-Tutor-RAG",
+      "dates": "",
+      "active": true,
+      "description": "A retrieval-augmented Socratic tutor for operating systems, grounded in lecture decks, OSTEP chapters and lab handouts. It also carries a research project asking whether executable reasoning benchmarks are identifiable when the gold reference is an arbitrary valid solution. Across 1,152 model outputs on 24 OS tasks and 50,000 Monte Carlo draws, changing only the reference flipped pairwise model winners in 18.61% of draws.",
+      "technologies": ["Python", "RAG", "LLM Evaluation", "Monte Carlo Simulation"],
+      "links": [
+        { "type": "Source", "href": "https://github.com/adhyan-jain/OS-Tutor-RAG", "icon": "github" }
+      ],
+      "image": "",
+      "video": ""
+    },
+    {
+      "title": "Proteus",
       "href": "",
       "dates": "",
       "active": true,
-      "description": "Refactored a monolithic legacy codebase into a microservices architecture in Go, enabling the platform to serve 600+ concurrent users across a high-stakes 36-hour live event. Structured a normalized PostgreSQL schema and shipped a real-time admin dashboard for live monitoring, processing 70,000+ API requests with zero downtime under sustained load.",
-      "technologies": ["Go", "PostgreSQL", "Microservices"],
-      "links": [
-        { "type": "Website", "href": "https://play.google.com/store/apps/details?id=com.acmvit.cryptic_hunt", "icon": "globe" }
-      ],
+      "description": "Drift-aware intrusion detection for software-defined networks. A KS-test drift monitor triggers conditional WGAN-GP augmentation, an MMD fidelity gate filters synthetic samples, and a bounded-memory classifier retrains without memory growth. I then tested whether the augmentation actually helps under a leak-free, preregistered protocol, and it did not in the tested regime. I retracted my earlier headline result and documented the negative finding in a paper.",
+      "technologies": ["Python", "PyTorch", "WGAN-GP", "scikit-learn", "SDN"],
+      "links": [],
       "image": "",
       "video": ""
     },
