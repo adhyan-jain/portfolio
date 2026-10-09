@@ -1,7 +1,6 @@
 /* eslint-disable @next/next/no-img-element */
 import BlurFade from "@/components/magicui/blur-fade";
 import BlurFadeText from "@/components/magicui/blur-fade-text";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { DATA } from "@/data/resume";
 import Link from "next/link";
 import AboutSection from "@/components/section/about-section";
@@ -11,7 +10,7 @@ import WorkSection from "@/components/section/work-section";
 import HackathonsSection from "@/components/section/hackathons-section";
 import TabbedSections, { type TabItem } from "@/components/tabbed-sections";
 import { SkillBadge } from "@/components/skill-badge";
-import { ArrowUpRight } from "lucide-react";
+import { ArrowUpRight, Briefcase, MapPin } from "lucide-react";
 
 const BLUR_FADE_DELAY = 0.04;
 
@@ -109,6 +108,7 @@ export default function Page() {
       value: "projects",
       label: "Projects",
       content: <ProjectsSection />,
+      wide: true,
       show: DATA.projects.length > 0,
     },
     {
@@ -119,44 +119,47 @@ export default function Page() {
     },
   ]
     .filter((tab) => tab.show)
-    .map(({ value, label, content }) => ({ value, label, content }));
+    .map(({ value, label, content, wide }) => ({ value, label, content, wide }));
+
+  // Display-only: the description carries a trailing emoji in the data file.
+  const tagline = DATA.description.replace(/\p{Extended_Pictographic}/gu, "").trim();
+  const currentRole = DATA.work.find((job) => job.end === "Present");
 
   return (
-    <main className="relative flex min-h-dvh flex-col gap-10">
+    <main className="relative flex min-h-dvh flex-col gap-14">
       <section id="hero">
-        <div className="mx-auto w-full max-w-2xl space-y-8">
-          <div className="flex flex-col justify-between gap-2 gap-y-6 md:flex-row">
-            <div className="order-2 flex flex-col gap-2 md:order-1">
-              <BlurFadeText
-                delay={BLUR_FADE_DELAY}
-                className="text-3xl font-semibold tracking-tighter sm:text-4xl lg:text-5xl"
-                yOffset={8}
-                text={`Hi, I'm ${DATA.name.split(" ")[0]} 👋`}
-              />
-              <BlurFadeText
-                className="max-w-[600px] text-muted-foreground md:text-lg lg:text-xl"
-                delay={BLUR_FADE_DELAY}
-                text={DATA.description}
-              />
-              {DATA.quote && (
-                <BlurFade delay={BLUR_FADE_DELAY * 2}>
-                  <p className="mt-2 text-sm italic text-muted-foreground">
-                    &ldquo;{DATA.quote}&rdquo;
-                  </p>
-                </BlurFade>
-              )}
-            </div>
-            <BlurFade delay={BLUR_FADE_DELAY} className="order-1 md:order-2">
-              <Avatar className="size-24 rounded-full border shadow-lg ring-4 ring-muted md:size-32">
-                <AvatarImage alt={DATA.name} src={DATA.avatarUrl} />
-                <AvatarFallback>{DATA.initials}</AvatarFallback>
-              </Avatar>
+        <div className="flex">
+          <div className="flex max-w-2xl flex-col gap-5">
+            <BlurFadeText
+              delay={BLUR_FADE_DELAY}
+              className="font-display text-5xl font-semibold leading-[0.95] tracking-tight sm:text-6xl lg:text-7xl"
+              yOffset={8}
+              text={DATA.name}
+            />
+            <BlurFadeText
+              className="max-w-xl text-pretty text-lg text-muted-foreground md:text-xl"
+              delay={BLUR_FADE_DELAY * 2}
+              text={tagline}
+            />
+            <BlurFade delay={BLUR_FADE_DELAY * 3}>
+              <ul className="flex flex-wrap gap-x-5 gap-y-2 text-sm text-muted-foreground">
+                <li className="flex items-center gap-1.5">
+                  <MapPin className="size-4" aria-hidden />
+                  {DATA.location}
+                </li>
+                {currentRole && (
+                  <li className="flex items-center gap-1.5">
+                    <Briefcase className="size-4" aria-hidden />
+                    {currentRole.title} at {currentRole.company.replace(/\s*\(.*\)$/, "")}
+                  </li>
+                )}
+              </ul>
             </BlurFade>
           </div>
         </div>
       </section>
 
-      <BlurFade delay={BLUR_FADE_DELAY * 3}>
+      <BlurFade delay={BLUR_FADE_DELAY * 4}>
         <TabbedSections tabs={tabs} />
       </BlurFade>
     </main>

@@ -4,9 +4,15 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { DATA } from "@/data/resume";
 import { cn } from "@/lib/utils";
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Bricolage_Grotesque, Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { FlickeringGrid } from "@/components/magicui/flickering-grid";
+import { MotionProvider } from "@/components/motion-provider";
+
+const bricolage = Bricolage_Grotesque({
+  subsets: ["latin"],
+  variable: "--font-display",
+});
 
 const geist = Geist({
   subsets: ["latin"],
@@ -68,11 +74,17 @@ export default function RootLayout({
         className={cn(
           "min-h-screen bg-background font-sans antialiased relative",
           geist.variable,
-          geistMono.variable
+          geistMono.variable,
+          bricolage.variable
         )}
       >
         <ThemeProvider attribute="class" defaultTheme="dark">
+          <MotionProvider>
           <TooltipProvider delayDuration={0}>
+            <div
+              aria-hidden
+              className="pointer-events-none absolute inset-x-0 top-0 z-0 h-[480px] bg-[radial-gradient(55%_60%_at_50%_0%,color-mix(in_oklab,var(--brand)_16%,transparent),transparent)]"
+            />
             <div className="absolute inset-0 top-0 left-0 right-0 h-[100px] overflow-hidden z-0">
               <FlickeringGrid
                 className="h-full w-full"
@@ -84,11 +96,12 @@ export default function RootLayout({
                 }}
               />
             </div>
-            <div className="relative z-10 max-w-2xl mx-auto py-12 pb-24 sm:py-24 px-6">
+            <div className="relative z-10 mx-auto max-w-5xl px-6 py-12 pb-28 sm:py-24">
               {children}
             </div>
             <Navbar />
           </TooltipProvider>
+          </MotionProvider>
         </ThemeProvider>
       </body>
     </html>

@@ -3,11 +3,14 @@
 import { useState, type ReactNode } from "react";
 import { AnimatePresence, motion } from "motion/react";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { cn } from "@/lib/utils";
 
 export type TabItem = {
   value: string;
   label: string;
   content: ReactNode;
+  /** Full shell width; otherwise the panel keeps a readable prose measure. */
+  wide?: boolean;
 };
 
 /**
@@ -34,21 +37,30 @@ export default function TabbedSections({ tabs }: { tabs: TabItem[] }) {
       <TabsList className="overflow-x-auto">
         {tabs.map((tab) => (
           <TabsTrigger key={tab.value} value={tab.value}>
-            {tab.label}
+            {active === tab.value && (
+              <motion.span
+                layoutId="tab-pill"
+                aria-hidden
+                className="absolute inset-0 rounded-full border border-border bg-foreground/10"
+                transition={{ type: "spring", bounce: 0.15, duration: 0.4 }}
+              />
+            )}
+            <span className="relative">{tab.label}</span>
           </TabsTrigger>
         ))}
       </TabsList>
 
-      <div className="relative mt-8">
+      <div className="relative mt-10">
         <AnimatePresence mode="wait" initial={false}>
           <motion.div
             key={activeTab.value}
             id={`tabpanel-${activeTab.value}`}
             role="tabpanel"
-            initial={{ opacity: 0, y: 12, filter: "blur(4px)" }}
+            className={cn(!activeTab.wide && "max-w-2xl")}
+            initial={{ opacity: 0, y: 8, filter: "blur(4px)" }}
             animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
-            exit={{ opacity: 0, y: -12, filter: "blur(4px)" }}
-            transition={{ duration: 0.25, ease: "easeInOut" }}
+            exit={{ opacity: 0, y: 0, filter: "blur(2px)", transition: { duration: 0.12 } }}
+            transition={{ duration: 0.25, ease: "easeOut" }}
           >
             {activeTab.content}
           </motion.div>

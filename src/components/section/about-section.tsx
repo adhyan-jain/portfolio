@@ -38,7 +38,10 @@ export default function AboutSection() {
             <BlurFade key={index} delay={0.02 + index * 0.06}>
               <div className="flex items-center gap-x-3">
                 {item.icon && (
-                  <span className="text-2xl leading-none" aria-hidden>
+                  <span
+                    className="flex size-10 shrink-0 items-center justify-center rounded-xl border border-border bg-card text-lg leading-none"
+                    aria-hidden
+                  >
                     {item.icon}
                   </span>
                 )}
@@ -53,7 +56,7 @@ export default function AboutSection() {
 
       {summary && (
         <BlurFade delay={0.16}>
-          <p className="text-pretty leading-relaxed text-muted-foreground">
+          <p className="text-pretty text-lg leading-relaxed text-muted-foreground [&_strong]:font-medium [&_strong]:text-foreground">
             <Inline>{summary}</Inline>
           </p>
         </BlurFade>
@@ -62,11 +65,18 @@ export default function AboutSection() {
       {favoriteTechnologies.length > 0 && (
         <BlurFade delay={0.2}>
           <div className="flex flex-col gap-y-3">
-            <h3 className="font-semibold">⚡ Favorite Technologies:</h3>
+            <h3 className="font-display text-xl font-semibold tracking-tight">
+              Favorite technologies
+            </h3>
             <div className="flex flex-wrap gap-2">
               {favoriteTechnologies.map((tech, index) => (
                 <BlurFade key={tech} delay={0.22 + index * 0.03} inView>
-                  <Badge variant="secondary">{tech}</Badge>
+                  <Badge
+                    variant="outline"
+                    className="h-8 rounded-lg px-3 font-mono text-xs font-normal"
+                  >
+                    {tech}
+                  </Badge>
                 </BlurFade>
               ))}
             </div>
@@ -77,12 +87,14 @@ export default function AboutSection() {
       {whatIDo.length > 0 && (
         <BlurFade delay={0.26}>
           <div className="flex flex-col gap-y-3">
-            <h3 className="font-semibold">🛠️ What I Do:</h3>
-            <ul className="flex list-disc flex-col gap-y-2 pl-5 marker:text-muted-foreground">
+            <h3 className="font-display text-xl font-semibold tracking-tight">
+              What I do
+            </h3>
+            <ul className="flex flex-col divide-y divide-border border-y border-border">
               {whatIDo.map((item, index) => (
                 <li
                   key={index}
-                  className="text-sm leading-relaxed text-muted-foreground animate-in fade-in slide-in-from-left-1"
+                  className="py-3 text-sm leading-relaxed text-muted-foreground animate-in fade-in slide-in-from-left-1 [&_strong]:font-medium [&_strong]:text-foreground"
                   style={{ animationDelay: `${0.28 + index * 0.04}s`, animationDuration: "0.3s", animationFillMode: "backwards" }}
                 >
                   <Inline>{item}</Inline>
@@ -95,7 +107,7 @@ export default function AboutSection() {
 
       {beyondTech.text && (
         <BlurFade delay={0.36}>
-          <div className="rounded-r-lg border-l-2 bg-muted/50 px-4 py-3">
+          <div className="rounded-xl border border-border bg-card/40 px-4 py-3">
             <p className="text-sm leading-relaxed text-muted-foreground">
               {beyondTech.label && (
                 <span className="font-semibold text-foreground">
