@@ -10,7 +10,7 @@ import WorkSection from "@/components/section/work-section";
 import HackathonsSection from "@/components/section/hackathons-section";
 import TabbedSections, { type TabItem } from "@/components/tabbed-sections";
 import { SkillBadge } from "@/components/skill-badge";
-import { ArrowUpRight, Briefcase, MapPin } from "lucide-react";
+import { ArrowUpRight, MapPin } from "lucide-react";
 
 const BLUR_FADE_DELAY = 0.04;
 
@@ -123,7 +123,6 @@ export default function Page() {
 
   // Display-only: the description carries a trailing emoji in the data file.
   const tagline = DATA.description.replace(/\p{Extended_Pictographic}/gu, "").trim();
-  const currentRole = DATA.work.find((job) => job.end === "Present");
 
   return (
     <main className="relative flex min-h-dvh flex-col gap-14">
@@ -147,12 +146,6 @@ export default function Page() {
                   <MapPin className="size-4" aria-hidden />
                   {DATA.location}
                 </li>
-                {currentRole && (
-                  <li className="flex items-center gap-1.5">
-                    <Briefcase className="size-4" aria-hidden />
-                    {currentRole.title} at {currentRole.company.replace(/\s*\(.*\)$/, "")}
-                  </li>
-                )}
               </ul>
             </BlurFade>
           </div>
