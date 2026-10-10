@@ -128,8 +128,8 @@ export default function Page() {
   return (
     <main className="relative flex min-h-dvh flex-col gap-14">
       <section id="hero">
-        <div className="flex">
-          <div className="flex max-w-2xl flex-col gap-5">
+        <div className="flex justify-center">
+          <div className="flex max-w-2xl flex-col items-center gap-5 text-center">
             <BlurFadeText
               delay={BLUR_FADE_DELAY}
               className="font-display text-5xl font-semibold leading-[0.95] tracking-tight sm:text-6xl lg:text-7xl"
@@ -137,12 +137,12 @@ export default function Page() {
               text={DATA.name}
             />
             <BlurFadeText
-              className="max-w-xl text-pretty text-lg text-muted-foreground md:text-xl"
+              className="max-w-xl text-balance text-lg text-muted-foreground md:text-xl"
               delay={BLUR_FADE_DELAY * 2}
               text={tagline}
             />
             <BlurFade delay={BLUR_FADE_DELAY * 3}>
-              <ul className="flex flex-wrap gap-x-5 gap-y-2 text-sm text-muted-foreground">
+              <ul className="flex flex-wrap justify-center gap-x-5 gap-y-2 text-sm text-muted-foreground">
                 <li className="flex items-center gap-1.5">
                   <MapPin className="size-4" aria-hidden />
                   {DATA.location}
