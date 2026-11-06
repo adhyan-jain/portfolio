@@ -5,3 +5,6 @@ next-env.d.ts
 *.tsbuildinfo
 .DS_Store
 .env*.local
+
+# replica planning (reference frames are never shipped)
+replica/screens/
