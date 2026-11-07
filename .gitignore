@@ -8,3 +8,5 @@ next-env.d.ts
 
 # replica planning (reference frames are never shipped)
 replica/screens/
+.vercel
+.env*
