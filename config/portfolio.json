@@ -225,7 +225,7 @@
       "links": [
         { "type": "Source", "href": "https://github.com/adhyan-jain/lab-tutor", "icon": "github" }
       ],
-      "image": "",
+      "image": "/projects/labtutor.png",
       "video": ""
     },
     {
@@ -238,7 +238,7 @@
       "links": [
         { "type": "Source", "href": "https://github.com/adhyan-jain/ComputeHive", "icon": "github" }
       ],
-      "image": "",
+      "image": "/projects/computehive.png",
       "video": ""
     },
     {
@@ -264,7 +264,7 @@
       "links": [
         { "type": "Source", "href": "https://github.com/adhyan-jain/OS-Tutor-RAG", "icon": "github" }
       ],
-      "image": "",
+      "image": "/projects/os-tutor.png",
       "video": ""
     },
     {
@@ -288,7 +288,7 @@
       "links": [
         { "type": "Source", "href": "https://github.com/adhyan-jain/EchoTales-Models", "icon": "github" }
       ],
-      "image": "",
+      "image": "/projects/echotales.png",
       "video": ""
     },
     {
