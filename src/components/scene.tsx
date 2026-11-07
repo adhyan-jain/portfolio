@@ -34,7 +34,7 @@ varying float vSeed;
 void main() {
   float d = length(gl_PointCoord - .5);
   if (d > .5) discard;
-  float a = smoothstep(.5, 0., d) * (.18 + .55 * vSeed);
+  float a = smoothstep(.5, 0., d) * (.12 + .42 * vSeed);
   vec3 col = mix(vec3(1., .29, .11), vec3(.35, .84, 1.), step(.94, vSeed));
   col = mix(col, vec3(1.), step(.985, vSeed));
   gl_FragColor = vec4(col, a);

@@ -221,14 +221,20 @@ export default function Site({ data }: { data: SiteData }) {
       const onMove = (e: PointerEvent) => {
         signal.px = (e.clientX / innerWidth) * 2 - 1;
         signal.py = -((e.clientY / innerHeight) * 2 - 1);
-        const t = titleRef.current;
-        if (t) {
-          const r = t.getBoundingClientRect();
-          t.style.setProperty("--mx", `${e.clientX - r.left}px`);
-          t.style.setProperty("--my", `${e.clientY - r.top}px`);
+        if (!moveRaf) {
+          const { clientX, clientY } = e;
+          moveRaf = requestAnimationFrame(() => {
+            moveRaf = 0;
+            const t = titleRef.current;
+            if (!t) return;
+            const r = t.getBoundingClientRect();
+            t.style.setProperty("--mx", `${clientX - r.left}px`);
+            t.style.setProperty("--my", `${clientY - r.top}px`);
+          });
         }
       };
-      addEventListener("pointermove", onMove);
+      let moveRaf = 0;
+      addEventListener("pointermove", onMove, { passive: true });
       cleanups.push(() => removeEventListener("pointermove", onMove));
 
       if (fine && !reduce) {
@@ -237,19 +243,28 @@ export default function Site({ data }: { data: SiteData }) {
         const target = { x: innerWidth / 2, y: innerHeight / 2 };
         const st = arrows.map(() => ({ x: target.x, y: target.y }));
         gsap.set(arrows, { opacity: 0 });
+        arrows.forEach((a) => (a.style.willChange = "transform"));
+        const fadeIn = gsap.to(arrows, { opacity: (i: number) => 1 - i * 0.13, duration: 0.5, paused: true });
+        let shown = false;
         const move = (e: PointerEvent) => {
           target.x = e.clientX;
           target.y = e.clientY;
-          gsap.to(arrows, { opacity: (i: number) => 1 - i * 0.13, duration: 0.4, overwrite: "auto" });
+          if (!shown) {
+            shown = true;
+            fadeIn.play();
+          }
         };
-        addEventListener("pointermove", move);
-        const follow = () =>
-          arrows.forEach((a, i) => {
-            const f = 0.34 - i * 0.04;
-            st[i].x += (target.x - st[i].x) * f;
-            st[i].y += (target.y - st[i].y) * f;
-            gsap.set(a, { x: st[i].x + i * 9, y: st[i].y + i * 6 });
-          });
+        addEventListener("pointermove", move, { passive: true });
+        // time-based damping: same feel at 60/120/144Hz, each arrow trails a little softer
+        const follow = (_t: number, dtMs: number) => {
+          const dt = Math.min(dtMs, 50) / 1000;
+          for (let i = 0; i < arrows.length; i++) {
+            const k = 1 - Math.exp(-dt * (48 - i * 5));
+            st[i].x += (target.x - st[i].x) * k;
+            st[i].y += (target.y - st[i].y) * k;
+            arrows[i].style.transform = `translate3d(${(st[i].x + i * 9).toFixed(2)}px,${(st[i].y + i * 6).toFixed(2)}px,0)`;
+          }
+        };
         gsap.ticker.add(follow);
         cleanups.push(() => {
           removeEventListener("pointermove", move);
@@ -355,11 +370,11 @@ export default function Site({ data }: { data: SiteData }) {
 
       <main className="relative z-10">
         {/* HERO */}
-        <section id="top" className="relative flex min-h-screen items-center px-5 pb-28 pt-28 md:px-12">
+        <section id="top" className="relative flex min-h-screen items-center px-5 pb-40 pt-28 md:px-12">
           <div className="mx-auto grid w-full max-w-[1400px] items-center gap-12 lg:grid-cols-12">
             <div className="lg:col-span-8">
-              <p data-hero className="font-script -rotate-3 text-4xl text-text md:text-5xl">Hello, I&apos;m</p>
-              <h1 ref={titleRef} aria-label={data.name} data-hero className="display relative mt-2 text-[clamp(5rem,19.5vw,19rem)]">
+              <p data-hero className="font-script relative z-10 mb-3 -rotate-3 text-4xl text-text md:text-5xl">Hello, I&apos;m</p>
+              <h1 ref={titleRef} aria-label={data.name} data-hero className="display relative mt-2 text-[clamp(4.5rem,16vw,16rem)] leading-[.86]">
                 <span aria-hidden className="outline-text block">
                   {first}
                   <br />

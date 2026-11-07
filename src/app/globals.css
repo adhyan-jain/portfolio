@@ -35,7 +35,7 @@ body::after {
 .display { font-family: var(--font-anton), Impact, sans-serif; text-transform: uppercase; line-height: .9; letter-spacing: .005em; }
 
 /* outlined headline that fills with accent under the cursor */
-.outline-text { color: transparent; -webkit-text-stroke: 1.5px color-mix(in oklab, var(--color-accent) 70%, transparent); }
+.outline-text { color: transparent; -webkit-text-stroke: 2px color-mix(in oklab, var(--color-accent) 92%, transparent); background: linear-gradient(180deg, color-mix(in oklab, var(--color-accent) 14%, transparent), transparent 85%); -webkit-background-clip: text; background-clip: text; }
 .fill-text {
   position: absolute; inset: 0; color: var(--color-accent); pointer-events: none;
   -webkit-mask-image: radial-gradient(circle 190px at var(--mx, -999px) var(--my, -999px), #000 30%, transparent 100%);
@@ -43,8 +43,15 @@ body::after {
 }
 
 /* monogram card with glitch slices */
-.portrait { position: relative; background: var(--color-accent); overflow: hidden; isolation: isolate; display: grid; place-items: center;
-  background-image: linear-gradient(rgb(0 0 0 / .12) 1px, transparent 1px), linear-gradient(90deg, rgb(0 0 0 / .12) 1px, transparent 1px); background-size: 32px 32px; }
+.portrait { position: relative; overflow: hidden; isolation: isolate; display: grid; place-items: center;
+  background: radial-gradient(120% 90% at 30% 15%, #ff6a3c 0%, var(--color-accent) 45%, #b82a0a 100%);
+  box-shadow: inset 0 0 0 1px rgb(255 255 255 / .18), 0 30px 80px -30px rgb(255 74 28 / .55); }
+.portrait::before { content: ""; position: absolute; inset: 0; z-index: 0; pointer-events: none;
+  background-image: linear-gradient(rgb(0 0 0 / .1) 1px, transparent 1px), linear-gradient(90deg, rgb(0 0 0 / .1) 1px, transparent 1px), repeating-linear-gradient(0deg, rgb(0 0 0 / .08) 0 1px, transparent 1px 3px);
+  background-size: 32px 32px, 32px 32px, auto; }
+.portrait::after { content: ""; position: absolute; inset: 14px; z-index: 2; pointer-events: none; border: 1px solid rgb(0 0 0 / .35);
+  -webkit-mask: linear-gradient(#000 0 0) top left / 18px 18px no-repeat, linear-gradient(#000 0 0) top right / 18px 18px no-repeat, linear-gradient(#000 0 0) bottom left / 18px 18px no-repeat, linear-gradient(#000 0 0) bottom right / 18px 18px no-repeat;
+          mask: linear-gradient(#000 0 0) top left / 18px 18px no-repeat, linear-gradient(#000 0 0) top right / 18px 18px no-repeat, linear-gradient(#000 0 0) bottom left / 18px 18px no-repeat, linear-gradient(#000 0 0) bottom right / 18px 18px no-repeat; }
 .portrait .mono-text, .portrait .slice { font-family: var(--font-anton), Impact, sans-serif; font-size: clamp(9rem, 22vw, 17rem); line-height: 1; color: #050505; }
 .portrait .slice { position: absolute; inset: 0; display: grid; place-items: center; color: #f4f4f2; mix-blend-mode: difference; }
 
@@ -66,3 +73,6 @@ dialog[open] { animation: pop .35s cubic-bezier(.2,.8,.2,1); }
 @keyframes pop { from { opacity: 0; transform: translateY(24px) scale(.98); } }
 
 @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; } }
+
+/* thin themed scrollbar */
+html { scrollbar-width: thin; scrollbar-color: color-mix(in oklab, var(--color-accent) 60%, #222) var(--color-bg); }
