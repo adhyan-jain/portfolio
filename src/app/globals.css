@@ -72,6 +72,39 @@ dialog::backdrop { background: rgb(0 0 0 / .78); backdrop-filter: blur(6px); }
 dialog[open] { animation: pop .35s cubic-bezier(.2,.8,.2,1); }
 @keyframes pop { from { opacity: 0; transform: translateY(24px) scale(.98); } }
 
+/* ---- build sequence: hidden until an agent boxes + renders it */
+[data-building] [data-build] { opacity: 0; }
+[data-building] header { background: none; }
+/* below the fold: blocks wait for an agent to box + render them as they scroll in */
+[data-scrollbuild] [data-reveal]:not([data-built]) { opacity: 0; }
+[data-building] .hud-idle { opacity: 0; }
+.hud-idle { transition: opacity .7s; }
+
+/* cursor agents (positioned from JS; the arrow rotates to its heading) */
+.agent { position: absolute; left: 0; top: 0; will-change: transform; color: var(--tint, #fff); }
+.agent svg { position: absolute; display: block; transition: opacity .15s; }
+.agent .arw { left: -9px; top: -7.5px; width: 18px; height: 15px; filter: drop-shadow(0 0 5px color-mix(in oklab, var(--tint, #fff) 55%, transparent)); }
+.agent .crs { left: -7.5px; top: -7.5px; width: 15px; height: 15px; color: #f4f4f2; opacity: 0; }
+.agent[data-look="cross"] .arw { opacity: 0; }
+.agent[data-look="cross"] .crs { opacity: 1; }
+.agent-tag { position: absolute; left: -6px; top: 11px; padding: 1px 4px; font: 600 8px/1.3 var(--font-geist-mono), ui-monospace, monospace; letter-spacing: .08em; text-transform: uppercase; color: #050505; background: var(--color-hud); white-space: nowrap; opacity: 0; transition: opacity .15s; }
+.agent[data-tag] .agent-tag { opacity: 1; }
+
+/* selection boxes the agents drag out */
+.bbox { position: absolute; left: 0; top: 0; width: 0; height: 0; border: 1px solid rgb(150 205 255 / .8); background: rgb(168 174 186 / .26); }
+.bbox-bg { background: rgb(168 174 186 / .3); border-color: rgb(150 205 255 / .55); }
+/* scroll builds: mostly outline, like the reference */
+.bbox-scroll { background: rgb(168 174 186 / .07); }
+.bbox i { position: absolute; width: 6px; height: 6px; border-radius: 50%; background: #f4f4f2; box-shadow: 0 0 0 1px rgb(0 0 0 / .4); }
+/* empty media slot: placeholder square in the middle of the frame */
+.bbox-ph::after { content: ""; position: absolute; left: 50%; top: 50%; width: 18px; height: 18px; translate: -50% -50%; border-radius: 3px; background: rgb(255 255 255 / .22); box-shadow: inset 0 0 0 1px rgb(255 255 255 / .3); }
+.bbox i:nth-child(1) { left: -3.5px; top: -3.5px; } .bbox i:nth-child(2) { right: -3.5px; top: -3.5px; }
+.bbox i:nth-child(3) { left: -3.5px; bottom: -3.5px; } .bbox i:nth-child(4) { right: -3.5px; bottom: -3.5px; }
+.bbox b { position: absolute; left: 50%; bottom: 0; translate: -50% 50%; padding: 1px 5px; font: 600 8px/1.4 var(--font-geist-mono), ui-monospace, monospace; letter-spacing: .1em; color: #050505; background: var(--color-hud); white-space: nowrap; opacity: 0; transition: opacity .2s; }
+.bbox.done b { opacity: 1; }
+.caret { position: absolute; left: 0; top: 0; width: 2px; background: var(--color-hud); box-shadow: 0 0 6px var(--color-hud); animation: blink .5s steps(1) infinite; }
+@keyframes blink { 50% { opacity: 0; } }
+
 @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; } }
 
 /* thin themed scrollbar */

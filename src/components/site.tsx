@@ -7,6 +7,7 @@ import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import Lenis from "lenis";
 import { signal } from "@/lib/signal";
+import { startSwarm } from "@/lib/swarm";
 
 const Scene = dynamic(() => import("./scene"), { ssr: false });
 
@@ -50,8 +51,11 @@ function Head({ n, label, title }: { n: string; label: string; title: string }) 
 
 export default function Site({ data }: { data: SiteData }) {
   const root = useRef<HTMLDivElement>(null);
-  const loaderRef = useRef<HTMLDivElement>(null);
-  const countRef = useRef<HTMLSpanElement>(null);
+  const overlayRef = useRef<HTMLDivElement>(null);
+  const statusRef = useRef<HTMLDivElement>(null);
+  const agentsRef = useRef<HTMLDivElement>(null);
+  const boxesRef = useRef<HTMLDivElement>(null);
+  const bgRef = useRef<HTMLDivElement>(null);
   const boxRef = useRef<HTMLDivElement>(null);
   const tagRef = useRef<HTMLSpanElement>(null);
   const titleRef = useRef<HTMLHeadingElement>(null);
@@ -153,8 +157,8 @@ export default function Site({ data }: { data: SiteData }) {
         onToggle: (s) => (signal.mix = s.isActive ? 1 : 0),
       });
 
-      // ---- reveals
-      if (!reduce) {
+      // ---- reveals (with a mouse, the cursor agents build these as they scroll in instead)
+      if (!reduce && !fine) {
         gsap.utils.toArray<HTMLElement>("[data-reveal]").forEach((el) =>
           gsap.from(el, {
             y: 50,
@@ -164,34 +168,39 @@ export default function Site({ data }: { data: SiteData }) {
             scrollTrigger: { trigger: el, start: "top 90%", once: true },
           }),
         );
-        gsap.to(".marquee-track", { xPercent: -50, repeat: -1, ease: "none", duration: 32 });
       }
+      if (!reduce) gsap.to(".marquee-track", { xPercent: -50, repeat: -1, ease: "none", duration: 32 });
 
-      // ---- loader -> hero intro
-      const loader = loaderRef.current!;
-      const intro = () => {
-        gsap.from("[data-hero]", { y: 70, opacity: 0, stagger: 0.09, duration: 1.2, ease: "power4.out" });
-        gsap.to(signal, { burst: 0, duration: 2.4, ease: "power3.out" });
-      };
-      if (reduce || sessionStorage.getItem("sig")) {
-        gsap.set(loader, { display: "none" });
+      // ---- cursor agents + the hard-reload build sequence
+      const nav = performance.getEntriesByType("navigation")[0] as PerformanceNavigationTiming | undefined;
+      const build = !reduce && nav?.type !== "back_forward";
+      if (!build) {
+        root.current!.removeAttribute("data-building");
+        gsap.set([overlayRef.current, statusRef.current], { autoAlpha: 0 });
         signal.burst = 0;
       } else {
+        history.scrollRestoration = "manual";
+        scrollTo(0, 0);
+        lenisRef.current?.scrollTo(0, { immediate: true });
+        lenisRef.current?.stop();
         signal.burst = 1;
-        const o = { v: 0 };
-        gsap.to(o, {
-          v: 100,
-          duration: 1.5,
-          ease: "power2.inOut",
-          onUpdate: () => {
-            if (countRef.current) countRef.current.textContent = String(Math.round(o.v)).padStart(3, "0");
-          },
-          onComplete: () => {
-            sessionStorage.setItem("sig", "1");
-            intro();
-            gsap.to(loader, { yPercent: -100, duration: 0.9, ease: "power4.inOut", onComplete: () => gsap.set(loader, { display: "none" }) });
-          },
-        });
+      }
+      if (!reduce) {
+        cleanups.push(
+          startSwarm({
+            root: root.current!,
+            agentsLayer: agentsRef.current!,
+            boxLayer: boxesRef.current!,
+            overlay: overlayRef.current!,
+            status: statusRef.current!,
+            bg: bgRef.current,
+            build,
+            fine,
+            scrollBuild: fine,
+            onClear: () => gsap.to(signal, { burst: 0, duration: 2.4, ease: "power3.out" }),
+            onDone: () => lenisRef.current?.start(),
+          }),
+        );
       }
 
       // ---- portrait glitch slices
@@ -238,39 +247,6 @@ export default function Site({ data }: { data: SiteData }) {
       cleanups.push(() => removeEventListener("pointermove", onMove));
 
       if (fine && !reduce) {
-        // ---- cursor swarm
-        const arrows = gsap.utils.toArray<HTMLElement>("[data-arrow]");
-        const target = { x: innerWidth / 2, y: innerHeight / 2 };
-        const st = arrows.map(() => ({ x: target.x, y: target.y }));
-        gsap.set(arrows, { opacity: 0 });
-        arrows.forEach((a) => (a.style.willChange = "transform"));
-        const fadeIn = gsap.to(arrows, { opacity: (i: number) => 1 - i * 0.13, duration: 0.5, paused: true });
-        let shown = false;
-        const move = (e: PointerEvent) => {
-          target.x = e.clientX;
-          target.y = e.clientY;
-          if (!shown) {
-            shown = true;
-            fadeIn.play();
-          }
-        };
-        addEventListener("pointermove", move, { passive: true });
-        // time-based damping: same feel at 60/120/144Hz, each arrow trails a little softer
-        const follow = (_t: number, dtMs: number) => {
-          const dt = Math.min(dtMs, 50) / 1000;
-          for (let i = 0; i < arrows.length; i++) {
-            const k = 1 - Math.exp(-dt * (48 - i * 5));
-            st[i].x += (target.x - st[i].x) * k;
-            st[i].y += (target.y - st[i].y) * k;
-            arrows[i].style.transform = `translate3d(${(st[i].x + i * 9).toFixed(2)}px,${(st[i].y + i * 6).toFixed(2)}px,0)`;
-          }
-        };
-        gsap.ticker.add(follow);
-        cleanups.push(() => {
-          removeEventListener("pointermove", move);
-          gsap.ticker.remove(follow);
-        });
-
         // ---- selection HUD that snaps to [data-hud] elements
         const box = boxRef.current!;
         let cur: HTMLElement | null = null;
@@ -322,32 +298,40 @@ export default function Site({ data }: { data: SiteData }) {
   const label = SECTIONS[active][1];
 
   return (
-    <div ref={root}>
-      {/* loader */}
-      <div id="loader" ref={loaderRef} className="fixed inset-0 z-[100] grid place-items-center bg-bg">
-        <div className="relative px-10 py-6 text-center">
-          <span ref={countRef} className="display block text-[24vw] leading-none text-accent md:text-[16vw]">000</span>
-          <p className="label mt-2">initialising signal</p>
-          {["-left-1 -top-1 border-l border-t", "-right-1 -top-1 border-r border-t", "-bottom-1 -left-1 border-b border-l", "-bottom-1 -right-1 border-b border-r"].map((c) => (
-            <i key={c} className={`absolute size-4 border-hud ${c}`} />
+    <div ref={root} data-building="">
+      {/* build: blank page the agents scan before they start drawing */}
+      <div id="build" ref={overlayRef} aria-hidden className="fixed inset-0 z-[85] grid place-items-center bg-bg">
+        <span className="mono grid size-9 place-items-center rounded-md border border-white/15 bg-white/[.04] text-[10px] text-white/40">AJ</span>
+      </div>
+      <div id="build-status" ref={statusRef} role="status" className="mono fixed bottom-5 left-1/2 z-[95] flex -translate-x-1/2 items-center gap-3 whitespace-nowrap border border-line bg-bg/80 px-3 py-2 text-[10px] uppercase tracking-[.14em] text-muted backdrop-blur">
+        <span aria-hidden className="hidden gap-1 sm:flex">
+          {["bg-accent", "bg-hud", "bg-[#ffd2b8]", "bg-[#b9c6ff]", "bg-[#9ff0d4]"].map((c) => (
+            <i key={c} className={`size-1.5 rounded-full ${c}`} />
           ))}
-        </div>
+        </span>
+        <span data-status-text>Scanning page…</span>
+        <span aria-hidden className="relative h-[3px] w-12 bg-white/10 md:w-28">
+          <i data-status-bar className="absolute inset-0 origin-left scale-x-0 bg-hud" />
+        </span>
+        <button data-skip type="button" className="text-text/70 transition-colors hover:text-accent">Skip ↵</button>
       </div>
       <noscript>
-        <style>{`#loader{display:none}`}</style>
+        <style>{`#build,#build-status{display:none}[data-building] [data-build]{opacity:1}`}</style>
       </noscript>
 
       {/* fixed layers */}
-      <div aria-hidden className="fixed inset-0 z-0 bg-[radial-gradient(60%_50%_at_70%_20%,rgba(255,74,28,.12),transparent),radial-gradient(40%_40%_at_10%_90%,rgba(90,215,255,.06),transparent)]">
+      <div ref={bgRef} aria-hidden className="fixed inset-0 z-0 bg-[radial-gradient(60%_50%_at_70%_20%,rgba(255,74,28,.12),transparent),radial-gradient(40%_40%_at_10%_90%,rgba(90,215,255,.06),transparent)]">
         {webgl && <Scene />}
       </div>
       <div data-bar aria-hidden className="fixed left-0 top-0 z-[70] h-[2px] w-full origin-left scale-x-0 bg-accent" />
 
-      <header className="fixed inset-x-0 top-0 z-50 flex items-center justify-between bg-gradient-to-b from-bg via-bg/70 to-transparent px-5 pb-8 pt-4 md:px-12">
-        <button onClick={() => go("top")} aria-label="Back to top" data-hud="HOME" className="display grid size-9 place-items-center bg-accent text-lg text-bg">
+      <div ref={boxesRef} aria-hidden className="pointer-events-none fixed inset-0 z-[5]" />
+
+      <header data-build-bg="HEADER" className="fixed inset-x-0 top-0 z-50 flex items-center justify-between bg-gradient-to-b from-bg via-bg/70 to-transparent px-5 pb-8 pt-4 md:px-12">
+        <button onClick={() => go("top")} aria-label="Back to top" data-hud="HOME" data-build="LOGO" className="display grid size-9 place-items-center bg-accent text-lg text-bg">
           AJ
         </button>
-        <nav aria-label="Primary" className="mono hidden gap-8 text-[11px] uppercase tracking-[.18em] text-muted md:flex">
+        <nav aria-label="Primary" data-build="NAV" className="mono hidden gap-8 text-[11px] uppercase tracking-[.18em] text-muted md:flex">
           {SECTIONS.slice(1).map(([id, l]) => (
             <a
               key={id}
@@ -362,7 +346,7 @@ export default function Site({ data }: { data: SiteData }) {
             </a>
           ))}
         </nav>
-        <span className="mono text-[11px] uppercase tracking-[.14em] text-muted">
+        <span data-build="CLOCK" className="mono text-[11px] uppercase tracking-[.14em] text-muted">
           <span className="mr-2 inline-block size-1.5 animate-pulse rounded-full bg-accent" />
           Vellore · {clock || "--:--"} IST
         </span>
@@ -372,9 +356,9 @@ export default function Site({ data }: { data: SiteData }) {
         {/* HERO */}
         <section id="top" className="relative flex min-h-screen items-center px-5 pb-40 pt-28 md:px-12">
           <div className="mx-auto grid w-full max-w-[1400px] items-center gap-12 lg:grid-cols-12">
-            <div className="lg:col-span-8">
-              <p data-hero className="font-script relative z-10 mb-3 -rotate-3 text-4xl text-text md:text-5xl">Hello, I&apos;m</p>
-              <h1 ref={titleRef} aria-label={data.name} data-hero className="display relative mt-2 text-[clamp(4.5rem,16vw,16rem)] leading-[.86]">
+            <div data-build-bg="HERO" className="lg:col-span-8">
+              <p data-build="GREETING" data-fx="type" className="font-script relative z-10 mb-3 -rotate-3 text-4xl text-text md:text-5xl">Hello, I&apos;m</p>
+              <h1 ref={titleRef} aria-label={data.name} data-build="HEADLINE" data-fx="wipe" className="display relative mt-2 text-[clamp(4.5rem,16vw,16rem)] leading-[.86]">
                 <span aria-hidden className="outline-text block">
                   {first}
                   <br />
@@ -386,11 +370,11 @@ export default function Site({ data }: { data: SiteData }) {
                   {rest.join(" ")}
                 </span>
               </h1>
-              <p data-hero className="display mt-6 inline-block bg-accent px-4 py-1 text-2xl text-bg md:text-3xl">
+              <p data-build="ROLE" data-fx="tag" className="display mt-6 inline-block bg-accent px-4 py-1 text-2xl text-bg md:text-3xl">
                 {tagRole}
               </p>
-              <p data-hero className="mt-6 max-w-xl text-lg leading-relaxed text-muted">{tagRest}.</p>
-              <div data-hero className="mt-8 flex flex-wrap gap-3">
+              <p data-build="TAGLINE" data-fx="type" className="mt-6 max-w-xl text-lg leading-relaxed text-muted">{tagRest}.</p>
+              <div data-build="ACTIONS" className="mt-8 flex flex-wrap gap-3">
                 <a href="#projects" onClick={(e) => { e.preventDefault(); go("projects"); }} data-hud="WORK" className="mono bg-accent px-6 py-3 text-xs font-semibold uppercase tracking-[.16em] text-bg transition-transform hover:-translate-y-0.5">
                   See the work →
                 </a>
@@ -402,15 +386,15 @@ export default function Site({ data }: { data: SiteData }) {
               </div>
             </div>
 
-            <div data-hero className="lg:col-span-4">
-              <div data-hud="PORTRAIT" className="portrait mx-auto aspect-[4/5] w-full max-w-sm">
+            <div data-build-bg="MEDIA" className="lg:col-span-4">
+              <div data-hud="PORTRAIT" data-build="PORTRAIT" data-fx="pixel" data-late className="portrait mx-auto aspect-[4/5] w-full max-w-sm">
                 <span className="mono-text" role="img" aria-label={`${data.name} monogram`}>{first[0]}{rest[0]?.[0]}</span>
                 {[0, 1, 2].map((i) => (
                   <span key={i} className="slice" aria-hidden>{first[0]}{rest[0]?.[0]}</span>
                 ))}
                 <span className="mono absolute bottom-3 left-3 z-10 bg-bg px-2 py-1 text-[10px] uppercase tracking-[.16em] text-accent">● {data.location.split(",")[0]}</span>
               </div>
-              <div className="mx-auto mt-4 grid max-w-sm grid-cols-3 gap-2">
+              <div data-build="STATS" data-late className="mx-auto mt-4 grid max-w-sm grid-cols-3 gap-2">
                 {[
                   [data.projects.length, "Projects"],
                   [data.work.length, "Roles"],
@@ -593,12 +577,12 @@ export default function Site({ data }: { data: SiteData }) {
       </main>
 
       {/* HUD */}
-      <nav aria-label="Sections" className="fixed bottom-5 left-1/2 z-50 flex -translate-x-1/2 gap-2 border border-line bg-bg/70 px-3 py-2.5 backdrop-blur">
+      <nav aria-label="Sections" className="hud-idle fixed bottom-5 left-1/2 z-50 flex -translate-x-1/2 gap-2 border border-line bg-bg/70 px-3 py-2.5 backdrop-blur">
         {SECTIONS.map(([id, l], i) => (
           <button key={id} onClick={() => go(id)} aria-label={l} aria-current={active === i} className={`h-1.5 transition-all duration-300 ${active === i ? "w-10 bg-accent" : "w-4 bg-white/25 hover:bg-white/60"}`} />
         ))}
       </nav>
-      <p aria-hidden className="mono fixed bottom-6 left-5 z-50 hidden text-[11px] uppercase tracking-[.14em] text-hud md:left-12 md:block">
+      <p aria-hidden data-build="INDEX" data-late className="mono fixed bottom-6 left-5 z-50 hidden text-[11px] uppercase tracking-[.14em] text-hud md:left-12 md:block">
         {"//"}0{active + 1}.00 SEC_{label} INDEX [0{active + 1}/0{SECTIONS.length}]
       </p>
 
@@ -609,13 +593,7 @@ export default function Site({ data }: { data: SiteData }) {
         <span ref={tagRef} className="mono absolute -top-6 left-0 bg-hud px-1.5 py-0.5 text-[10px] font-semibold text-bg" />
       </div>
 
-      <div aria-hidden className="pointer-events-none fixed inset-0 z-[80] hidden [@media(pointer:fine)]:block">
-        {[0, 1, 2, 3, 4, 5].map((i) => (
-          <svg key={i} data-arrow width="14" height="14" viewBox="0 0 24 24" className={`absolute left-0 top-0 ${i === 0 ? "text-hud" : "text-accent"}`}>
-            <path d="M3 2l17 8-7 2-3 8z" fill="currentColor" />
-          </svg>
-        ))}
-      </div>
+      <div ref={agentsRef} aria-hidden className="pointer-events-none fixed inset-0 z-[90]" />
 
       {/* project detail */}
       <dialog
