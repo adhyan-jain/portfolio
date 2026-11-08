@@ -571,7 +571,9 @@ export default function Site({ data }: { data: SiteData }) {
         onClose={() => setOpen(null)}
         onClick={(e) => e.target === dialogRef.current && dialogRef.current?.close()}
         aria-label={open?.title}
-        className="m-auto max-h-[88vh] w-[min(920px,92vw)] overflow-auto border border-line bg-surface p-0 text-text"
+        // Lenis is stopped while the dialog is open and cancels every wheel event; this lets the dialog scroll natively
+        data-lenis-prevent
+        className="m-auto max-h-[88vh] overscroll-contain w-[min(920px,92vw)] overflow-auto border border-line bg-surface p-0 text-text"
       >
         {open && (
           <div>
