@@ -93,8 +93,8 @@ dialog[open] { animation: pop .35s cubic-bezier(.2,.8,.2,1); }
 /* selection boxes the agents drag out */
 .bbox { position: absolute; left: 0; top: 0; width: 0; height: 0; border: 1px solid rgb(150 205 255 / .8); background: rgb(168 174 186 / .26); }
 .bbox-bg { background: rgb(168 174 186 / .3); border-color: rgb(150 205 255 / .55); }
-/* scroll builds: mostly outline, like the reference */
-.bbox-scroll { background: rgb(168 174 186 / .07); }
+/* scroll builds: grey selection box under the content while it renders, then it clears (like the hero) */
+.bbox-scroll { background: rgb(168 174 186 / .18); }
 .bbox i { position: absolute; width: 6px; height: 6px; border-radius: 50%; background: #f4f4f2; box-shadow: 0 0 0 1px rgb(0 0 0 / .4); }
 /* empty media slot: placeholder square in the middle of the frame */
 .bbox-ph::after { content: ""; position: absolute; left: 50%; top: 50%; width: 18px; height: 18px; translate: -50% -50%; border-radius: 3px; background: rgb(255 255 255 / .22); box-shadow: inset 0 0 0 1px rgb(255 255 255 / .3); }

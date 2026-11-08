@@ -11,7 +11,7 @@ import gsap from "gsap";
 type Fx = "fade" | "type" | "tag" | "wipe" | "pixel";
 type Drag = { b: HTMLElement; L: number; T: number; W: number; H: number };
 /** a live element the agent's target tracks while the page scrolls (scroll builds) */
-type Anchor = { el: HTMLElement; pad: number; p?: number; onDrag?: () => void };
+type Anchor = { el: HTMLElement; pad: number; p?: number; onDrag?: () => void; layer?: HTMLElement };
 type Agent = {
   el: HTMLDivElement;
   arw: SVGSVGElement;
@@ -64,9 +64,6 @@ export function startSwarm(o: SwarmOpts): () => void {
   let dead = false;
   // scroll-build boxes stay glued to their element while the page scrolls
   const pinned = new Map<HTMLElement, HTMLElement>();
-  // smoothed page scroll speed (px/s): fast flicks skip the agents
-  let lastScrollY = scrollY;
-  let scrollSpeed = 0;
 
   // ---------- agents
   for (let i = 0; i < n; i++) {
@@ -157,8 +154,6 @@ export function startSwarm(o: SwarmOpts): () => void {
 
   const step = (time: number, dtMs: number) => {
     const total = Math.min(dtMs, 50) / 1000;
-    scrollSpeed += (Math.abs(scrollY - lastScrollY) / Math.max(total, 0.001) - scrollSpeed) * Math.min(1, total * 8);
-    lastScrollY = scrollY;
     const sub = total > 1 / 70 ? 2 : 1;
     const dt = total / sub;
     if (orbit.follow) {
@@ -251,7 +246,7 @@ export function startSwarm(o: SwarmOpts): () => void {
   const progress = (p: number, d = 0.3) => sBar && tweens.push(gsap.to(sBar, { scaleX: p, duration: d, ease: "power2.out" }));
 
   // ---------- boxes
-  const makeBox = (label: string, x: number, y: number, bg: boolean, cls = "") => {
+  const makeBox = (label: string, x: number, y: number, bg: boolean, cls = "", layer = o.boxLayer) => {
     const b = document.createElement("div");
     b.className = `${bg ? "bbox bbox-bg" : "bbox"} ${cls}`.trim();
     b.innerHTML = "<i></i><i></i><i></i><i></i>";
@@ -259,7 +254,7 @@ export function startSwarm(o: SwarmOpts): () => void {
     chip.textContent = label;
     b.appendChild(chip);
     b.style.transform = `translate3d(${x}px,${y}px,0)`;
-    o.boxLayer.appendChild(b);
+    layer.appendChild(b);
     return b;
   };
 
@@ -281,7 +276,7 @@ export function startSwarm(o: SwarmOpts): () => void {
     if (anchor) anchor.p = 0;
     await seek(a, L, T, 700);
     if (stop()) return null;
-    const b = makeBox(label, a.anchor ? a.tx : L, a.anchor ? a.ty : T, bg, cls);
+    const b = makeBox(label, a.anchor ? a.tx : L, a.anchor ? a.ty : T, bg, cls, anchor?.layer);
     anchor?.onDrag?.();
     a.drag = { b, L, T, W, H };
     a.sk = 1100;
@@ -566,26 +561,52 @@ export function startSwarm(o: SwarmOpts): () => void {
   const scrollJob = async (a: Agent, el: HTMLElement) => {
     a.busy = true;
     const show = () => el.setAttribute("data-built", "");
-    const fx = el.dataset.fx || (el.querySelector("img") ? "fade" : "type");
-    const render = () => {
+    // the same effects as the hero build: headings wipe in, images glitch in
+    // black & white then snap to colour, text types in on top of a grey box
+    const heading = el.matches("h2") ? el : el.querySelector<HTMLElement>("h2");
+    const fx = el.dataset.fx || (el.querySelector("img") ? "media" : heading ? "head" : "type");
+    const render = async () => {
       show();
-      return fx === "type" ? typeIn(el) : twFrom(el, { opacity: 0 }, { opacity: 1, duration: 0.35, ease: "steps(4)" });
+      if (fx === "head" && heading) {
+        touched.add(el);
+        gsap.set(el, { opacity: 1 });
+        const rest = [...el.children].filter((c) => c !== heading && !c.contains(heading)) as HTMLElement[];
+        await Promise.all([
+          twFrom(heading, { clipPath: "inset(0% 100% 0% 0%)" }, { clipPath: "inset(0% 0% 0% 0%)", duration: 0.5, ease: "steps(10)" }),
+          ...rest.map((c) => typeIn(c)),
+        ]);
+        gsap.set(heading, { clearProps: "clipPath" });
+      } else if (fx === "media") {
+        const imgs = [...el.querySelectorAll<HTMLElement>("img")];
+        // plate images carry a CSS filter transition; switch it off so the steps stay glitchy
+        gsap.set(imgs, { transition: "none" });
+        await Promise.all([
+          twFrom(el, { opacity: 0 }, { opacity: 1, duration: 0.3, ease: "steps(4)" }),
+          ...imgs.map((img) =>
+            twFrom(img, { filter: "grayscale(1) contrast(1.3) blur(12px)" }, { filter: "grayscale(1) contrast(1.1) blur(0px)", duration: 0.35, ease: "steps(6)" }).then(
+              () => tw(img, { filter: "grayscale(0) contrast(1) blur(0px)", duration: 0.2, ease: "steps(2)" }),
+            ),
+          ),
+        ]);
+        gsap.set(imgs, { clearProps: "filter,transition" });
+      } else if (fx === "type") {
+        await typeIn(el);
+      } else {
+        await twFrom(el, { opacity: 0 }, { opacity: 1, duration: 0.35, ease: "steps(4)" });
+      }
     };
     if (!visible(el)) {
       show();
-    } else if (scrollSpeed > 1400) {
-      // flicking past: no time for an agent, just flicker it in
-      show();
-      await twFrom(el, { opacity: 0 }, { opacity: 1, duration: 0.25, ease: "steps(3)" });
     } else {
       const r = el.getBoundingClientRect();
-      const label = el.dataset.hud || (el.matches("h2,p") ? "TEXT" : "BLOCK");
+      const label = el.dataset.hud || (heading === el || fx === "head" ? "HEADING" : fx === "media" ? "MEDIA" : "TEXT");
       // content starts rendering the moment the agent starts dragging its box
       let rendering: Promise<void> | null = null;
       const b = await drawRect(a, r.left - 5, r.top - 5, r.width + 10, r.height + 10, label, false, () => dead, "bbox-scroll", {
         el,
         pad: 5,
         onDrag: () => void (rendering = render()),
+        layer: scrollLayer,
       });
       if (dead) return;
       if (b) pinned.set(b, el);
@@ -594,18 +615,21 @@ export function startSwarm(o: SwarmOpts): () => void {
       void seek(a, Math.min(innerWidth - 20, r.right + rand(-40, 10)), Math.min(innerHeight - 20, r.top + rand(10, 60)), 120);
       await (rendering ?? render());
       if (dead) return;
-      if (b)
+      if (b) {
+        // grey drops away, then the outline fades, like the hero clear
+        tweens.push(gsap.to(b, { backgroundColor: "rgba(0,0,0,0)", duration: 0.12, ease: "steps(2)" }));
         tweens.push(
           gsap.to(b, {
             opacity: 0,
-            duration: 0.5,
-            delay: 0.15,
+            duration: 0.45,
+            delay: 0.2,
             onComplete: () => {
               pinned.delete(b);
               b.remove();
             },
           }),
         );
+      }
     }
     // back into the swarm
     a.busy = false;
@@ -632,7 +656,13 @@ export function startSwarm(o: SwarmOpts): () => void {
     }
   };
   let io: IntersectionObserver | null = null;
+  // scroll-build boxes sit above the page content (cards have opaque backgrounds that would
+  // hide a box underneath) but below the fixed header
+  const scrollLayer = document.createElement("div");
+  scrollLayer.setAttribute("aria-hidden", "true");
+  Object.assign(scrollLayer.style, { position: "fixed", inset: "0", zIndex: "45", pointerEvents: "none" });
   if (o.scrollBuild) {
+    o.root.appendChild(scrollLayer);
     o.root.setAttribute("data-scrollbuild", "");
     io = new IntersectionObserver(
       (entries) => {
@@ -664,6 +694,7 @@ export function startSwarm(o: SwarmOpts): () => void {
     io?.disconnect();
     tweens.forEach((t) => t.kill());
     pinned.clear();
+    scrollLayer.remove();
     o.root.removeAttribute("data-scrollbuild");
     o.root.querySelectorAll("[data-built]").forEach((el) => el.removeAttribute("data-built"));
     gsap.ticker.remove(step);
