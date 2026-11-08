@@ -1,90 +1,149 @@
 @import "tailwindcss";
 
-@theme {
-  --color-bg: #050505;
-  --color-surface: #0c0c0d;
-  --color-line: rgb(255 255 255 / 0.1);
-  --color-text: #f4f4f2;
-  --color-muted: #8a8a8f;
-  --color-accent: #ff4a1c;
-  --color-hud: #5ad7ff;
+/* ---------------------------------------------------------------------------
+   The Drafting Room: every section is an engineering drawing sheet that the
+   cursor agents draft live. Two prints: cyanotype (default) and diazo (light).
+   --------------------------------------------------------------------------- */
+:root {
+  --paper: #0e2a47;     /* cyanotype paper */
+  --surface: #123559;   /* panel fill, one step up from the paper */
+  --print: #1b4f8a;     /* print blue: zone fills, construction areas */
+  --ink: #e8f0fa;       /* white linework and text */
+  --graphite: #8fb0d2;  /* construction lines, secondary text */
+  --redline: #ff5d4d;   /* markup only: agents, stamps, corrections */
+  --hilite: #f2e14c;    /* approvals and current focus only */
+  --line: rgb(232 240 250 / 0.16);
+  --line-strong: rgb(232 240 250 / 0.42);
+  color-scheme: dark;
+}
+:root[data-theme="diazo"] {
+  --paper: #f1f4f8;
+  --surface: #e6edf4;
+  --print: #c9d8ea;
+  --ink: #163a66;
+  --graphite: #5a7598;
+  --redline: #d63a2e;
+  --hilite: #c9a50f;
+  --line: rgb(22 58 102 / 0.16);
+  --line-strong: rgb(22 58 102 / 0.45);
+  color-scheme: light;
 }
 
 @theme inline {
-  --font-display: var(--font-anton), Impact, sans-serif;
-  --font-sans: var(--font-geist), system-ui, sans-serif;
-  --font-mono: var(--font-geist-mono), ui-monospace, monospace;
-  --font-script: var(--font-caveat), cursive;
+  --color-bg: var(--paper);
+  --color-surface: var(--surface);
+  --color-print: var(--print);
+  --color-line: var(--line);
+  --color-line-strong: var(--line-strong);
+  --color-text: var(--ink);
+  --color-muted: var(--graphite);
+  --color-accent: var(--redline);
+  --color-hud: var(--hilite);
+  --font-stencil: var(--font-stencil), "Arial Narrow", sans-serif;
+  --font-sans: var(--font-rec), system-ui, sans-serif;
 }
 
-html { background: var(--color-bg); color-scheme: dark; }
+html { background: var(--paper); }
 html.lenis, html.lenis body { height: auto; }
 .lenis.lenis-smooth { scroll-behavior: auto !important; }
-/* while Lenis is stopped (project dialog open, build intro) the page itself must not scroll natively;
+/* while Lenis is stopped (project drawing open, build intro) the page must not scroll natively;
    the stable gutter keeps the layout from shifting when the scrollbar hides */
 html.lenis-stopped { overflow: clip; }
-html { scrollbar-gutter: stable; }
-body { background: var(--color-bg); color: var(--color-text); font-family: var(--font-geist), system-ui, sans-serif; -webkit-font-smoothing: antialiased; overflow-x: clip; }
-::selection { background: var(--color-accent); color: #050505; }
-:focus-visible { outline: 2px solid var(--color-hud); outline-offset: 3px; }
+html { scrollbar-gutter: stable; scrollbar-width: thin; scrollbar-color: var(--graphite) var(--paper); }
 
-/* film grain + vignette over everything */
+body {
+  color: var(--ink);
+  font-family: var(--font-rec), system-ui, sans-serif;
+  font-variation-settings: "CASL" 0, "MONO" 0;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: clip;
+  /* drafting film: a faint 5 mm grid with a heavier 25 mm line, on the print */
+  background-color: var(--paper);
+  background-image:
+    linear-gradient(color-mix(in oklab, var(--line) 55%, transparent) 1px, transparent 1px),
+    linear-gradient(90deg, color-mix(in oklab, var(--line) 55%, transparent) 1px, transparent 1px),
+    linear-gradient(color-mix(in oklab, var(--line) 22%, transparent) 1px, transparent 1px),
+    linear-gradient(90deg, color-mix(in oklab, var(--line) 22%, transparent) 1px, transparent 1px);
+  background-size: 120px 120px, 120px 120px, 24px 24px, 24px 24px;
+  transition: background-color .5s, color .5s;
+}
+/* paper fibre */
 body::after {
-  content: ""; position: fixed; inset: 0; z-index: 60; pointer-events: none; opacity: .07; mix-blend-mode: screen;
-  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+  content: ""; position: fixed; inset: 0; z-index: 60; pointer-events: none; opacity: .09; mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='180' height='180'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
 }
+::selection { background: var(--hilite); color: var(--paper); }
+:focus-visible { outline: 2px solid var(--hilite); outline-offset: 3px; }
 
-.label { font-family: var(--font-geist-mono), ui-monospace, monospace; font-size: 11px; letter-spacing: .18em; text-transform: uppercase; color: var(--color-accent); }
-.mono { font-family: var(--font-geist-mono), ui-monospace, monospace; }
-.display { font-family: var(--font-anton), Impact, sans-serif; text-transform: uppercase; line-height: .9; letter-spacing: .005em; }
+/* ---- type */
+.stencil { font-family: var(--font-stencil), "Arial Narrow", sans-serif; text-transform: uppercase; line-height: .86; letter-spacing: .01em; font-variation-settings: normal; }
+.casual { font-variation-settings: "CASL" 1, "MONO" 0; }
+.tab { font-variation-settings: "MONO" 1, "CASL" 0; font-variant-numeric: tabular-nums; }
+.measure { max-width: 68ch; }
 
-/* outlined headline that fills with accent under the cursor */
-.outline-text { color: transparent; -webkit-text-stroke: 2px color-mix(in oklab, var(--color-accent) 92%, transparent); background: linear-gradient(180deg, color-mix(in oklab, var(--color-accent) 14%, transparent), transparent 85%); -webkit-background-clip: text; background-clip: text; }
-.fill-text {
-  position: absolute; inset: 0; color: var(--color-accent); pointer-events: none;
-  -webkit-mask-image: radial-gradient(circle 190px at var(--mx, -999px) var(--my, -999px), #000 30%, transparent 100%);
-          mask-image: radial-gradient(circle 190px at var(--mx, -999px) var(--my, -999px), #000 30%, transparent 100%);
-}
+/* ---- pencil -> ink: anything an agent hasn't finished is lettered in casual "pencil" */
+[data-build], [data-reveal] { transition: font-variation-settings .8s cubic-bezier(.2,.8,.2,1); }
+[data-building] [data-build]:not([data-inked]),
+[data-scrollbuild] [data-reveal]:not([data-inked]) { font-variation-settings: "CASL" 1, "MONO" 0; }
 
-/* monogram card with glitch slices */
-.portrait { position: relative; overflow: hidden; isolation: isolate; display: grid; place-items: center;
-  background: radial-gradient(120% 90% at 30% 15%, #ff6a3c 0%, var(--color-accent) 45%, #b82a0a 100%);
-  box-shadow: inset 0 0 0 1px rgb(255 255 255 / .18), 0 30px 80px -30px rgb(255 74 28 / .55); }
-.portrait::before { content: ""; position: absolute; inset: 0; z-index: 0; pointer-events: none;
-  background-image: linear-gradient(rgb(0 0 0 / .1) 1px, transparent 1px), linear-gradient(90deg, rgb(0 0 0 / .1) 1px, transparent 1px), repeating-linear-gradient(0deg, rgb(0 0 0 / .08) 0 1px, transparent 1px 3px);
-  background-size: 32px 32px, 32px 32px, auto; }
-.portrait::after { content: ""; position: absolute; inset: 14px; z-index: 2; pointer-events: none; border: 1px solid rgb(0 0 0 / .35);
-  -webkit-mask: linear-gradient(#000 0 0) top left / 18px 18px no-repeat, linear-gradient(#000 0 0) top right / 18px 18px no-repeat, linear-gradient(#000 0 0) bottom left / 18px 18px no-repeat, linear-gradient(#000 0 0) bottom right / 18px 18px no-repeat;
-          mask: linear-gradient(#000 0 0) top left / 18px 18px no-repeat, linear-gradient(#000 0 0) top right / 18px 18px no-repeat, linear-gradient(#000 0 0) bottom left / 18px 18px no-repeat, linear-gradient(#000 0 0) bottom right / 18px 18px no-repeat; }
-.portrait .mono-text, .portrait .slice { font-family: var(--font-anton), Impact, sans-serif; font-size: clamp(9rem, 22vw, 17rem); line-height: 1; color: #050505; }
-.portrait .slice { position: absolute; inset: 0; display: grid; place-items: center; color: #f4f4f2; mix-blend-mode: difference; }
+/* ---- drawing sheet: border, zone grid along the edges, title block */
+.sheet { position: relative; border: 1px solid var(--line-strong); outline: 1px solid var(--line); outline-offset: 6px; }
+.zones { position: absolute; display: flex; justify-content: space-around; pointer-events: none; color: var(--graphite); font-size: 10px; font-variation-settings: "MONO" 1; }
+.zones-x { left: 0; right: 0; height: 18px; align-items: center; }
+.zones-x.top { top: -26px; } .zones-x.bottom { bottom: -26px; }
+.zones-y { top: 0; bottom: 0; width: 18px; flex-direction: column; align-items: center; }
+.zones-y.left { left: -26px; } .zones-y.right { right: -26px; }
+.zones span { position: relative; }
+.zones-x span::before { content: ""; position: absolute; left: 50%; top: -4px; height: 3px; width: 1px; background: var(--line-strong); }
 
-.card { background: color-mix(in oklab, var(--color-surface) 80%, transparent); border: 1px solid var(--color-line); backdrop-filter: blur(6px); transition: border-color .3s, transform .3s; }
-.card:hover { border-color: color-mix(in oklab, var(--color-accent) 60%, transparent); }
-.chip { font-family: var(--font-geist-mono), ui-monospace, monospace; font-size: 11px; padding: 4px 9px; border: 1px solid var(--color-line); color: var(--color-muted); transition: .25s; }
-.chip:hover { color: #050505; background: var(--color-accent); border-color: var(--color-accent); }
+.tblock { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); border: 1px solid var(--line-strong); font-size: 11px; }
+.tblock > div { border-left: 1px solid var(--line); border-top: 1px solid var(--line); padding: 6px 9px; min-width: 0; }
+.tblock > div:nth-child(-n + 4) { border-top: 0; }
+.tblock > div:nth-child(4n + 1) { border-left: 0; }
+.tblock dt { color: var(--graphite); font-size: 9.5px; }
+.tblock dd { margin-top: 2px; color: var(--ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.tblock .wide { grid-column: span 2; }
 
-/* project plate hover: rgb split + scanline */
-.plate img { transition: transform .8s cubic-bezier(.2,.8,.2,1), filter .4s; }
-.plate:hover img { transform: scale(1.06); filter: contrast(1.1) saturate(1.2); }
-.plate::before, .plate::after { content: ""; position: absolute; inset: 0; z-index: 1; pointer-events: none; opacity: 0; transition: opacity .3s; background-size: cover; }
-.plate::after { background: linear-gradient(transparent 0 48%, color-mix(in oklab, var(--color-accent) 50%, transparent) 50%, transparent 52%); background-size: 100% 220%; }
-.plate:hover::after { opacity: 1; animation: scan 1.1s linear infinite; }
-@keyframes scan { from { background-position: 0 0; } to { background-position: 0 -220%; } }
+/* dimension line: |<-- label -->| */
+.dim { display: flex; align-items: center; gap: 10px; color: var(--graphite); font-size: 12px; }
+.dim::before, .dim::after { content: ""; flex: 1; height: 1px; background: currentColor; opacity: .7; }
+.dim > span { color: var(--ink); text-align: center; }
+@media (min-width: 768px) { .dim > span { white-space: nowrap; } }
+/* extension ticks at both ends of the dimension */
+.dim-ends { border-inline: 1px solid var(--graphite); padding-inline: 1px; }
 
-/* project card with no screenshot: the title set as a type specimen on the site's grid */
-.plate-blank { background: radial-gradient(120% 90% at 20% 10%, color-mix(in oklab, var(--color-accent) 14%, transparent), transparent 60%), var(--color-surface);
-  background-image: radial-gradient(120% 90% at 20% 10%, color-mix(in oklab, var(--color-accent) 14%, transparent), transparent 60%), linear-gradient(rgb(255 255 255 / .04) 1px, transparent 1px), linear-gradient(90deg, rgb(255 255 255 / .04) 1px, transparent 1px);
-  background-size: auto, 32px 32px, 32px 32px; }
+/* rubber stamp: redline markup; awards and approvals in highlighter */
+.stamp { display: inline-block; border: 2px solid currentColor; padding: 3px 9px 2px; color: var(--redline); font-family: var(--font-stencil), sans-serif; font-size: 15px; letter-spacing: .08em; text-transform: uppercase; rotate: -5deg; opacity: .92; mix-blend-mode: normal; }
+.stamp[data-tone="award"] { color: var(--hilite); }
 
-dialog::backdrop { background: rgb(0 0 0 / .78); backdrop-filter: blur(6px); }
-dialog[open] { animation: pop .35s cubic-bezier(.2,.8,.2,1); }
-@keyframes pop { from { opacity: 0; transform: translateY(24px) scale(.98); } }
+/* screenshots print as cyanotypes and develop into colour once an agent inks them */
+.cyano { background: var(--print); overflow: hidden; }
+.cyano img { transition: filter 1.4s cubic-bezier(.2,.8,.2,1), transform .9s cubic-bezier(.2,.8,.2,1); }
+[data-scrollbuild] [data-reveal]:not([data-developed]) .cyano img { filter: grayscale(1) contrast(1.15) brightness(.9) sepia(1) hue-rotate(175deg) saturate(2.6); }
+.cyano:hover img { transform: scale(1.03); }
+
+/* project with no screenshot: its title lettered on drafting film */
+.blank-plate { background-color: var(--surface); background-image: linear-gradient(var(--line) 1px, transparent 1px), linear-gradient(90deg, var(--line) 1px, transparent 1px); background-size: 24px 24px; }
+
+/* tables: revision history and bill of materials */
+.ledger { width: 100%; border-collapse: collapse; font-size: 14px; }
+.ledger th { text-align: left; font-weight: 500; font-size: 11px; color: var(--graphite); padding: 10px 12px; border-bottom: 1px solid var(--line-strong); }
+.ledger td { padding: 14px 12px; border-bottom: 1px solid var(--line); vertical-align: top; }
+.ledger tr:hover td { background: color-mix(in oklab, var(--print) 22%, transparent); }
+
+.chip { font-size: 12px; padding: 3px 8px; border: 1px solid var(--line-strong); color: var(--graphite); font-variation-settings: "MONO" 1; }
+
+/* axonometric plates in the hero: stroked by the agents as a plot */
+.axo path, .axo line, .axo polyline { vector-effect: non-scaling-stroke; }
+.axo-tilt { transition: transform .9s cubic-bezier(.2,.8,.2,1); transform-style: preserve-3d; }
+
+dialog::backdrop { background: color-mix(in oklab, var(--paper) 75%, transparent); backdrop-filter: blur(5px); }
+dialog[open] { animation: unroll .45s cubic-bezier(.2,.8,.2,1); }
+@keyframes unroll { from { opacity: 0; transform: translateY(18px); clip-path: inset(0 0 60% 0); } }
 
 /* ---- build sequence: hidden until an agent boxes + renders it */
 [data-building] [data-build] { opacity: 0; }
 [data-building] header { background: none; }
-/* below the fold: blocks wait for an agent to box + render them as they scroll in */
 [data-scrollbuild] [data-reveal]:not([data-built]) { opacity: 0; }
 [data-building] .hud-idle { opacity: 0; }
 .hud-idle { transition: opacity .7s; }
@@ -92,29 +151,41 @@ dialog[open] { animation: pop .35s cubic-bezier(.2,.8,.2,1); }
 /* cursor agents (positioned from JS; the arrow rotates to its heading) */
 .agent { position: absolute; left: 0; top: 0; will-change: transform; color: var(--tint, #fff); }
 .agent svg { position: absolute; display: block; transition: opacity .15s; }
-.agent .arw { left: -9px; top: -7.5px; width: 18px; height: 15px; filter: drop-shadow(0 0 5px color-mix(in oklab, var(--tint, #fff) 55%, transparent)); }
-.agent .crs { left: -7.5px; top: -7.5px; width: 15px; height: 15px; color: #f4f4f2; opacity: 0; }
+.agent .arw { left: -9px; top: -7.5px; width: 18px; height: 15px; filter: drop-shadow(0 0 4px color-mix(in oklab, var(--tint, #fff) 45%, transparent)); }
+.agent .crs { left: -7.5px; top: -7.5px; width: 15px; height: 15px; color: var(--ink); opacity: 0; }
 .agent[data-look="cross"] .arw { opacity: 0; }
 .agent[data-look="cross"] .crs { opacity: 1; }
-.agent-tag { position: absolute; left: -6px; top: 11px; padding: 1px 4px; font: 600 8px/1.3 var(--font-geist-mono), ui-monospace, monospace; letter-spacing: .08em; text-transform: uppercase; color: #050505; background: var(--color-hud); white-space: nowrap; opacity: 0; transition: opacity .15s; }
+.agent-tag { position: absolute; left: -6px; top: 11px; padding: 1px 4px; font: 600 9px/1.3 var(--font-rec), sans-serif; font-variation-settings: "MONO" 1; color: var(--paper); background: var(--redline); white-space: nowrap; opacity: 0; transition: opacity .15s; }
 .agent[data-tag] .agent-tag { opacity: 1; }
+/* pale cursors vanish on the white diazo print: letter them in the print's blue instead */
+:root[data-theme="diazo"] .agent { color: var(--ink); }
+
+/* construction lines the agents pencil in before they box an element */
+.guide { position: absolute; pointer-events: none; opacity: .55; background: repeating-linear-gradient(90deg, var(--graphite) 0 6px, transparent 6px 11px); }
+.guide-h { left: 0; right: 0; height: 1px; transform-origin: left; }
+.guide-v { top: 0; bottom: 0; width: 1px; transform-origin: top; background: repeating-linear-gradient(180deg, var(--graphite) 0 6px, transparent 6px 11px); }
 
 /* selection boxes the agents drag out */
-.bbox { position: absolute; left: 0; top: 0; width: 0; height: 0; border: 1px solid rgb(150 205 255 / .8); background: rgb(168 174 186 / .26); }
-.bbox-bg { background: rgb(168 174 186 / .3); border-color: rgb(150 205 255 / .55); }
-/* scroll builds: grey selection box under the content while it renders, then it clears (like the hero) */
-.bbox-scroll { background: rgb(168 174 186 / .18); }
-.bbox i { position: absolute; width: 6px; height: 6px; border-radius: 50%; background: #f4f4f2; box-shadow: 0 0 0 1px rgb(0 0 0 / .4); }
-/* empty media slot: placeholder square in the middle of the frame */
-.bbox-ph::after { content: ""; position: absolute; left: 50%; top: 50%; width: 18px; height: 18px; translate: -50% -50%; border-radius: 3px; background: rgb(255 255 255 / .22); box-shadow: inset 0 0 0 1px rgb(255 255 255 / .3); }
+.bbox { position: absolute; left: 0; top: 0; width: 0; height: 0; border: 1px solid color-mix(in oklab, var(--ink) 75%, transparent); background: color-mix(in oklab, var(--print) 55%, transparent); }
+.bbox-bg { background: color-mix(in oklab, var(--print) 60%, transparent); border-color: color-mix(in oklab, var(--ink) 45%, transparent); }
+.bbox-scroll { background: color-mix(in oklab, var(--print) 45%, transparent); }
+.bbox i { position: absolute; width: 6px; height: 6px; border-radius: 50%; background: var(--ink); box-shadow: 0 0 0 1px var(--paper); }
 .bbox i:nth-child(1) { left: -3.5px; top: -3.5px; } .bbox i:nth-child(2) { right: -3.5px; top: -3.5px; }
 .bbox i:nth-child(3) { left: -3.5px; bottom: -3.5px; } .bbox i:nth-child(4) { right: -3.5px; bottom: -3.5px; }
-.bbox b { position: absolute; left: 50%; bottom: 0; translate: -50% 50%; padding: 1px 5px; font: 600 8px/1.4 var(--font-geist-mono), ui-monospace, monospace; letter-spacing: .1em; color: #050505; background: var(--color-hud); white-space: nowrap; opacity: 0; transition: opacity .2s; }
+.bbox-ph::after { content: ""; position: absolute; left: 50%; top: 50%; width: 18px; height: 18px; translate: -50% -50%; border-radius: 3px; background: color-mix(in oklab, var(--ink) 25%, transparent); }
+.bbox b { position: absolute; left: 50%; bottom: 0; translate: -50% 50%; padding: 1px 5px; font: 600 9px/1.4 var(--font-rec), sans-serif; font-variation-settings: "MONO" 1; color: var(--paper); background: var(--redline); white-space: nowrap; opacity: 0; transition: opacity .2s; }
 .bbox.done b { opacity: 1; }
-.caret { position: absolute; left: 0; top: 0; width: 2px; background: var(--color-hud); box-shadow: 0 0 6px var(--color-hud); animation: blink .5s steps(1) infinite; }
+.caret { position: absolute; left: 0; top: 0; width: 2px; background: var(--hilite); box-shadow: 0 0 6px var(--hilite); animation: blink .5s steps(1) infinite; }
 @keyframes blink { 50% { opacity: 0; } }
 
-@media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; } }
+@media (max-width: 767px) {
+  .zones-y { display: none; }
+  .zones-x.top { top: -20px; } .zones-x.bottom { bottom: -20px; }
+  .tblock { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .tblock > div:nth-child(-n + 4) { border-top: 1px solid var(--line); }
+  .tblock > div:nth-child(-n + 2) { border-top: 0; }
+  .tblock > div:nth-child(4n + 1) { border-left: 1px solid var(--line); }
+  .tblock > div:nth-child(2n + 1) { border-left: 0; }
+}
 
-/* thin themed scrollbar */
-html { scrollbar-width: thin; scrollbar-color: color-mix(in oklab, var(--color-accent) 60%, #222) var(--color-bg); }
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; } }

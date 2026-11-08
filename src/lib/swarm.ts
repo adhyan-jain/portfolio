@@ -8,7 +8,7 @@ import gsap from "gsap";
  * into view.
  */
 
-type Fx = "fade" | "type" | "tag" | "wipe" | "pixel";
+type Fx = "fade" | "type" | "tag" | "wipe" | "pixel" | "plot";
 type Drag = { b: HTMLElement; L: number; T: number; W: number; H: number };
 /** a live element the agent's target tracks while the page scrolls (scroll builds) */
 type Anchor = { el: HTMLElement; pad: number; p?: number; onDrag?: () => void; layer?: HTMLElement };
@@ -58,6 +58,7 @@ export function startSwarm(o: SwarmOpts): () => void {
   const pendings = new Set<() => void>();
   const touched = new Set<HTMLElement>();
   const slices = new Set<HTMLElement>();
+  const plotted = new Set<Element>();
   const typed: [Text[], string[]][] = [];
   let building = o.build;
   let finished = !o.build;
@@ -258,6 +259,23 @@ export function startSwarm(o: SwarmOpts): () => void {
     return b;
   };
 
+  // construction lines: before boxing an element the agent pencils guides through its corner
+  const pencil = (x: number, y: number, layer: HTMLElement) => {
+    const h = document.createElement("div");
+    const v = document.createElement("div");
+    h.className = "guide guide-h";
+    v.className = "guide guide-v";
+    h.style.top = `${y}px`;
+    v.style.left = `${x}px`;
+    layer.append(h, v);
+    tweens.push(
+      gsap.timeline({ onComplete: () => { h.remove(); v.remove(); } })
+        .fromTo(h, { scaleX: 0 }, { scaleX: 1, duration: 0.28, ease: "power2.out" }, 0)
+        .fromTo(v, { scaleY: 0 }, { scaleY: 1, duration: 0.28, ease: "power2.out" }, 0)
+        .to([h, v], { opacity: 0, duration: 0.45 }, 0.45),
+    );
+  };
+
   const draw = (a: Agent, el: HTMLElement, label: string, bg = false) => {
     const r = el.getBoundingClientRect();
     const pad = bg ? 0 : 5;
@@ -276,6 +294,7 @@ export function startSwarm(o: SwarmOpts): () => void {
     if (anchor) anchor.p = 0;
     await seek(a, L, T, 700);
     if (stop()) return null;
+    pencil(a.anchor ? a.tx : L, a.anchor ? a.ty : T, anchor?.layer ?? o.boxLayer);
     const b = makeBox(label, a.anchor ? a.tx : L, a.anchor ? a.ty : T, bg, cls, anchor?.layer);
     anchor?.onDrag?.();
     a.drag = { b, L, T, W, H };
@@ -359,10 +378,24 @@ export function startSwarm(o: SwarmOpts): () => void {
     gsap.set(el, { clearProps: "width,height" });
   };
 
-  const reveal = (el: HTMLElement): Promise<void> => {
+  // once an element's effect finishes it is "inked": its lettering morphs from pencil (casual) to ink (linear)
+  const reveal = (el: HTMLElement): Promise<void> => revealFx(el).then(() => el.setAttribute("data-inked", ""));
+  const revealFx = (el: HTMLElement): Promise<void> => {
     const fx = (el.dataset.fx || "fade") as Fx;
     touched.add(el);
     if (fx === "type" || fx === "tag") return typeIn(el);
+    if (fx === "plot") {
+      // a pen plotter: every edge of the drawing is stroked in, then the labels appear
+      gsap.set(el, { opacity: 1 });
+      const shapes = [...el.querySelectorAll<SVGElement>("line, polyline, polygon")];
+      const labels = [...el.querySelectorAll<SVGElement>("text, circle")];
+      shapes.forEach((x) => plotted.add(x));
+      labels.forEach((x) => plotted.add(x));
+      return Promise.all([
+        twFrom(shapes, { strokeDasharray: 1, strokeDashoffset: 1, fillOpacity: 0 }, { strokeDashoffset: 0, fillOpacity: 1, duration: 0.5, stagger: 0.012, ease: "power2.inOut" }),
+        twFrom(labels, { opacity: 0 }, { opacity: 1, duration: 0.25, stagger: 0.05, delay: 0.45, ease: "steps(3)" }),
+      ]).then(() => void gsap.set([...shapes, ...labels], { clearProps: "strokeDasharray,strokeDashoffset,fillOpacity,opacity" }));
+    }
     if (fx === "wipe")
       return twFrom(el, { opacity: 1, clipPath: "inset(0% 100% 0% 0%)" }, { clipPath: "inset(0% 0% 0% 0%)", duration: 0.5, ease: "steps(10)" });
     if (fx === "pixel") {
@@ -396,6 +429,8 @@ export function startSwarm(o: SwarmOpts): () => void {
     typed.forEach(([nodes, orig]) => nodes.forEach((t, i) => (t.data = orig[i])));
     if (touched.size) gsap.set([...touched], { clearProps: "opacity,clipPath,filter,width,height" });
     if (slices.size) gsap.set([...slices], { x: 0, clipPath: "inset(0% 0% 100% 0%)" });
+    if (plotted.size) gsap.set([...plotted], { clearProps: "strokeDasharray,strokeDashoffset,fillOpacity,opacity" });
+    o.root.querySelectorAll("[data-build]").forEach((e) => e.setAttribute("data-inked", ""));
     o.root.removeAttribute("data-building");
     o.boxLayer.replaceChildren();
     o.agentsLayer.querySelectorAll(".caret").forEach((c) => c.remove());
@@ -425,7 +460,7 @@ export function startSwarm(o: SwarmOpts): () => void {
 
   const run = async () => {
     // 1. scan: agents orbit the empty page
-    say("Scanning page…");
+    say("Plotting sheet 1…");
     progress(0.16, 1.1);
     await wait(1.2);
     if (finished) return;
@@ -455,10 +490,10 @@ export function startSwarm(o: SwarmOpts): () => void {
     let done = 0;
     const tick = () => {
       done++;
-      say(`${n} agents · ${done} / ${total} layers`);
+      say(`${n} agents drafting, ${done} of ${total} layers`);
       progress(0.16 + (done / total) * 0.84);
     };
-    say(`${n} agents · 0 / ${total} layers`);
+    say(`${n} agents drafting, 0 of ${total} layers`);
     const boxes: HTMLElement[] = [];
     const keep = (b: HTMLElement | null) => b && boxes.push(b);
 
@@ -490,7 +525,7 @@ export function startSwarm(o: SwarmOpts): () => void {
     );
     await Promise.all([small, big]);
     if (finished) return;
-    say("Rendering…");
+    say("Inking…");
     // late agents head for their corners while the fills render, so they're in place at the clear
     late.forEach((el, i) => {
       const r = el.getBoundingClientRect();
@@ -546,7 +581,7 @@ export function startSwarm(o: SwarmOpts): () => void {
       }),
     );
     if (finished) return;
-    say("Build complete");
+    say("Sheet issued");
     progress(1);
     // free agents drift back toward the pointer before the build wraps up
     await wait(0.3);
@@ -577,35 +612,49 @@ export function startSwarm(o: SwarmOpts): () => void {
         ]);
         gsap.set(heading, { clearProps: "clipPath" });
       } else if (fx === "media") {
-        const imgs = [...el.querySelectorAll<HTMLElement>("img")];
-        // plate images carry a CSS filter transition; switch it off so the steps stay glitchy
-        gsap.set(imgs, { transition: "none" });
-        await Promise.all([
-          twFrom(el, { opacity: 0 }, { opacity: 1, duration: 0.3, ease: "steps(4)" }),
-          ...imgs.map((img) =>
-            twFrom(img, { filter: "grayscale(1) contrast(1.3) blur(12px)" }, { filter: "grayscale(1) contrast(1.1) blur(0px)", duration: 0.35, ease: "steps(6)" }).then(
-              () => tw(img, { filter: "grayscale(0) contrast(1) blur(0px)", duration: 0.2, ease: "steps(2)" }),
-            ),
-          ),
-        ]);
-        gsap.set(imgs, { clearProps: "filter,transition" });
+        // the screenshot prints as a cyanotype first, then develops into colour (CSS transition)
+        // card text types in while the screenshot develops
+        await Promise.all([typeIn(el), wait(0.3).then(() => el.setAttribute("data-developed", ""))]);
       } else if (fx === "type") {
         await typeIn(el);
       } else {
         await twFrom(el, { opacity: 0 }, { opacity: 1, duration: 0.35, ease: "steps(4)" });
       }
     };
-    if (!visible(el)) {
+    // triggered a little before the block enters: park the agent at the bottom edge where it will
+    // come in, and start drawing the moment it is actually on screen
+    look(a, "cross");
+    let r = el.getBoundingClientRect();
+    while (!dead && r.top >= innerHeight - 4 && r.top <= innerHeight * 1.6) {
+      a.mode = "seek";
+      a.sk = 140;
+      a.tx = Math.min(innerWidth - 12, Math.max(12, r.left));
+      a.ty = innerHeight - 14;
+      await wait(0.05);
+      r = el.getBoundingClientRect();
+    }
+    if (dead) return;
+    if (r.top > innerHeight * 1.6) {
+      // scrolled back up before it arrived: free the agent and wait for the block's next approach
+      a.busy = false;
+      look(a, "arrow");
+      a.mode = "orbit";
+      io?.observe(el);
+      return;
+    }
+    if (r.bottom < 0) {
+      // already scrolled past above: no point drawing it off screen
       show();
+      el.setAttribute("data-inked", "");
+      el.setAttribute("data-developed", "");
     } else {
       const r = el.getBoundingClientRect();
       const label = el.dataset.hud || (heading === el || fx === "head" ? "HEADING" : fx === "media" ? "MEDIA" : "TEXT");
-      // content starts rendering the moment the agent starts dragging its box
-      let rendering: Promise<void> | null = null;
+      // content starts rendering as soon as the block is on screen; the agent drags its box around it
+      const rendering = render();
       const b = await drawRect(a, r.left - 5, r.top - 5, r.width + 10, r.height + 10, label, false, () => dead, "bbox-scroll", {
         el,
         pad: 5,
-        onDrag: () => void (rendering = render()),
         layer: scrollLayer,
       });
       if (dead) return;
@@ -613,8 +662,9 @@ export function startSwarm(o: SwarmOpts): () => void {
       tag(a, false);
       a.sk = 120;
       void seek(a, Math.min(innerWidth - 20, r.right + rand(-40, 10)), Math.min(innerHeight - 20, r.top + rand(10, 60)), 120);
-      await (rendering ?? render());
+      await rendering;
       if (dead) return;
+      el.setAttribute("data-inked", "");
       if (b) {
         // grey drops away, then the outline fades, like the hero clear
         tweens.push(gsap.to(b, { backgroundColor: "rgba(0,0,0,0)", duration: 0.12, ease: "steps(2)" }));

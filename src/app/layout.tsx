@@ -1,13 +1,13 @@
 import { DATA } from "@/data/resume";
 import { cn } from "@/lib/utils";
 import type { Metadata } from "next";
-import { Anton, Caveat, Geist, Geist_Mono } from "next/font/google";
+import { Big_Shoulders_Stencil, Recursive } from "next/font/google";
 import "./globals.css";
 
-const anton = Anton({ subsets: ["latin"], weight: "400", variable: "--font-anton" });
-const caveat = Caveat({ subsets: ["latin"], variable: "--font-caveat" });
-const geist = Geist({ subsets: ["latin"], variable: "--font-geist" });
-const geistMono = Geist_Mono({ subsets: ["latin"], variable: "--font-geist-mono" });
+// Stencil lettering for sheet titles; Recursive for everything else. Its CASL axis is the
+// "pencil" (casual) to "ink" (linear) morph the cursor agents run when they finish an element.
+const stencil = Big_Shoulders_Stencil({ subsets: ["latin"], variable: "--font-stencil", axes: ["opsz"] });
+const recursive = Recursive({ subsets: ["latin"], variable: "--font-rec", axes: ["CASL", "MONO", "slnt"] });
 
 export const metadata: Metadata = {
   // `url` is blank until configured, and new URL("") throws.
@@ -28,8 +28,12 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en" className="dark" suppressHydrationWarning>
-      <body className={cn("min-h-screen antialiased", anton.variable, caveat.variable, geist.variable, geistMono.variable)}>
+    <html lang="en" suppressHydrationWarning>
+      <head>
+        {/* apply a saved print (theme) before first paint so the diazo print does not flash cyanotype */}
+        <script dangerouslySetInnerHTML={{ __html: `try{if(localStorage.getItem("print")==="diazo")document.documentElement.dataset.theme="diazo"}catch(e){}` }} />
+      </head>
+      <body className={cn("min-h-screen antialiased", stencil.variable, recursive.variable)}>
         {children}
       </body>
     </html>

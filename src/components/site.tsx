@@ -1,18 +1,15 @@
 "use client";
 /* eslint-disable @next/next/no-img-element */
 
-import dynamic from "next/dynamic";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import Lenis from "lenis";
-import { signal } from "@/lib/signal";
 import { startSwarm } from "@/lib/swarm";
 
-const Scene = dynamic(() => import("./scene"), { ssr: false });
-
 type Link = { type: string; href: string };
-type Project = { title: string; description: string; tech: string[]; links: Link[]; image: string };
+type Spec = { label: string; value: string };
+type Project = { title: string; description: string; tech: string[]; links: Link[]; image: string; status: string; specs: Spec[] };
 export type SiteData = {
   name: string;
   tagline: string;
@@ -29,23 +26,126 @@ export type SiteData = {
   resume: string;
 };
 
-const SECTIONS: [string, string][] = [
-  ["top", "Intro"],
-  ["about", "About"],
-  ["work", "Work"],
-  ["projects", "Projects"],
-  ["skills", "Skills"],
-  ["contact", "Contact"],
+/** The drawing set: one sheet per section, numbered in reading order. */
+const SHEETS: [id: string, title: string][] = [
+  ["top", "General arrangement"],
+  ["notes", "General notes"],
+  ["drawings", "Detail drawings"],
+  ["revisions", "Revision history"],
+  ["parts", "Bill of materials"],
+  ["signoff", "Sign-off"],
 ];
+const AGENTS = ["ag-07", "ag-03", "ag-11", "ag-05", "ag-14", "ag-09"];
+const dwg = (i: number) => `DWG-${String(i + 1).padStart(3, "0")}`;
+const MONTHS = ["jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "sep", "oct", "nov", "dec"];
+const when = (s: string) => {
+  const [m, y] = s.toLowerCase().split(" ");
+  return Number(y) * 12 + MONTHS.indexOf(m.slice(0, 3));
+};
 
-function Head({ n, label, title }: { n: string; label: string; title: string }) {
+function Zones() {
+  const cols = ["1", "2", "3", "4", "5", "6", "7", "8"];
+  const rows = ["A", "B", "C", "D", "E", "F"];
   return (
-    <div className="mb-12 md:mb-16" data-reveal>
-      <p className="label mb-4">
-        {"//"}{n} {label}
-      </p>
-      <h2 className="display text-[clamp(2.8rem,8vw,7rem)]">{title}</h2>
-    </div>
+    <>
+      {(["top", "bottom"] as const).map((p) => (
+        <div key={p} aria-hidden className={`zones zones-x ${p}`}>{cols.map((c) => <span key={c}>{c}</span>)}</div>
+      ))}
+      {(["left", "right"] as const).map((p) => (
+        <div key={p} aria-hidden className={`zones zones-y ${p}`}>{rows.map((r) => <span key={r}>{r}</span>)}</div>
+      ))}
+    </>
+  );
+}
+
+function TitleBlock({ n, rev, print, extra, build }: { n: number; rev: string; print: string; extra?: [string, string]; build?: boolean }) {
+  const fields: [string, string, boolean?][] = [
+    ["Drawing", SHEETS[n][1], true],
+    ["Sheet", `${n + 1} of ${SHEETS.length}`],
+    ["Scale", "1 : 1"],
+    ["Drawn", AGENTS[n]],
+    ["Checked", "A. Jain"],
+    ["Rev", rev],
+    extra ?? ["Print", print === "diazo" ? "Diazo" : "Cyanotype"],
+  ];
+  return (
+    <dl {...(build ? { "data-build": "TITLE BLOCK", "data-late": "" } : { "data-reveal": "", "data-hud": "TITLE BLOCK" })} className="tblock ml-auto w-full max-w-[560px]">
+      {fields.map(([k, v, wide]) => (
+        <div key={k} className={wide ? "wide" : ""}>
+          <dt>{k}</dt>
+          <dd className="tab">{v}</dd>
+        </div>
+      ))}
+    </dl>
+  );
+}
+
+function Sheet({ n, rev, print, children, head }: { n: number; rev: string; print: string; children: ReactNode; head?: ReactNode }) {
+  const [id, title] = SHEETS[n];
+  return (
+    <section id={id} data-sheet={n} aria-labelledby={`${id}-title`} className="px-4 py-20 sm:px-5 md:px-14 md:py-28">
+      <div className="sheet mx-auto max-w-[1360px] px-4 pb-6 pt-10 sm:px-5 md:px-12 md:pt-14">
+        <Zones />
+        {head ?? (
+          <div data-reveal className="mb-12 md:mb-16">
+            <h2 id={`${id}-title`} className="stencil text-[clamp(2.6rem,7vw,5.5rem)]">{title}</h2>
+          </div>
+        )}
+        {children}
+        <div className="mt-14">
+          <TitleBlock n={n} rev={rev} print={print} />
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/** Exploded axonometric of the stack: five isometric plates, each labelled with the projects that live on it. */
+const LAYERS: [name: string, tools: string, where: string][] = [
+  ["Interfaces", "Next.js, React, Tauri", "Catalyst, EchoTales, ComputeHive"],
+  ["Agents and retrieval", "MCP, RAG, tool calling", "StoryTrace, OS-Tutor, Verity"],
+  ["Services", "Go, gRPC, FastAPI", "ComputeHive, Cryptic Hunt, Verity"],
+  ["Data", "Redis, ClickHouse, PostgreSQL", "ComputeHive, StoryTrace, Cryptic Hunt"],
+  ["Infrastructure", "Docker, AWS Lambda, Prometheus", "ComputeHive, Hermes at Palni"],
+];
+function Axo({ labels, hot, onHot }: { labels: boolean; hot: number; onHot: (i: number) => void }) {
+  const cx = 190, w = 168, h = 84, t = 14, gap = 92, top = 92;
+  return (
+    <svg viewBox={labels ? "0 0 640 580" : "0 0 380 580"} className="axo h-auto w-full" role="img" aria-label="Exploded drawing of the stack, five layers from interfaces down to infrastructure">
+      {/* hidden-line connectors between the plates */}
+      {[-w, w, 0].map((dx) => (
+        <line key={dx} x1={cx + dx} y1={top + (dx === 0 ? h : 0)} x2={cx + dx} y2={top + gap * 4 + (dx === 0 ? h : 0)} stroke="var(--graphite)" strokeDasharray="5 6" strokeWidth={1} pathLength={1} />
+      ))}
+      {LAYERS.map(([name, tools], i) => {
+        const cy = top + i * gap;
+        const face = `${cx},${cy - h} ${cx + w},${cy} ${cx},${cy + h} ${cx - w},${cy}`;
+        const right = `${cx + w},${cy} ${cx},${cy + h} ${cx},${cy + h + t} ${cx + w},${cy + t}`;
+        const left = `${cx - w},${cy} ${cx},${cy + h} ${cx},${cy + h + t} ${cx - w},${cy + t}`;
+        const on = hot === i;
+        return (
+          <g key={name} onPointerEnter={() => onHot(i)} onPointerLeave={() => onHot(-1)} style={{ cursor: "default" }}>
+            <polygon points={left} fill="var(--surface)" stroke="var(--ink)" strokeWidth={1.2} pathLength={1} />
+            <polygon points={right} fill="var(--print)" stroke="var(--ink)" strokeWidth={1.2} pathLength={1} />
+            <polygon points={face} fill={on ? "color-mix(in oklab, var(--hilite) 30%, var(--paper))" : "color-mix(in oklab, var(--print) 55%, var(--paper))"} stroke="var(--ink)" strokeWidth={1.4} pathLength={1} style={{ transition: "fill .3s" }} />
+            {/* iso grid on the top face */}
+            {[0.25, 0.5, 0.75].map((f) => (
+              <g key={f} stroke="var(--graphite)" strokeWidth={0.8} opacity={0.55}>
+                <line x1={cx - w * (1 - f)} y1={cy - h * f} x2={cx + w * f} y2={cy + h * (1 - f)} pathLength={1} />
+                <line x1={cx + w * (1 - f)} y1={cy - h * f} x2={cx - w * f} y2={cy + h * (1 - f)} pathLength={1} />
+              </g>
+            ))}
+            {labels && (
+              <>
+                <polyline points={`${cx + w},${cy} ${cx + w + 34},${cy - 26} 404,${cy - 26}`} fill="none" stroke={on ? "var(--hilite)" : "var(--graphite)"} strokeWidth={1} pathLength={1} />
+                <circle cx={cx + w} cy={cy} r={3} fill="var(--ink)" />
+                <text x={412} y={cy - 30} fill="var(--ink)" fontSize={17} style={{ fontVariationSettings: '"CASL" 0' }}>{name}</text>
+                <text x={412} y={cy - 10} fill="var(--graphite)" fontSize={12.5} style={{ fontVariationSettings: '"MONO" 1' }}>{tools}</text>
+              </>
+            )}
+          </g>
+        );
+      })}
+    </svg>
   );
 }
 
@@ -55,23 +155,55 @@ export default function Site({ data }: { data: SiteData }) {
   const statusRef = useRef<HTMLDivElement>(null);
   const agentsRef = useRef<HTMLDivElement>(null);
   const boxesRef = useRef<HTMLDivElement>(null);
-  const bgRef = useRef<HTMLDivElement>(null);
   const boxRef = useRef<HTMLDivElement>(null);
   const tagRef = useRef<HTMLSpanElement>(null);
-  const titleRef = useRef<HTMLHeadingElement>(null);
+  const coordRef = useRef<HTMLSpanElement>(null);
+  const tiltRef = useRef<HTMLDivElement>(null);
   const dialogRef = useRef<HTMLDialogElement>(null);
   const lenisRef = useRef<Lenis | null>(null);
   const [active, setActive] = useState(0);
-  const [webgl, setWebgl] = useState(false);
-  const [clock, setClock] = useState("");
   const [open, setOpen] = useState<Project | null>(null);
   const [copied, setCopied] = useState(false);
+  const [hot, setHot] = useState(-1);
+  const [signer, setSigner] = useState("");
+  const [print, setPrint] = useState<"cyanotype" | "diazo">("cyanotype");
 
   const [first, ...rest] = data.name.toUpperCase().split(" ");
   const [tagRole, tagBody] = data.tagline.split(/ (?=building)/);
   const tagRest = tagBody ? tagBody[0].toUpperCase() + tagBody.slice(1) : data.tagline;
-  // projects arrive ranked (config order); every one gets the same card
+  const projects = data.projects;
   const awardFor = (p: Project) => data.hackathons.find((h) => h.description.includes(p.title));
+  const internships = data.work.filter((w) => /intern/i.test(w.title)).length;
+  // "B.Tech in Computer Science and Engineering (CGPA: 8.83)" at "Vellore Institute of Technology (VIT)" -> "B.Tech CSE, VIT, CGPA 8.83"
+  const edu = data.education[0];
+  const degreeLine = edu
+    ? [
+        edu.degree.replace(/ in Computer Science and Engineering/, " CSE").replace(/\s*\(CGPA:.*\)/, ""),
+        edu.school.match(/\((\w+)\)/)?.[1] ?? edu.school,
+        edu.degree.match(/CGPA:\s*([\d.]+)/)?.[1] ? `CGPA ${edu.degree.match(/CGPA:\s*([\d.]+)/)?.[1]}` : "",
+      ].filter(Boolean).join(", ")
+    : "";
+
+  // revision history: roles, awards and education, oldest = rev A
+  const revisions = useMemo(() => {
+    const rows = [
+      ...data.work.map((w) => ({ kind: "Role", date: `${w.start} to ${w.end}`, at: when(w.start), title: w.title, org: w.company, body: w.description, award: false })),
+      ...data.hackathons.map((h) => ({ kind: "Award", date: h.dates, at: when(h.dates), title: h.title, org: h.location, body: h.description, award: true })),
+      ...data.education.map((e) => ({ kind: "Education", date: `${e.start} to ${e.end}`, at: when(e.start), title: e.degree, org: e.school, body: "", award: false })),
+    ].sort((a, b) => a.at - b.at);
+    return rows.map((r, i) => ({ ...r, rev: String.fromCharCode(65 + i) })).reverse();
+  }, [data]);
+  const latestRev = revisions[0]?.rev ?? "A";
+
+  // bill of materials: every tool on a drawing, with how many drawings use it
+  const bom = useMemo(() => {
+    const m = new Map<string, number[]>();
+    projects.forEach((p, i) => p.tech.forEach((t) => m.set(t, [...(m.get(t) ?? []), i])));
+    const rows = [...m.entries()].sort((a, b) => b[1].length - a[1].length || a[0].localeCompare(b[0]));
+    const used = new Set(m.keys());
+    const stock = [...new Set(data.skills.flatMap((g) => g.items))].filter((s) => ![...used].some((u) => u.toLowerCase() === s.toLowerCase()));
+    return { multi: rows.filter(([, v]) => v.length > 1), single: rows.filter(([, v]) => v.length === 1), stock };
+  }, [projects, data.skills]);
 
   const go = (id: string) => {
     const el = document.getElementById(id);
@@ -79,22 +211,27 @@ export default function Site({ data }: { data: SiteData }) {
     if (lenisRef.current) lenisRef.current.scrollTo(el, { offset: 0 });
     else el.scrollIntoView();
   };
+  const openProject = (i: number) => setOpen(projects[i]);
+  const usedOn = (on: number[]) =>
+    on.map((j) => (
+      <button key={j} type="button" onClick={() => openProject(j)} className="tab whitespace-nowrap text-[13px] text-muted underline decoration-dotted underline-offset-4 hover:text-hud">{dwg(j)}</button>
+    ));
 
+  // print (theme): cyanotype by default, diazo on request; remembered per browser
   useEffect(() => {
-    const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+    let saved: string | null = null;
     try {
-      const c = document.createElement("canvas");
-      // eslint-disable-next-line react-hooks/set-state-in-effect -- capability check needs the browser; SSR renders without it
-      setWebgl(!reduce && !!(c.getContext("webgl2") || c.getContext("webgl")));
-    } catch {
-      /* no WebGL: CSS background only */
-    }
-    const tick = () =>
-      setClock(new Date().toLocaleTimeString("en-GB", { timeZone: "Asia/Kolkata", hour: "2-digit", minute: "2-digit" }));
-    tick();
-    const id = setInterval(tick, 30000);
-    return () => clearInterval(id);
+      saved = localStorage.getItem("print");
+    } catch {}
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- the saved print is only readable in the browser
+    if (saved === "diazo") setPrint("diazo");
   }, []);
+  useEffect(() => {
+    document.documentElement.dataset.theme = print;
+    try {
+      localStorage.setItem("print", print);
+    } catch {}
+  }, [print]);
 
   useEffect(() => {
     const d = dialogRef.current;
@@ -115,7 +252,6 @@ export default function Site({ data }: { data: SiteData }) {
     const cleanups: (() => void)[] = [];
 
     const ctx = gsap.context(() => {
-      // ---- smooth scroll, synced with ScrollTrigger
       if (!reduce) {
         const lenis = new Lenis({ lerp: 0.1 });
         lenisRef.current = lenis;
@@ -130,58 +266,30 @@ export default function Site({ data }: { data: SiteData }) {
         });
       }
 
-      // ---- scroll -> scene + progress + active section
       const bar = root.current!.querySelector<HTMLElement>("[data-bar]")!;
-      ScrollTrigger.create({
-        start: 0,
-        end: "max",
-        onUpdate: (s) => {
-          signal.scroll = s.progress;
-          signal.burst = s.progress > 0.975 ? 0.9 : signal.burst > 0.5 ? signal.burst : 0;
-          bar.style.transform = `scaleX(${s.progress})`;
-        },
-      });
-      SECTIONS.forEach(([id], i) =>
-        ScrollTrigger.create({
-          trigger: `#${id}`,
-          start: "top 55%",
-          end: "bottom 55%",
-          onToggle: (s) => s.isActive && setActive(i),
-        }),
+      ScrollTrigger.create({ start: 0, end: "max", onUpdate: (s) => (bar.style.transform = `scaleX(${s.progress})`) });
+      SHEETS.forEach(([id], i) =>
+        ScrollTrigger.create({ trigger: `#${id}`, start: "top 55%", end: "bottom 55%", onToggle: (s) => s.isActive && setActive(i) }),
       );
-      ScrollTrigger.create({
-        trigger: "#contact",
-        start: "top 70%",
-        onToggle: (s) => (signal.mix = s.isActive ? 1 : 0),
-      });
 
-      // ---- reveals (with a mouse, the cursor agents build these as they scroll in instead)
+      // without a mouse there are no visible agents: sheets simply fade up
       if (!reduce && !fine) {
         gsap.utils.toArray<HTMLElement>("[data-reveal]").forEach((el) =>
-          gsap.from(el, {
-            y: 50,
-            opacity: 0,
-            duration: 1,
-            ease: "power3.out",
-            scrollTrigger: { trigger: el, start: "top 90%", once: true },
-          }),
+          gsap.from(el, { y: 40, opacity: 0, duration: 0.9, ease: "power3.out", scrollTrigger: { trigger: el, start: "top 90%", once: true } }),
         );
       }
-      if (!reduce) gsap.to(".marquee-track", { xPercent: -50, repeat: -1, ease: "none", duration: 32 });
 
-      // ---- cursor agents + the hard-reload build sequence
+      // cursor agents + the hard-reload build
       const nav = performance.getEntriesByType("navigation")[0] as PerformanceNavigationTiming | undefined;
       const build = !reduce && nav?.type !== "back_forward";
       if (!build) {
         root.current!.removeAttribute("data-building");
         gsap.set([overlayRef.current, statusRef.current], { autoAlpha: 0 });
-        signal.burst = 0;
       } else {
         history.scrollRestoration = "manual";
         scrollTo(0, 0);
         lenisRef.current?.scrollTo(0, { immediate: true });
         lenisRef.current?.stop();
-        signal.burst = 1;
       }
       if (!reduce) {
         cleanups.push(
@@ -191,80 +299,70 @@ export default function Site({ data }: { data: SiteData }) {
             boxLayer: boxesRef.current!,
             overlay: overlayRef.current!,
             status: statusRef.current!,
-            bg: bgRef.current,
+            bg: null,
             build,
             fine,
             scrollBuild: fine,
-            onClear: () => gsap.to(signal, { burst: 0, duration: 2.4, ease: "power3.out" }),
             onDone: () => lenisRef.current?.start(),
           }),
         );
       }
 
-      // ---- portrait glitch slices
-      if (!reduce) {
-        gsap.utils.toArray<HTMLElement>(".slice").forEach((s, i) => {
-          gsap.set(s, { clipPath: "inset(0% 0% 100% 0%)" });
-          const loop = () => {
-            const top = Math.random() * 80;
-            const h = 6 + Math.random() * 16;
-            gsap.set(s, { clipPath: `inset(${top}% 0% ${100 - top - h}% 0%)` });
-            gsap.to(s, {
-              x: (Math.random() - 0.5) * 46,
-              duration: 0.12,
-              yoyo: true,
-              repeat: 3,
-              onComplete: () => {
-                gsap.set(s, { x: 0, clipPath: "inset(0% 0% 100% 0%)" });
-                gsap.delayedCall(1 + Math.random() * 2.5, loop);
-              },
-            });
-          };
-          gsap.delayedCall(1.8 + i * 0.5, loop);
-        });
-      }
-
-      // ---- pointer: scene repel + headline fill
+      // pointer: zone readout (sheet + grid square under the cursor) and a gentle tilt of the hero drawing
+      let raf = 0;
+      let px = -1, py = -1;
+      const onScrollReadout = () => px >= 0 && onMove({ clientX: px, clientY: py } as PointerEvent);
       const onMove = (e: PointerEvent) => {
-        signal.px = (e.clientX / innerWidth) * 2 - 1;
-        signal.py = -((e.clientY / innerHeight) * 2 - 1);
-        if (!moveRaf) {
-          const { clientX, clientY } = e;
-          moveRaf = requestAnimationFrame(() => {
-            moveRaf = 0;
-            const t = titleRef.current;
-            if (!t) return;
-            const r = t.getBoundingClientRect();
-            t.style.setProperty("--mx", `${clientX - r.left}px`);
-            t.style.setProperty("--my", `${clientY - r.top}px`);
-          });
-        }
+        px = e.clientX;
+        py = e.clientY;
+        if (raf) return;
+        const { clientX: x, clientY: y } = e;
+        raf = requestAnimationFrame(() => {
+          raf = 0;
+          const sheet = (document.elementFromPoint(x, y) as HTMLElement | null)?.closest<HTMLElement>("[data-sheet]");
+          if (coordRef.current) {
+            if (sheet) {
+              const r = sheet.getBoundingClientRect();
+              const col = Math.min(8, Math.max(1, Math.ceil(((x - r.left) / r.width) * 8)));
+              const row = "ABCDEF"[Math.min(5, Math.max(0, Math.floor(((y - r.top) / r.height) * 6)))];
+              coordRef.current.textContent = `Sheet ${Number(sheet.dataset.sheet) + 1}, zone ${row}${col}`;
+            } else coordRef.current.textContent = "Off sheet";
+          }
+          if (tiltRef.current && !reduce) {
+            const nx = x / innerWidth - 0.5;
+            const ny = y / innerHeight - 0.5;
+            tiltRef.current.style.transform = `perspective(1400px) rotateX(${(-ny * 6).toFixed(2)}deg) rotateY(${(nx * 9).toFixed(2)}deg)`;
+          }
+        });
       };
-      let moveRaf = 0;
       addEventListener("pointermove", onMove, { passive: true });
-      cleanups.push(() => removeEventListener("pointermove", onMove));
+      addEventListener("scroll", onScrollReadout, { passive: true });
+      cleanups.push(() => {
+        removeEventListener("pointermove", onMove);
+        removeEventListener("scroll", onScrollReadout);
+      });
 
       if (fine && !reduce) {
-        // ---- selection HUD that snaps to [data-hud] elements
+        // redline measurement that snaps to whatever [data-hud] element is under the cursor
         const box = boxRef.current!;
         let cur: HTMLElement | null = null;
+        const mm = (px: number) => Math.round(px * 0.2646);
         const place = (animate: boolean) => {
           if (!cur) return;
           const r = cur.getBoundingClientRect();
+          if (tagRef.current) tagRef.current.textContent = `${cur.dataset.hud || "ITEM"}  ${mm(r.width)} × ${mm(r.height)} mm`;
           gsap.to(box, { x: r.left - 6, y: r.top - 6, width: r.width + 12, height: r.height + 12, duration: animate ? 0.35 : 0, ease: "power3.out", overwrite: "auto" });
         };
         const over = (e: PointerEvent) => {
           const el = (e.target as HTMLElement).closest?.("[data-hud]") as HTMLElement | null;
           if (el && el !== cur) {
             cur = el;
-            if (tagRef.current) tagRef.current.textContent = el.dataset.hud || "ITEM";
             gsap.to(box, { opacity: 1, duration: 0.2 });
             place(true);
           }
         };
         const out = (e: PointerEvent) => {
-          const to = (e.relatedTarget as HTMLElement | null)?.closest?.("[data-hud]");
-          if (!to) {
+          if (!(e.relatedTarget as HTMLElement | null)?.closest?.("[data-hud]")) {
             cur = null;
             gsap.to(box, { opacity: 0, duration: 0.2 });
           }
@@ -292,280 +390,276 @@ export default function Site({ data }: { data: SiteData }) {
       setCopied(true);
       setTimeout(() => setCopied(false), 1800);
     });
-
-  const label = SECTIONS[active][1];
+  const signOff = () => {
+    const who = signer.trim() || "a visitor";
+    location.href = `mailto:${data.email}?subject=${encodeURIComponent(`Signed off by ${who}`)}&body=${encodeURIComponent(`Hi Adhyan,\n\nI went through the drawing set and wanted to get in touch.\n\n${who}`)}`;
+  };
+  const statusTone = (s: string) => (/winner|finalist/i.test(s) ? "award" : "markup");
 
   return (
     <div ref={root} data-building="">
-      {/* build: blank page the agents scan before they start drawing */}
+      {/* build: a blank sheet the agents scan before they start drafting */}
       <div id="build" ref={overlayRef} aria-hidden className="fixed inset-0 z-[85] grid place-items-center bg-bg">
-        <span className="mono grid size-9 place-items-center rounded-md border border-white/15 bg-white/[.04] text-[10px] text-white/40">AJ</span>
+        <span className="stencil grid size-10 place-items-center border border-line-strong text-sm text-muted">AJ</span>
       </div>
-      <div id="build-status" ref={statusRef} role="status" className="mono fixed bottom-5 left-1/2 z-[95] flex -translate-x-1/2 items-center gap-3 whitespace-nowrap border border-line bg-bg/80 px-3 py-2 text-[10px] uppercase tracking-[.14em] text-muted backdrop-blur">
-        <span aria-hidden className="hidden gap-1 sm:flex">
-          {["bg-accent", "bg-hud", "bg-[#ffd2b8]", "bg-[#b9c6ff]", "bg-[#9ff0d4]"].map((c) => (
-            <i key={c} className={`size-1.5 rounded-full ${c}`} />
-          ))}
-        </span>
-        <span data-status-text>Scanning page…</span>
-        <span aria-hidden className="relative h-[3px] w-12 bg-white/10 md:w-28">
+      <div id="build-status" ref={statusRef} role="status" className="fixed bottom-5 left-1/2 z-[95] flex -translate-x-1/2 items-center gap-3 whitespace-nowrap border border-line-strong bg-bg/90 px-3 py-2 text-[11px] text-muted backdrop-blur">
+        <span className="tab" data-status-text>Plotting sheet 1…</span>
+        <span aria-hidden className="relative h-[3px] w-12 bg-line md:w-28">
           <i data-status-bar className="absolute inset-0 origin-left scale-x-0 bg-hud" />
         </span>
-        <button data-skip type="button" className="text-text/70 transition-colors hover:text-accent">Skip ↵</button>
+        <button data-skip type="button" className="text-text transition-colors hover:text-hud">Skip the plot</button>
       </div>
       <noscript>
         <style>{`#build,#build-status{display:none}[data-building] [data-build]{opacity:1}`}</style>
       </noscript>
 
-      {/* fixed layers */}
-      <div ref={bgRef} aria-hidden className="fixed inset-0 z-0 bg-[radial-gradient(60%_50%_at_70%_20%,rgba(255,74,28,.12),transparent),radial-gradient(40%_40%_at_10%_90%,rgba(90,215,255,.06),transparent)]">
-        {webgl && <Scene />}
-      </div>
-      <div data-bar aria-hidden className="fixed left-0 top-0 z-[70] h-[2px] w-full origin-left scale-x-0 bg-accent" />
-
+      <div data-bar aria-hidden className="fixed left-0 top-0 z-[70] h-[2px] w-full origin-left scale-x-0 bg-hud" />
       <div ref={boxesRef} aria-hidden className="pointer-events-none fixed inset-0 z-[5]" />
 
-      <header data-build-bg="HEADER" className="fixed inset-x-0 top-0 z-50 flex items-center justify-between bg-gradient-to-b from-bg via-bg/70 to-transparent px-5 pb-8 pt-4 md:px-12">
-        <button onClick={() => go("top")} aria-label="Back to top" data-hud="HOME" data-build="LOGO" className="display grid size-9 place-items-center bg-accent text-lg text-bg">
-          AJ
-        </button>
-        <nav aria-label="Primary" data-build="NAV" className="mono hidden gap-8 text-[11px] uppercase tracking-[.18em] text-muted md:flex">
-          {SECTIONS.slice(1).map(([id, l]) => (
-            <a
-              key={id}
-              href={`#${id}`}
-              onClick={(e) => {
-                e.preventDefault();
-                go(id);
-              }}
-              className="transition-colors hover:text-text"
-            >
-              {l}
-            </a>
-          ))}
-        </nav>
-        <span data-build="CLOCK" className="mono text-[11px] uppercase tracking-[.14em] text-muted">
-          <span className="mr-2 inline-block size-1.5 animate-pulse rounded-full bg-accent" />
-          Vellore · {clock || "--:--"} IST
-        </span>
+      {/* title strip */}
+      <header data-build-bg="TITLE STRIP" className="fixed inset-x-0 top-0 z-50 border-b border-line bg-bg/85 backdrop-blur">
+        <div className="mx-auto flex max-w-[1500px] items-center justify-between gap-4 px-5 py-3 md:px-10">
+          <button onClick={() => go("top")} aria-label="Back to the first sheet" data-hud="MARK" data-build="MARK" className="stencil grid size-9 place-items-center border border-line-strong text-lg">AJ</button>
+          <nav aria-label="Sheets" data-build="SHEET INDEX" className="hidden items-center gap-6 text-[13px] text-muted lg:flex">
+            {SHEETS.map(([id, t], i) => (
+              <a key={id} href={`#${id}`} onClick={(e) => { e.preventDefault(); go(id); }} aria-current={active === i ? "true" : undefined} className={`transition-colors hover:text-text ${active === i ? "text-text" : ""}`}>
+                <span className="tab mr-1.5 text-[11px] text-muted">{i + 1}</span>{t}
+              </a>
+            ))}
+          </nav>
+          <div data-build="READOUT" className="flex items-center gap-4 text-[12px] text-muted">
+            <span ref={coordRef} aria-hidden className="tab hidden md:inline">Off sheet</span>
+            <button type="button" onClick={() => setPrint((p) => (p === "cyanotype" ? "diazo" : "cyanotype"))} className="border border-line-strong px-2.5 py-1 text-text transition-colors hover:border-hud" aria-label={`Switch to the ${print === "cyanotype" ? "diazo (light)" : "cyanotype (dark)"} print`}>
+              Print: {print === "cyanotype" ? "cyanotype" : "diazo"}
+            </button>
+          </div>
+        </div>
       </header>
 
       <main className="relative z-10">
-        {/* HERO */}
-        <section id="top" className="relative flex min-h-screen items-center px-5 pb-40 pt-28 md:px-12">
-          <div className="mx-auto grid w-full max-w-[1400px] items-center gap-12 lg:grid-cols-12">
-            <div data-build-bg="HERO" className="lg:col-span-8">
-              <p data-build="GREETING" data-fx="type" className="font-script relative z-10 mb-3 -rotate-3 text-4xl text-text md:text-5xl">Hello, I&apos;m</p>
-              <h1 ref={titleRef} aria-label={data.name} data-build="HEADLINE" data-fx="wipe" className="display relative mt-2 text-[clamp(4.5rem,16vw,16rem)] leading-[.86]">
-                <span aria-hidden className="outline-text block">
-                  {first}
-                  <br />
-                  {rest.join(" ")}
-                </span>
-                <span aria-hidden className="fill-text">
-                  {first}
-                  <br />
-                  {rest.join(" ")}
-                </span>
-              </h1>
-              <p data-build="ROLE" data-fx="tag" className="display mt-6 inline-block bg-accent px-4 py-1 text-2xl text-bg md:text-3xl">
-                {tagRole}
-              </p>
-              <p data-build="TAGLINE" data-fx="type" className="mt-6 max-w-xl text-lg leading-relaxed text-muted">{tagRest}.</p>
-              <div data-build="ACTIONS" className="mt-8 flex flex-wrap gap-3">
-                <a href="#projects" onClick={(e) => { e.preventDefault(); go("projects"); }} data-hud="WORK" className="mono bg-accent px-6 py-3 text-xs font-semibold uppercase tracking-[.16em] text-bg transition-transform hover:-translate-y-0.5">
-                  See the work →
-                </a>
-                {data.resume && (
-                  <a href={data.resume} target="_blank" rel="noreferrer" data-hud="RESUME" className="mono border border-line px-6 py-3 text-xs uppercase tracking-[.16em] transition-colors hover:border-accent hover:text-accent">
-                    Resume
-                  </a>
-                )}
+        {/* SHEET 1: general arrangement */}
+        <section id="top" data-sheet={0} className="flex min-h-screen items-center px-5 pb-16 pt-24 md:px-14">
+          <div className="sheet mx-auto w-full max-w-[1360px] px-5 pb-6 pt-10 md:px-12 md:pt-12">
+            <Zones />
+            <div className="grid items-center gap-10 lg:grid-cols-12">
+              <div data-build-bg="ELEVATION" className="lg:col-span-6">
+                <h1 data-build="NAME" data-fx="wipe" aria-label={data.name} className="stencil text-[clamp(4.6rem,13vw,10.5rem)]">
+                  <span aria-hidden className="block">{first}</span>
+                  <span aria-hidden className="block">{rest.join(" ")}</span>
+                </h1>
+                <div data-build="DIMENSIONS" className="mt-5 max-w-[520px] space-y-3">
+                  <p className="dim dim-ends"><span className="tab">{degreeLine}</span></p>
+                  <p className="dim dim-ends"><span className="tab">{internships} internships, {projects.length} projects, {data.hackathons.length} hackathon results</span></p>
+                </div>
+                <p data-build="ROLE" data-fx="type" className="mt-8 text-2xl md:text-3xl">{tagRole}</p>
+                <p data-build="TAGLINE" data-fx="type" className="measure mt-3 text-lg leading-relaxed text-muted">{tagRest}.</p>
+                <div data-build="ACTIONS" className="mt-8 flex flex-wrap gap-3">
+                  <button onClick={() => go("drawings")} data-hud="DRAWINGS" className="bg-text px-5 py-3 text-sm font-medium text-bg transition-transform hover:-translate-y-0.5">
+                    See the drawings
+                  </button>
+                  {data.resume && (
+                    <a href={data.resume} target="_blank" rel="noreferrer" data-hud="RESUME" className="border border-line-strong px-5 py-3 text-sm transition-colors hover:border-hud">
+                      Résumé
+                    </a>
+                  )}
+                </div>
+              </div>
+              <div data-build-bg="ISOMETRIC" className="lg:col-span-6">
+                <div data-build="ISOMETRIC" data-fx="plot" data-late className="relative">
+                  <div ref={tiltRef} className="axo-tilt">
+                    <div className="hidden md:block"><Axo labels hot={hot} onHot={setHot} /></div>
+                    <div className="md:hidden"><Axo labels={false} hot={hot} onHot={setHot} /></div>
+                  </div>
+                  <ol className="mt-4 space-y-2 text-sm md:hidden">
+                    {LAYERS.map(([n, t], i) => (
+                      <li key={n} className="flex gap-3"><span className="tab text-muted">{i + 1}</span><span>{n}<span className="block text-muted">{t}</span></span></li>
+                    ))}
+                  </ol>
+                  <p className="casual mt-3 text-sm text-accent md:absolute md:bottom-2 md:right-2 md:mt-0" aria-live="polite">
+                    {hot >= 0 ? `Used by ${LAYERS[hot][2]}` : "Hover a plate to see which projects sit on it"}
+                  </p>
+                </div>
               </div>
             </div>
-
-            <div data-build-bg="MEDIA" className="lg:col-span-4">
-              <div data-hud="PORTRAIT" data-build="PORTRAIT" data-fx="pixel" data-late className="portrait mx-auto aspect-[4/5] w-full max-w-sm">
-                <span className="mono-text" role="img" aria-label={`${data.name} monogram`}>{first[0]}{rest[0]?.[0]}</span>
-                {[0, 1, 2].map((i) => (
-                  <span key={i} className="slice" aria-hidden>{first[0]}{rest[0]?.[0]}</span>
-                ))}
-                <span className="mono absolute bottom-3 left-3 z-10 bg-bg px-2 py-1 text-[10px] uppercase tracking-[.16em] text-accent">● {data.location.split(",")[0]}</span>
-              </div>
-              <div data-build="STATS" data-late className="mx-auto mt-4 grid max-w-sm grid-cols-3 gap-2">
-                {[
-                  [data.projects.length, "Projects"],
-                  [data.work.length, "Roles"],
-                  [data.hackathons.length, "Hackathons"],
-                ].map(([n, l]) => (
-                  <div key={l} data-hud={String(l).toUpperCase()} className="card px-3 py-3 text-center">
-                    <p className="display text-3xl text-accent">{n}</p>
-                    <p className="mono mt-1 text-[10px] uppercase tracking-[.14em] text-muted">{l}</p>
-                  </div>
-                ))}
-              </div>
+            <div className="mt-10">
+              <TitleBlock n={0} rev={latestRev} print={print} build extra={["Location", data.location.split(",")[0]]} />
             </div>
           </div>
         </section>
 
-        {/* ABOUT */}
-        <section id="about" className="px-5 py-28 md:px-12 md:py-40">
-          <div className="mx-auto max-w-[1400px]">
-            <Head n="01" label="About" title="Built end to end." />
-            <div className="grid gap-12 lg:grid-cols-12">
-              <p data-reveal className="text-2xl leading-snug md:text-3xl lg:col-span-7">{data.about.summary}</p>
-              <div className="space-y-3 lg:col-span-5">
-                {data.about.highlights.map((h) => (
-                  <p key={h} data-reveal data-hud="FACT" className="card p-5 text-sm leading-relaxed text-muted">{h}</p>
-                ))}
-              </div>
-            </div>
-            <ol className="mt-16 grid gap-px border border-line bg-line md:grid-cols-2">
-              {data.about.whatIDo.map((w, i) => (
-                <li key={w} data-reveal className="flex gap-5 bg-bg/90 p-6">
-                  <span className="mono text-xs text-accent">0{i + 1}</span>
-                  <span className="text-muted">{w}</span>
+        {/* SHEET 2: general notes */}
+        <Sheet n={1} rev={latestRev} print={print}>
+          <div className="grid gap-12 lg:grid-cols-12">
+            <ol className="space-y-8 lg:col-span-7">
+              {[data.about.summary, ...data.about.whatIDo].map((note, i) => (
+                <li key={note} data-reveal data-hud={`NOTE ${i + 1}`} className="grid grid-cols-[2.5rem_1fr] gap-2">
+                  <span className="tab pt-1 text-muted">{i + 1}.</span>
+                  <p className={i === 0 ? "measure text-xl leading-relaxed md:text-2xl" : "measure leading-relaxed text-muted"}>{note}</p>
                 </li>
               ))}
             </ol>
-            <div className="mt-16 overflow-hidden border-y border-line py-5" aria-hidden>
-              <div className="marquee-track display flex w-max gap-12 text-4xl text-text/80 md:text-6xl">
-                {[...data.about.favorites, ...data.about.favorites].map((f, i) => (
-                  <span key={i} className={i % 2 ? "outline-text" : ""}>{f} <span className="text-accent">/</span></span>
-                ))}
-              </div>
+            <div className="space-y-4 lg:col-span-5">
+              {data.about.highlights.map((h) => (
+                <p key={h} data-reveal data-hud="SPEC" className="border border-line-strong p-5 text-sm leading-relaxed">{h}</p>
+              ))}
+              <p data-reveal className="casual pt-4 text-lg leading-snug text-accent">
+                <span aria-hidden className="mr-2">↳</span>{data.about.beyond}
+              </p>
             </div>
-            <p className="mono mt-8 text-sm text-muted"><span className="text-accent">&gt;</span> {data.about.beyond}<span className="ml-1 animate-pulse text-accent">_</span></p>
           </div>
-        </section>
+        </Sheet>
 
-        {/* WORK */}
-        <section id="work" className="px-5 py-28 md:px-12 md:py-40">
-          <div className="mx-auto max-w-[1400px]">
-            <Head n="02" label="Work" title="Where I've shipped." />
-            <div className="space-y-4">
-              {data.work.map((w) => (
-                <article key={w.company} data-reveal data-hud={w.company.toUpperCase()} className="card grid gap-6 p-6 md:grid-cols-12 md:p-8">
-                  <div className="md:col-span-4">
-                    <div className="flex items-center gap-3">
-                      {w.logo && <img src={w.logo} alt="" className="size-9 rounded bg-white/90 object-contain p-1" />}
-                      <h3 className="display text-3xl">{w.company}</h3>
-                    </div>
-                    <p className="mt-3 text-text">{w.title}</p>
-                    <p className="mono mt-1 text-xs text-muted">{w.start} — {w.end} · {w.location}</p>
+        {/* SHEET 3: detail drawings, in rank order */}
+        <Sheet n={2} rev={latestRev} print={print}>
+          <div className="grid gap-6 lg:grid-cols-2">
+            {projects.map((p, i) => {
+              const award = awardFor(p);
+              return (
+                <button key={p.title} onClick={() => openProject(i)} data-reveal data-hud={dwg(i)} className="group flex flex-col border border-line-strong bg-bg/60 text-left transition-colors hover:border-hud">
+                  <div className="flex items-center justify-between border-b border-line px-4 py-2.5 text-[12px] text-muted">
+                    <span className="tab">{dwg(i)}</span>
+                    <span className="stamp" data-tone={statusTone(p.status)}>{p.status}</span>
                   </div>
-                  <p className="whitespace-pre-line text-sm leading-relaxed text-muted md:col-span-8">{w.description}</p>
-                </article>
-              ))}
-            </div>
-            <div className="mt-4 grid gap-4 md:grid-cols-3">
-              {data.education.map((e) => (
-                <div key={e.school} data-reveal data-hud="EDUCATION" className="card p-6">
-                  <p className="label mb-3">Education</p>
-                  <p className="text-lg">{e.school}</p>
-                  <p className="mt-1 text-sm text-muted">{e.degree}</p>
-                  <p className="mono mt-3 text-xs text-muted">{e.start} — {e.end}</p>
-                </div>
-              ))}
-              {data.hackathons.map((h) => (
-                <div key={h.title} data-reveal data-hud="HACKATHON" className="card p-6">
-                  <p className="label mb-3">{h.dates}</p>
-                  <p className="text-lg">{h.title}</p>
-                  <p className="mt-1 text-sm text-muted">{h.location}</p>
-                  <p className="mt-3 text-sm text-muted">{h.description}</p>
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        {/* PROJECTS */}
-        <section id="projects" className="px-5 py-28 md:px-12 md:py-40">
-          <div className="mx-auto max-w-[1400px]">
-            <Head n="03" label="Projects" title="Selected work." />
-
-            <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
-              {data.projects.map((p, i) => {
-                const award = awardFor(p);
-                return (
-                  <button key={p.title} onClick={() => setOpen(p)} data-reveal data-hud={p.title.toUpperCase()} className="plate card relative flex flex-col overflow-hidden text-left">
-                    <div className="relative aspect-[16/10] overflow-hidden">
-                      {p.image ? (
-                        <img src={p.image} alt={`${p.title} screenshot`} className="size-full object-cover object-top" />
-                      ) : (
-                        <div aria-hidden className="plate-blank grid size-full place-items-center p-6 text-center">
-                          <span className="display outline-text text-[clamp(3rem,7vw,5.5rem)] leading-none">{p.title}</span>
+                  <div className={`relative aspect-[16/9] ${p.image ? "cyano" : "blank-plate grid place-items-center p-6"}`}>
+                    {p.image ? (
+                      <img src={p.image} alt={`${p.title} screenshot`} className="size-full object-cover object-top" />
+                    ) : (
+                      <span aria-hidden className="stencil text-center text-[clamp(2.6rem,6vw,4.4rem)] text-muted">{p.title}</span>
+                    )}
+                  </div>
+                  <div className="flex flex-1 flex-col p-5">
+                    {award && <p className="mb-1 text-sm text-hud">{award.title}</p>}
+                    <h3 className="stencil text-[2.1rem]">{p.title}</h3>
+                    <p className="mt-2 line-clamp-3 text-[15px] leading-relaxed text-muted">{p.description}</p>
+                    <dl className="mt-4 space-y-1.5 text-[13px]">
+                      {p.specs.map((s) => (
+                        <div key={s.label} className="flex items-baseline gap-2">
+                          <dt className="text-muted">{s.label}</dt>
+                          <span aria-hidden className="mb-1 flex-1 border-b border-dotted border-line-strong" />
+                          <dd className="tab text-right">{s.value}</dd>
                         </div>
-                      )}
-                      <span className="mono absolute left-3 top-3 bg-bg/85 px-2 py-1 text-[10px] tracking-[.16em] text-accent">{String(i + 1).padStart(2, "0")}</span>
-                    </div>
-                    <div className="flex flex-1 flex-col p-5">
-                      {award && <p className="label mb-2">{award.title}</p>}
-                      <h3 className="display text-3xl">{p.title}</h3>
-                      <p className="mt-2 line-clamp-3 text-sm text-muted">{p.description}</p>
-                      <div className="mt-auto flex flex-wrap gap-1.5 pt-4">{p.tech.slice(0, 4).map((t) => <span key={t} className="chip">{t}</span>)}</div>
-                    </div>
-                  </button>
-                );
-              })}
-            </div>
+                      ))}
+                    </dl>
+                    <div className="mt-auto flex flex-wrap gap-1.5 pt-5">{p.tech.slice(0, 5).map((t) => <span key={t} className="chip">{t}</span>)}</div>
+                  </div>
+                </button>
+              );
+            })}
           </div>
-        </section>
+        </Sheet>
 
-        {/* SKILLS */}
-        <section id="skills" className="px-5 py-28 md:px-12 md:py-40">
-          <div className="mx-auto max-w-[1400px]">
-            <Head n="04" label="Skills" title="The toolkit." />
-            <div className="grid gap-px border border-line bg-line md:grid-cols-2 xl:grid-cols-3">
-              {data.skills.map((g) => (
-                <div key={g.title} data-reveal data-hud={g.title.toUpperCase()} className="bg-bg/90 p-6">
-                  <p className="label mb-5">{g.title}</p>
-                  <div className="flex flex-wrap gap-2">{g.items.map((s) => <span key={s} className="chip text-xs">{s}</span>)}</div>
+        {/* SHEET 4: revision history */}
+        <Sheet n={3} rev={latestRev} print={print}>
+          <div className="border-t border-line-strong">
+            <div className="hidden grid-cols-[4rem_10rem_1fr_7rem] gap-6 border-b border-line-strong px-3 py-2.5 text-[12px] text-muted md:grid">
+              <span>Rev</span><span>Date</span><span>Change</span><span className="text-right">Type</span>
+            </div>
+            {revisions.map((r) => (
+              <article key={r.rev} data-reveal data-hud={`REV ${r.rev}`} className="grid gap-2 border-b border-line px-3 py-6 md:grid-cols-[4rem_10rem_1fr_7rem] md:gap-6">
+                <span className="stencil text-3xl">{r.rev}</span>
+                <span className="tab pt-1 text-sm text-muted">{r.date}</span>
+                <div>
+                  <h3 className="text-lg">{r.title}</h3>
+                  <p className="text-sm text-muted">{r.org}</p>
+                  {r.body && <p className="measure mt-3 text-[15px] leading-relaxed text-muted">{r.body}</p>}
                 </div>
-              ))}
-            </div>
+                <span className="md:text-right">{r.award ? <span className="stamp" data-tone="award">Approved</span> : <span className="text-sm text-muted">{r.kind}</span>}</span>
+              </article>
+            ))}
           </div>
-        </section>
+        </Sheet>
 
-        {/* CONTACT */}
-        <section id="contact" className="flex min-h-screen flex-col justify-center px-5 py-32 md:px-12">
-          <div className="mx-auto w-full max-w-[1400px]">
-            <p className="label mb-6" data-reveal>{"//"}05 Contact</p>
-            <h2 data-reveal className="display outline-text text-[clamp(4rem,15vw,14rem)]">
-              Let&apos;s build<br />something.
-            </h2>
-            <div data-reveal className="mt-12 flex flex-wrap items-center gap-3">
-              <button onClick={copy} data-hud="EMAIL" className="mono bg-accent px-6 py-3 text-xs font-semibold uppercase tracking-[.16em] text-bg">
-                {copied ? "Copied ✓" : data.email}
-              </button>
-              {data.linkedin && <a href={data.linkedin} target="_blank" rel="noreferrer" data-hud="LINKEDIN" className="mono border border-line px-6 py-3 text-xs uppercase tracking-[.16em] hover:border-accent hover:text-accent">LinkedIn</a>}
-              {data.github && <a href={data.github} target="_blank" rel="noreferrer" data-hud="GITHUB" className="mono border border-line px-6 py-3 text-xs uppercase tracking-[.16em] hover:border-accent hover:text-accent">GitHub</a>}
-            </div>
-            <p className="mono mt-24 text-[11px] uppercase tracking-[.16em] text-muted">© {new Date().getFullYear()} {data.name} · {data.location}</p>
+        {/* SHEET 5: bill of materials, computed from the drawings */}
+        <Sheet n={4} rev={latestRev} print={print}>
+          <div data-reveal data-hud="PARTS LIST" className="overflow-x-auto">
+            <table className="ledger">
+              <thead>
+                <tr><th className="w-14">Item</th><th>Part</th><th className="w-16">Qty</th><th className="hidden sm:table-cell">Used on</th></tr>
+              </thead>
+              <tbody>
+                {bom.multi.map(([part, on], i) => (
+                  <tr key={part}>
+                    <td className="tab text-muted">{String(i + 1).padStart(2, "0")}</td>
+                    <td>
+                      {part}
+                      {/* on phones the drawing links sit under the part instead of in their own column */}
+                      <span className="mt-2 flex flex-wrap gap-x-3 gap-y-1 sm:hidden">{usedOn(on)}</span>
+                    </td>
+                    <td className="tab">{on.length}</td>
+                    <td className="hidden sm:table-cell"><span className="flex flex-wrap gap-x-3 gap-y-1">{usedOn(on)}</span></td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
-        </section>
+          <div className="mt-12 grid gap-10 lg:grid-cols-2">
+            <div data-reveal data-hud="SINGLE-USE PARTS">
+              <h3 className="mb-4 text-lg">Used on one drawing</h3>
+              <ul className="flex flex-wrap gap-2">
+                {bom.single.map(([part, [j]]) => (
+                  <li key={part}><button type="button" onClick={() => openProject(j)} className="chip hover:border-hud hover:text-text">{part} <span className="opacity-60">{dwg(j)}</span></button></li>
+                ))}
+              </ul>
+            </div>
+            <div data-reveal data-hud="STOCK">
+              <h3 className="mb-4 text-lg">In stock, not on these drawings</h3>
+              <ul className="flex flex-wrap gap-2">{bom.stock.map((s) => <li key={s} className="chip">{s}</li>)}</ul>
+            </div>
+          </div>
+        </Sheet>
+
+        {/* SHEET 6: sign-off */}
+        <Sheet
+          n={5}
+          rev={latestRev}
+          print={print}
+          head={
+            <div data-reveal className="mb-10">
+              <h2 id="signoff-title" className="stencil text-[clamp(3.4rem,11vw,9rem)]">Sign-off</h2>
+            </div>
+          }
+        >
+          <div className="grid gap-10 lg:grid-cols-12">
+            <form data-reveal data-hud="APPROVAL" onSubmit={(e) => { e.preventDefault(); signOff(); }} className="min-w-0 border border-line-strong p-5 lg:col-span-7 md:p-8">
+              <p className="measure text-lg leading-relaxed">If the set looks right to you, sign it off. It opens an email to me with your name on it.</p>
+              <label htmlFor="signer" className="mt-8 block text-sm text-muted">Approved by</label>
+              <input id="signer" value={signer} onChange={(e) => setSigner(e.target.value)} placeholder="Your name" autoComplete="name" className="casual mt-2 w-full border-b border-line-strong bg-transparent py-2 text-3xl outline-none placeholder:text-muted/60 focus:border-hud" />
+              <div className="mt-8 flex flex-wrap gap-3">
+                <button type="submit" className="bg-text px-5 py-3 text-sm font-medium text-bg">Sign and email</button>
+                <button type="button" onClick={copy} className="tab max-w-full break-all border border-line-strong px-5 py-3 text-left text-sm hover:border-hud">{copied ? "Email copied" : data.email}</button>
+              </div>
+            </form>
+            <ul data-reveal className="min-w-0 space-y-3 lg:col-span-5">
+              {[
+                ["LinkedIn", data.linkedin],
+                ["GitHub", data.github],
+                ["Résumé", data.resume],
+              ].filter(([, h]) => h).map(([k, h]) => (
+                <li key={k}>
+                  <a href={h} target="_blank" rel="noreferrer" data-hud={k.toUpperCase()} className="flex items-baseline gap-3 border-b border-line py-3 text-lg hover:text-hud">
+                    {k}
+                    <span aria-hidden className="mb-1 flex-1 border-b border-dotted border-line-strong" />
+                    <span className="tab text-sm text-muted">{h.replace(/^https?:\/\/(www\.)?/, "").split("/")[0]}</span>
+                  </a>
+                </li>
+              ))}
+              <li className="pt-6 text-sm text-muted">© {new Date().getFullYear()} {data.name}, {data.location}</li>
+            </ul>
+          </div>
+        </Sheet>
       </main>
 
-      {/* HUD */}
-      <nav aria-label="Sections" className="hud-idle fixed bottom-5 left-1/2 z-50 flex -translate-x-1/2 gap-2 border border-line bg-bg/70 px-3 py-2.5 backdrop-blur">
-        {SECTIONS.map(([id, l], i) => (
-          <button key={id} onClick={() => go(id)} aria-label={l} aria-current={active === i} className={`h-1.5 transition-all duration-300 ${active === i ? "w-10 bg-accent" : "w-4 bg-white/25 hover:bg-white/60"}`} />
-        ))}
-      </nav>
-      <p aria-hidden data-build="INDEX" data-late className="mono fixed bottom-6 left-5 z-50 hidden text-[11px] uppercase tracking-[.14em] text-hud md:left-12 md:block">
-        {"//"}0{active + 1}.00 SEC_{label} INDEX [0{active + 1}/0{SECTIONS.length}]
-      </p>
-
-      <div ref={boxRef} aria-hidden className="pointer-events-none fixed left-0 top-0 z-[55] border border-hud/70 opacity-0" style={{ width: 0, height: 0 }}>
+      {/* redline measurement that follows the hovered element */}
+      <div ref={boxRef} aria-hidden className="pointer-events-none fixed left-0 top-0 z-[55] border border-accent opacity-0" style={{ width: 0, height: 0 }}>
         {["-left-1 -top-1", "-right-1 -top-1", "-bottom-1 -left-1", "-bottom-1 -right-1"].map((c) => (
-          <i key={c} className={`absolute size-2 border border-hud bg-bg ${c}`} />
+          <i key={c} className={`absolute size-2 border border-accent bg-bg ${c}`} />
         ))}
-        <span ref={tagRef} className="mono absolute -top-6 left-0 bg-hud px-1.5 py-0.5 text-[10px] font-semibold text-bg" />
+        <span ref={tagRef} className="tab absolute -top-6 left-0 whitespace-pre bg-accent px-1.5 py-0.5 text-[10px] font-semibold text-bg" />
       </div>
 
       <div ref={agentsRef} aria-hidden className="pointer-events-none fixed inset-0 z-[90]" />
 
-      {/* project detail */}
+      {/* a project opened as its full drawing */}
       <dialog
         ref={dialogRef}
         onClose={() => setOpen(null)}
@@ -573,23 +667,40 @@ export default function Site({ data }: { data: SiteData }) {
         aria-label={open?.title}
         // Lenis is stopped while the dialog is open and cancels every wheel event; this lets the dialog scroll natively
         data-lenis-prevent
-        className="m-auto max-h-[88vh] overscroll-contain w-[min(920px,92vw)] overflow-auto border border-line bg-surface p-0 text-text"
+        className="m-auto max-h-[88vh] w-[min(980px,94vw)] overflow-auto overscroll-contain border border-line-strong bg-bg p-0 text-text"
       >
         {open && (
           <div>
-            {open.image && <img src={open.image} alt={`${open.title} screenshot`} className="aspect-[16/8] w-full object-cover object-top" />}
+            <div className="flex items-center justify-between border-b border-line px-5 py-3 text-sm text-muted">
+              <span className="tab">{dwg(projects.indexOf(open))}</span>
+              <button onClick={() => dialogRef.current?.close()} className="border border-line-strong px-3 py-1 text-text hover:border-hud">Close</button>
+            </div>
+            {open.image && <img src={open.image} alt={`${open.title} screenshot`} className="aspect-[16/9] w-full object-cover object-top" />}
             <div className="space-y-6 p-6 md:p-10">
-              <div className="flex items-start justify-between gap-6">
-                <h3 className="display text-5xl">{open.title}</h3>
-                <button onClick={() => dialogRef.current?.close()} className="mono border border-line px-3 py-1.5 text-xs uppercase hover:border-accent hover:text-accent">Close ✕</button>
+              <div className="flex flex-wrap items-start justify-between gap-4">
+                <h3 className="stencil text-5xl md:text-6xl">{open.title}</h3>
+                <span className="stamp" data-tone={statusTone(open.status)}>{open.status}</span>
               </div>
-              <p className="leading-relaxed text-muted">{open.description}</p>
-              <div className="flex flex-wrap gap-1.5">{open.tech.map((t) => <span key={t} className="chip">{t}</span>)}</div>
-              <div className="flex flex-wrap gap-3">
-                {open.links.map((l) => (
-                  <a key={l.href} href={l.href} target="_blank" rel="noreferrer" className="mono bg-accent px-5 py-2.5 text-xs font-semibold uppercase tracking-[.14em] text-bg">{l.type} ↗</a>
+              <p className="measure leading-relaxed text-muted">{open.description}</p>
+              <dl className="max-w-xl space-y-2 text-sm">
+                {open.specs.map((s) => (
+                  <div key={s.label} className="flex items-baseline gap-2">
+                    <dt className="text-muted">{s.label}</dt>
+                    <span aria-hidden className="mb-1 flex-1 border-b border-dotted border-line-strong" />
+                    <dd className="tab">{s.value}</dd>
+                  </div>
                 ))}
-              </div>
+              </dl>
+              <div className="flex flex-wrap gap-1.5">{open.tech.map((t) => <span key={t} className="chip">{t}</span>)}</div>
+              {open.links.length > 0 && (
+                <div className="flex flex-wrap gap-3">
+                  {open.links.map((l) => (
+                    <a key={l.href} href={l.href} target="_blank" rel="noreferrer" className="bg-text px-5 py-2.5 text-sm font-medium text-bg">
+                      {l.type === "Source" ? "View source" : "Open website"}
+                    </a>
+                  ))}
+                </div>
+              )}
             </div>
           </div>
         )}

@@ -3,10 +3,10 @@ import Link from "next/link";
 export default function NotFound() {
   return (
     <main className="flex min-h-screen flex-col items-center justify-center gap-6 px-6 text-center">
-      <p className="label">{"//"} 404 signal lost</p>
-      <h1 className="display text-[22vw] text-accent">404</h1>
-      <Link href="/" className="mono border border-line px-5 py-3 text-sm hover:bg-accent hover:text-bg">
-        Back to home
+      <p className="tab text-sm text-muted">No sheet at this address</p>
+      <h1 className="stencil text-[22vw] leading-none text-accent">404</h1>
+      <Link href="/" className="border border-line-strong px-5 py-3 text-sm hover:border-hud">
+        Back to the drawing set
       </Link>
     </main>
   );
