@@ -674,7 +674,7 @@ export function startSwarm(o: SwarmOpts): () => void {
         queue.sort((p, q) => p.getBoundingClientRect().top - q.getBoundingClientRect().top);
         pump();
       },
-      { threshold: 0, rootMargin: "0px 0px -3% 0px" },
+      { threshold: 0, rootMargin: "0px 0px 20% 0px" },
     );
     o.root.querySelectorAll<HTMLElement>("[data-reveal]").forEach((el) => io!.observe(el));
   }
