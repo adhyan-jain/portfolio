@@ -41,6 +41,8 @@ export default function Page() {
         tech: [...p.technologies],
         links: p.links.map((l) => ({ type: l.type, href: l.href })),
         image: p.image || "",
+        status: p.status,
+        specs: p.specs.map((s) => ({ label: s.label, value: s.value })),
       })),
     skills,
     email: DATA.contact.email,

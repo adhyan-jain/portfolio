@@ -250,7 +250,22 @@
         }
       ],
       "image": "/projects/echotales.png",
-      "video": ""
+      "video": "",
+      "status": "Finalist",
+      "specs": [
+        {
+          "label": "Primary volume",
+          "value": "199 chapters"
+        },
+        {
+          "label": "Audiobook spans",
+          "value": "about 21,000"
+        },
+        {
+          "label": "Novels covered",
+          "value": "3"
+        }
+      ]
     },
     {
       "title": "ComputeHive",
@@ -267,7 +282,22 @@
         }
       ],
       "image": "/projects/computehive.png",
-      "video": ""
+      "video": "",
+      "status": "Tested",
+      "specs": [
+        {
+          "label": "Dead-worker requeue",
+          "value": "under 15 s"
+        },
+        {
+          "label": "Chaos run, random kills",
+          "value": "1,000 jobs, 0 lost"
+        },
+        {
+          "label": "Contributor load cap",
+          "value": "90% RAM, CPU, disk"
+        }
+      ]
     },
     {
       "title": "Catalyst (LabTutor)",
@@ -289,7 +319,22 @@
         }
       ],
       "image": "/projects/labtutor.png",
-      "video": ""
+      "video": "",
+      "status": "Deployed",
+      "specs": [
+        {
+          "label": "Verdicts decided by an LLM",
+          "value": "0"
+        },
+        {
+          "label": "Concurrent students",
+          "value": "70"
+        },
+        {
+          "label": "Course",
+          "value": "BACHY105"
+        }
+      ]
     },
     {
       "title": "StoryTrace & SSR-Bench V2",
@@ -311,7 +356,22 @@
         }
       ],
       "image": "/projects/storytrace.png",
-      "video": ""
+      "video": "",
+      "status": "Benchmarked",
+      "specs": [
+        {
+          "label": "Story-blind attacker",
+          "value": "0.000"
+        },
+        {
+          "label": "Replay oracle",
+          "value": "1.000"
+        },
+        {
+          "label": "State store",
+          "value": "ClickHouse + MCP"
+        }
+      ]
     },
     {
       "title": "Shadow-Code",
@@ -333,7 +393,22 @@
         }
       ],
       "image": "/projects/shadow-code.png",
-      "video": ""
+      "video": "",
+      "status": "Winner",
+      "specs": [
+        {
+          "label": "DevSoc participants",
+          "value": "1,200+"
+        },
+        {
+          "label": "Target languages",
+          "value": "Go, Kotlin, TypeScript"
+        },
+        {
+          "label": "Pre-conversion verdict",
+          "value": "Safe, review, risky"
+        }
+      ]
     },
     {
       "title": "METIS-X",
@@ -350,7 +425,22 @@
         }
       ],
       "image": "",
-      "video": ""
+      "video": "",
+      "status": "Measured",
+      "specs": [
+        {
+          "label": "RAM on Zephyr RTOS",
+          "value": "40.2% less"
+        },
+        {
+          "label": "p95 lookup latency",
+          "value": "45.7% lower"
+        },
+        {
+          "label": "Symbols benchmarked",
+          "value": "228k"
+        }
+      ]
     },
     {
       "title": "OS-Tutor",
@@ -367,7 +457,22 @@
         }
       ],
       "image": "/projects/os-tutor.png",
-      "video": ""
+      "video": "",
+      "status": "Research",
+      "specs": [
+        {
+          "label": "Model outputs scored",
+          "value": "1,152"
+        },
+        {
+          "label": "Winner flips from the reference alone",
+          "value": "18.61%"
+        },
+        {
+          "label": "True ranking from exact match",
+          "value": "2.86%"
+        }
+      ]
     },
     {
       "title": "Verity",
@@ -384,7 +489,22 @@
         }
       ],
       "image": "/projects/verity.png",
-      "video": ""
+      "video": "",
+      "status": "Tested",
+      "specs": [
+        {
+          "label": "Detection engines",
+          "value": "3"
+        },
+        {
+          "label": "Services",
+          "value": "4"
+        },
+        {
+          "label": "Tests",
+          "value": "80"
+        }
+      ]
     },
     {
       "title": "Chapter Recruitment Platform",
@@ -401,7 +521,22 @@
         }
       ],
       "image": "/projects/chapter-recruitment-platform.png",
-      "video": ""
+      "video": "",
+      "status": "Shipped",
+      "specs": [
+        {
+          "label": "Applications processed",
+          "value": "1,100+"
+        },
+        {
+          "label": "Domains",
+          "value": "5"
+        },
+        {
+          "label": "Membership growth",
+          "value": "40%"
+        }
+      ]
     },
     {
       "title": "Cryptic Hunt Backend",
@@ -418,7 +553,22 @@
         }
       ],
       "image": "",
-      "video": ""
+      "video": "",
+      "status": "Shipped",
+      "specs": [
+        {
+          "label": "Concurrent users",
+          "value": "600+"
+        },
+        {
+          "label": "API requests",
+          "value": "70,000+"
+        },
+        {
+          "label": "Downtime",
+          "value": "0"
+        }
+      ]
     },
     {
       "title": "Proteus",
@@ -435,7 +585,22 @@
         }
       ],
       "image": "",
-      "video": ""
+      "video": "",
+      "status": "Retracted",
+      "specs": [
+        {
+          "label": "Drift test",
+          "value": "Kolmogorov-Smirnov"
+        },
+        {
+          "label": "Augmentation",
+          "value": "WGAN-GP + MMD gate"
+        },
+        {
+          "label": "Preregistered result",
+          "value": "no gain"
+        }
+      ]
     },
     {
       "title": "FormSpace",
@@ -452,7 +617,22 @@
         }
       ],
       "image": "/projects/formspace.png",
-      "video": ""
+      "video": "",
+      "status": "Shipped",
+      "specs": [
+        {
+          "label": "Question types",
+          "value": "8"
+        },
+        {
+          "label": "Role levels",
+          "value": "6"
+        },
+        {
+          "label": "Branching",
+          "value": "nested AND/OR"
+        }
+      ]
     },
     {
       "title": "Load & Stability Analyzer",
@@ -469,7 +649,22 @@
         }
       ],
       "image": "/projects/load-stability-analyzer.png",
-      "video": ""
+      "video": "",
+      "status": "Built",
+      "specs": [
+        {
+          "label": "Collapse flag",
+          "value": "errors over 20% or P95 over 5x avg"
+        },
+        {
+          "label": "Ramp-up",
+          "value": "1 worker per second"
+        },
+        {
+          "label": "Stability score inputs",
+          "value": "4"
+        }
+      ]
     },
     {
       "title": "WhatsApp Issue Tracker Bot",
@@ -486,7 +681,22 @@
         }
       ],
       "image": "",
-      "video": ""
+      "video": "",
+      "status": "Retired",
+      "specs": [
+        {
+          "label": "Interface",
+          "value": "WhatsApp group"
+        },
+        {
+          "label": "Admin commands",
+          "value": "owner only"
+        },
+        {
+          "label": "Deploy",
+          "value": "Docker"
+        }
+      ]
     }
   ],
   "hackathons": [
