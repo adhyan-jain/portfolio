@@ -30,8 +30,8 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
-        {/* apply a saved print (theme) before first paint so the diazo print does not flash cyanotype */}
-        <script dangerouslySetInnerHTML={{ __html: `try{if(localStorage.getItem("print")==="diazo")document.documentElement.dataset.theme="diazo"}catch(e){}` }} />
+        {/* apply a saved print (theme) before first paint so the light print does not flash dark */}
+        <script dangerouslySetInnerHTML={{ __html: `try{if(localStorage.getItem("print")==="light")document.documentElement.dataset.theme="light"}catch(e){}` }} />
       </head>
       <body className={cn("min-h-screen antialiased", stencil.variable, recursive.variable)}>
         {children}

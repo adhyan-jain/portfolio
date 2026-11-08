@@ -2,31 +2,34 @@
 
 /* ---------------------------------------------------------------------------
    The Drafting Room: every section is an engineering drawing sheet that the
-   cursor agents draft live. Two prints: cyanotype (default) and diazo (light).
+   cursor agents draft live. Three colours only: pine and bone are the pair the
+   whole page is drawn in, tangerine is reserved for buttons, stamps, the
+   agents' tags and anything that wants attention. Every other tone is mixed
+   from pine and bone. The light print is the same pair swapped.
    --------------------------------------------------------------------------- */
 :root {
-  --paper: #0e2a47;     /* cyanotype paper */
-  --surface: #123559;   /* panel fill, one step up from the paper */
-  --print: #1b4f8a;     /* print blue: zone fills, construction areas */
-  --ink: #e8f0fa;       /* white linework and text */
-  --graphite: #8fb0d2;  /* construction lines, secondary text */
-  --redline: #ff5d4d;   /* markup only: agents, stamps, corrections */
-  --hilite: #f2e14c;    /* approvals and current focus only */
-  --line: rgb(232 240 250 / 0.16);
-  --line-strong: rgb(232 240 250 / 0.42);
+  --pine: #12261f;
+  --bone: #e4ede6;
+  --tangerine: #ff7a45;
+  --paper: var(--pine);
+  --ink: var(--bone);
+  --accent: var(--tangerine);
   color-scheme: dark;
 }
-:root[data-theme="diazo"] {
-  --paper: #f1f4f8;
-  --surface: #e6edf4;
-  --print: #c9d8ea;
-  --ink: #163a66;
-  --graphite: #5a7598;
-  --redline: #d63a2e;
-  --hilite: #c9a50f;
-  --line: rgb(22 58 102 / 0.16);
-  --line-strong: rgb(22 58 102 / 0.45);
+:root[data-theme="light"] {
+  --paper: #e7eee9;
+  --ink: var(--pine);
+  --accent: #e25a26;
   color-scheme: light;
+}
+:root, :root[data-theme="light"] {
+  --surface: color-mix(in oklab, var(--paper) 90%, var(--ink));
+  --print: color-mix(in oklab, var(--paper) 76%, var(--ink));
+  --graphite: color-mix(in oklab, var(--ink) 62%, var(--paper));
+  --redline: var(--accent);
+  --hilite: var(--accent);
+  --line: color-mix(in oklab, var(--ink) 15%, transparent);
+  --line-strong: color-mix(in oklab, var(--ink) 40%, transparent);
 }
 
 @theme inline {
@@ -112,24 +115,18 @@ body::after {
 /* extension ticks at both ends of the dimension */
 .dim-ends { border-inline: 1px solid var(--graphite); padding-inline: 1px; }
 
-/* rubber stamp: redline markup; awards and approvals in highlighter */
+/* rubber stamp in the accent; awards and approvals in bone */
 .stamp { display: inline-block; border: 2px solid currentColor; padding: 3px 9px 2px; color: var(--redline); font-family: var(--font-stencil), sans-serif; font-size: 15px; letter-spacing: .08em; text-transform: uppercase; rotate: -5deg; opacity: .92; mix-blend-mode: normal; }
-.stamp[data-tone="award"] { color: var(--hilite); }
+.stamp[data-tone="award"] { color: var(--ink); }
 
-/* screenshots print as cyanotypes and develop into colour once an agent inks them */
+/* screenshots print tinted to the pine print and develop into colour once an agent inks them */
 .cyano { background: var(--print); overflow: hidden; }
 .cyano img { transition: filter 1.4s cubic-bezier(.2,.8,.2,1), transform .9s cubic-bezier(.2,.8,.2,1); }
-[data-scrollbuild] [data-reveal]:not([data-developed]) .cyano img { filter: grayscale(1) contrast(1.15) brightness(.9) sepia(1) hue-rotate(175deg) saturate(2.6); }
+[data-scrollbuild] [data-reveal]:not([data-developed]) .cyano img { filter: grayscale(1) contrast(1.1) brightness(.85) sepia(1) hue-rotate(95deg) saturate(1.6); }
 .cyano:hover img { transform: scale(1.03); }
 
 /* project with no screenshot: its title lettered on drafting film */
 .blank-plate { background-color: var(--surface); background-image: linear-gradient(var(--line) 1px, transparent 1px), linear-gradient(90deg, var(--line) 1px, transparent 1px); background-size: 24px 24px; }
-
-/* tables: revision history and bill of materials */
-.ledger { width: 100%; border-collapse: collapse; font-size: 14px; }
-.ledger th { text-align: left; font-weight: 500; font-size: 11px; color: var(--graphite); padding: 10px 12px; border-bottom: 1px solid var(--line-strong); }
-.ledger td { padding: 14px 12px; border-bottom: 1px solid var(--line); vertical-align: top; }
-.ledger tr:hover td { background: color-mix(in oklab, var(--print) 22%, transparent); }
 
 .chip { font-size: 12px; padding: 3px 8px; border: 1px solid var(--line-strong); color: var(--graphite); font-variation-settings: "MONO" 1; }
 
@@ -157,8 +154,8 @@ dialog[open] { animation: unroll .45s cubic-bezier(.2,.8,.2,1); }
 .agent[data-look="cross"] .crs { opacity: 1; }
 .agent-tag { position: absolute; left: -6px; top: 11px; padding: 1px 4px; font: 600 9px/1.3 var(--font-rec), sans-serif; font-variation-settings: "MONO" 1; color: var(--paper); background: var(--redline); white-space: nowrap; opacity: 0; transition: opacity .15s; }
 .agent[data-tag] .agent-tag { opacity: 1; }
-/* pale cursors vanish on the white diazo print: letter them in the print's blue instead */
-:root[data-theme="diazo"] .agent { color: var(--ink); }
+/* pale cursors vanish on the light print: letter them in pine instead */
+:root[data-theme="light"] .agent { color: var(--ink); }
 
 /* construction lines the agents pencil in before they box an element */
 .guide { position: absolute; pointer-events: none; opacity: .55; background: repeating-linear-gradient(90deg, var(--graphite) 0 6px, transparent 6px 11px); }

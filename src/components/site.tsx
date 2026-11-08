@@ -32,8 +32,7 @@ const SHEETS: [id: string, title: string][] = [
   ["notes", "General notes"],
   ["drawings", "Detail drawings"],
   ["revisions", "Revision history"],
-  ["parts", "Bill of materials"],
-  ["signoff", "Sign-off"],
+  ["contact", "Contact"],
 ];
 const AGENTS = ["ag-07", "ag-03", "ag-11", "ag-05", "ag-14", "ag-09"];
 const dwg = (i: number) => `DWG-${String(i + 1).padStart(3, "0")}`;
@@ -66,7 +65,7 @@ function TitleBlock({ n, rev, print, extra, build }: { n: number; rev: string; p
     ["Drawn", AGENTS[n]],
     ["Checked", "A. Jain"],
     ["Rev", rev],
-    extra ?? ["Print", print === "diazo" ? "Diazo" : "Cyanotype"],
+    extra ?? ["Print", print === "light" ? "Light" : "Dark"],
   ];
   return (
     <dl {...(build ? { "data-build": "TITLE BLOCK", "data-late": "" } : { "data-reveal": "", "data-hud": "TITLE BLOCK" })} className="tblock ml-auto w-full max-w-[560px]">
@@ -165,8 +164,7 @@ export default function Site({ data }: { data: SiteData }) {
   const [open, setOpen] = useState<Project | null>(null);
   const [copied, setCopied] = useState(false);
   const [hot, setHot] = useState(-1);
-  const [signer, setSigner] = useState("");
-  const [print, setPrint] = useState<"cyanotype" | "diazo">("cyanotype");
+  const [print, setPrint] = useState<"dark" | "light">("dark");
 
   const [first, ...rest] = data.name.toUpperCase().split(" ");
   const [tagRole, tagBody] = data.tagline.split(/ (?=building)/);
@@ -195,16 +193,6 @@ export default function Site({ data }: { data: SiteData }) {
   }, [data]);
   const latestRev = revisions[0]?.rev ?? "A";
 
-  // bill of materials: every tool on a drawing, with how many drawings use it
-  const bom = useMemo(() => {
-    const m = new Map<string, number[]>();
-    projects.forEach((p, i) => p.tech.forEach((t) => m.set(t, [...(m.get(t) ?? []), i])));
-    const rows = [...m.entries()].sort((a, b) => b[1].length - a[1].length || a[0].localeCompare(b[0]));
-    const used = new Set(m.keys());
-    const stock = [...new Set(data.skills.flatMap((g) => g.items))].filter((s) => ![...used].some((u) => u.toLowerCase() === s.toLowerCase()));
-    return { multi: rows.filter(([, v]) => v.length > 1), single: rows.filter(([, v]) => v.length === 1), stock };
-  }, [projects, data.skills]);
-
   const go = (id: string) => {
     const el = document.getElementById(id);
     if (!el) return;
@@ -212,19 +200,15 @@ export default function Site({ data }: { data: SiteData }) {
     else el.scrollIntoView();
   };
   const openProject = (i: number) => setOpen(projects[i]);
-  const usedOn = (on: number[]) =>
-    on.map((j) => (
-      <button key={j} type="button" onClick={() => openProject(j)} className="tab whitespace-nowrap text-[13px] text-muted underline decoration-dotted underline-offset-4 hover:text-hud">{dwg(j)}</button>
-    ));
 
-  // print (theme): cyanotype by default, diazo on request; remembered per browser
+  // print (theme): dark by default, light on request; remembered per browser
   useEffect(() => {
     let saved: string | null = null;
     try {
       saved = localStorage.getItem("print");
     } catch {}
     // eslint-disable-next-line react-hooks/set-state-in-effect -- the saved print is only readable in the browser
-    if (saved === "diazo") setPrint("diazo");
+    if (saved === "light") setPrint("light");
   }, []);
   useEffect(() => {
     document.documentElement.dataset.theme = print;
@@ -390,10 +374,6 @@ export default function Site({ data }: { data: SiteData }) {
       setCopied(true);
       setTimeout(() => setCopied(false), 1800);
     });
-  const signOff = () => {
-    const who = signer.trim() || "a visitor";
-    location.href = `mailto:${data.email}?subject=${encodeURIComponent(`Signed off by ${who}`)}&body=${encodeURIComponent(`Hi Adhyan,\n\nI went through the drawing set and wanted to get in touch.\n\n${who}`)}`;
-  };
   const statusTone = (s: string) => (/winner|finalist/i.test(s) ? "award" : "markup");
 
   return (
@@ -407,7 +387,7 @@ export default function Site({ data }: { data: SiteData }) {
         <span aria-hidden className="relative h-[3px] w-12 bg-line md:w-28">
           <i data-status-bar className="absolute inset-0 origin-left scale-x-0 bg-hud" />
         </span>
-        <button data-skip type="button" className="text-text transition-colors hover:text-hud">Skip the plot</button>
+        <button data-skip type="button" className="text-text transition-colors hover:text-accent">Skip the plot</button>
       </div>
       <noscript>
         <style>{`#build,#build-status{display:none}[data-building] [data-build]{opacity:1}`}</style>
@@ -429,8 +409,8 @@ export default function Site({ data }: { data: SiteData }) {
           </nav>
           <div data-build="READOUT" className="flex items-center gap-4 text-[12px] text-muted">
             <span ref={coordRef} aria-hidden className="tab hidden md:inline">Off sheet</span>
-            <button type="button" onClick={() => setPrint((p) => (p === "cyanotype" ? "diazo" : "cyanotype"))} className="border border-line-strong px-2.5 py-1 text-text transition-colors hover:border-hud" aria-label={`Switch to the ${print === "cyanotype" ? "diazo (light)" : "cyanotype (dark)"} print`}>
-              Print: {print === "cyanotype" ? "cyanotype" : "diazo"}
+            <button type="button" onClick={() => setPrint((p) => (p === "dark" ? "light" : "dark"))} className="border border-line-strong px-2.5 py-1 text-text transition-colors hover:border-accent" aria-label={`Switch to the ${print === "dark" ? "light" : "dark"} print`}>
+              Print: {print}
             </button>
           </div>
         </div>
@@ -454,11 +434,11 @@ export default function Site({ data }: { data: SiteData }) {
                 <p data-build="ROLE" data-fx="type" className="mt-8 text-2xl md:text-3xl">{tagRole}</p>
                 <p data-build="TAGLINE" data-fx="type" className="measure mt-3 text-lg leading-relaxed text-muted">{tagRest}.</p>
                 <div data-build="ACTIONS" className="mt-8 flex flex-wrap gap-3">
-                  <button onClick={() => go("drawings")} data-hud="DRAWINGS" className="bg-text px-5 py-3 text-sm font-medium text-bg transition-transform hover:-translate-y-0.5">
+                  <button onClick={() => go("drawings")} data-hud="DRAWINGS" className="bg-accent px-5 py-3 text-sm font-medium text-bg transition-transform hover:-translate-y-0.5">
                     See the drawings
                   </button>
                   {data.resume && (
-                    <a href={data.resume} target="_blank" rel="noreferrer" data-hud="RESUME" className="border border-line-strong px-5 py-3 text-sm transition-colors hover:border-hud">
+                    <a href={data.resume} target="_blank" rel="noreferrer" data-hud="RESUME" className="border border-line-strong px-5 py-3 text-sm transition-colors hover:border-accent">
                       Résumé
                     </a>
                   )}
@@ -515,7 +495,7 @@ export default function Site({ data }: { data: SiteData }) {
             {projects.map((p, i) => {
               const award = awardFor(p);
               return (
-                <button key={p.title} onClick={() => openProject(i)} data-reveal data-hud={dwg(i)} className="group flex flex-col border border-line-strong bg-bg/60 text-left transition-colors hover:border-hud">
+                <button key={p.title} onClick={() => openProject(i)} data-reveal data-hud={dwg(i)} className="group flex flex-col border border-line-strong bg-bg/60 text-left transition-colors hover:border-accent">
                   <div className="flex items-center justify-between border-b border-line px-4 py-2.5 text-[12px] text-muted">
                     <span className="tab">{dwg(i)}</span>
                     <span className="stamp" data-tone={statusTone(p.status)}>{p.status}</span>
@@ -569,66 +549,16 @@ export default function Site({ data }: { data: SiteData }) {
           </div>
         </Sheet>
 
-        {/* SHEET 5: bill of materials, computed from the drawings */}
+        {/* SHEET 5: contact */}
         <Sheet n={4} rev={latestRev} print={print}>
-          <div data-reveal data-hud="PARTS LIST" className="overflow-x-auto">
-            <table className="ledger">
-              <thead>
-                <tr><th className="w-14">Item</th><th>Part</th><th className="w-16">Qty</th><th className="hidden sm:table-cell">Used on</th></tr>
-              </thead>
-              <tbody>
-                {bom.multi.map(([part, on], i) => (
-                  <tr key={part}>
-                    <td className="tab text-muted">{String(i + 1).padStart(2, "0")}</td>
-                    <td>
-                      {part}
-                      {/* on phones the drawing links sit under the part instead of in their own column */}
-                      <span className="mt-2 flex flex-wrap gap-x-3 gap-y-1 sm:hidden">{usedOn(on)}</span>
-                    </td>
-                    <td className="tab">{on.length}</td>
-                    <td className="hidden sm:table-cell"><span className="flex flex-wrap gap-x-3 gap-y-1">{usedOn(on)}</span></td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-          <div className="mt-12 grid gap-10 lg:grid-cols-2">
-            <div data-reveal data-hud="SINGLE-USE PARTS">
-              <h3 className="mb-4 text-lg">Used on one drawing</h3>
-              <ul className="flex flex-wrap gap-2">
-                {bom.single.map(([part, [j]]) => (
-                  <li key={part}><button type="button" onClick={() => openProject(j)} className="chip hover:border-hud hover:text-text">{part} <span className="opacity-60">{dwg(j)}</span></button></li>
-                ))}
-              </ul>
-            </div>
-            <div data-reveal data-hud="STOCK">
-              <h3 className="mb-4 text-lg">In stock, not on these drawings</h3>
-              <ul className="flex flex-wrap gap-2">{bom.stock.map((s) => <li key={s} className="chip">{s}</li>)}</ul>
-            </div>
-          </div>
-        </Sheet>
-
-        {/* SHEET 6: sign-off */}
-        <Sheet
-          n={5}
-          rev={latestRev}
-          print={print}
-          head={
-            <div data-reveal className="mb-10">
-              <h2 id="signoff-title" className="stencil text-[clamp(3.4rem,11vw,9rem)]">Sign-off</h2>
-            </div>
-          }
-        >
           <div className="grid gap-10 lg:grid-cols-12">
-            <form data-reveal data-hud="APPROVAL" onSubmit={(e) => { e.preventDefault(); signOff(); }} className="min-w-0 border border-line-strong p-5 lg:col-span-7 md:p-8">
-              <p className="measure text-lg leading-relaxed">If the set looks right to you, sign it off. It opens an email to me with your name on it.</p>
-              <label htmlFor="signer" className="mt-8 block text-sm text-muted">Approved by</label>
-              <input id="signer" value={signer} onChange={(e) => setSigner(e.target.value)} placeholder="Your name" autoComplete="name" className="casual mt-2 w-full border-b border-line-strong bg-transparent py-2 text-3xl outline-none placeholder:text-muted/60 focus:border-hud" />
+            <div data-reveal data-hud="EMAIL" className="min-w-0 lg:col-span-7">
+              <p className="measure text-xl leading-relaxed md:text-2xl">Email is the quickest way to reach me. I usually reply within a day.</p>
               <div className="mt-8 flex flex-wrap gap-3">
-                <button type="submit" className="bg-text px-5 py-3 text-sm font-medium text-bg">Sign and email</button>
-                <button type="button" onClick={copy} className="tab max-w-full break-all border border-line-strong px-5 py-3 text-left text-sm hover:border-hud">{copied ? "Email copied" : data.email}</button>
+                <a href={`mailto:${data.email}`} className="bg-accent px-5 py-3 text-sm font-medium text-bg transition-transform hover:-translate-y-0.5">Email me</a>
+                <button type="button" onClick={copy} className="tab max-w-full break-all border border-line-strong px-5 py-3 text-left text-sm transition-colors hover:border-accent">{copied ? "Email copied" : data.email}</button>
               </div>
-            </form>
+            </div>
             <ul data-reveal className="min-w-0 space-y-3 lg:col-span-5">
               {[
                 ["LinkedIn", data.linkedin],
@@ -636,7 +566,7 @@ export default function Site({ data }: { data: SiteData }) {
                 ["Résumé", data.resume],
               ].filter(([, h]) => h).map(([k, h]) => (
                 <li key={k}>
-                  <a href={h} target="_blank" rel="noreferrer" data-hud={k.toUpperCase()} className="flex items-baseline gap-3 border-b border-line py-3 text-lg hover:text-hud">
+                  <a href={h} target="_blank" rel="noreferrer" data-hud={k.toUpperCase()} className="flex items-baseline gap-3 border-b border-line py-3 text-lg transition-colors hover:text-accent">
                     {k}
                     <span aria-hidden className="mb-1 flex-1 border-b border-dotted border-line-strong" />
                     <span className="tab text-sm text-muted">{h.replace(/^https?:\/\/(www\.)?/, "").split("/")[0]}</span>
@@ -673,7 +603,7 @@ export default function Site({ data }: { data: SiteData }) {
           <div>
             <div className="flex items-center justify-between border-b border-line px-5 py-3 text-sm text-muted">
               <span className="tab">{dwg(projects.indexOf(open))}</span>
-              <button onClick={() => dialogRef.current?.close()} className="border border-line-strong px-3 py-1 text-text hover:border-hud">Close</button>
+              <button onClick={() => dialogRef.current?.close()} className="border border-line-strong px-3 py-1 text-text hover:border-accent">Close</button>
             </div>
             {open.image && <img src={open.image} alt={`${open.title} screenshot`} className="aspect-[16/9] w-full object-cover object-top" />}
             <div className="space-y-6 p-6 md:p-10">
@@ -695,7 +625,7 @@ export default function Site({ data }: { data: SiteData }) {
               {open.links.length > 0 && (
                 <div className="flex flex-wrap gap-3">
                   {open.links.map((l) => (
-                    <a key={l.href} href={l.href} target="_blank" rel="noreferrer" className="bg-text px-5 py-2.5 text-sm font-medium text-bg">
+                    <a key={l.href} href={l.href} target="_blank" rel="noreferrer" className="bg-accent px-5 py-2.5 text-sm font-medium text-bg">
                       {l.type === "Source" ? "View source" : "Open website"}
                     </a>
                   ))}
