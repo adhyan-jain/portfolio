@@ -10,3 +10,6 @@ next-env.d.ts
 replica/screens/
 .vercel
 .env*
+
+# browser test artifacts (Playwright MCP screenshots and logs)
+.playwright-mcp/
