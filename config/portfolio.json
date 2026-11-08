@@ -1,79 +1,194 @@
 {
   "name": "Adhyan Jain",
   "initials": "AJ",
-  "url": "https://shadow-code-delta.vercel.app",
+  "url": "https://adhyan-jain.vercel.app",
   "location": "Vellore, Tamil Nadu, India",
   "locationLink": "https://www.google.com/maps/place/Vellore",
-  "description": "AI & Full-Stack Engineer building scalable backend systems and LLM-powered products 🚀",
+  "description": "AI & Full-Stack Engineer building distributed backends and LLM-powered products",
   "quote": "Code with purpose, build with passion.",
   "avatarUrl": "https://avatars.githubusercontent.com/u/71976554?v=4",
-
   "about": {
     "highlights": [
-      { "icon": "🎓", "text": "**CSE student @ VIT Vellore** (B.Tech – Computer Science and Engineering, CGPA: 8.83, Aug 2024 – Present)" },
-      { "icon": "💻", "text": "**AI & Full-Stack Engineer** with internship experience across AI automation and frontend engineering" }
+      {
+        "icon": "🎓",
+        "text": "**CSE student at VIT Vellore** (B.Tech in Computer Science and Engineering, CGPA 8.83, Aug 2024 to present)"
+      },
+      {
+        "icon": "💻",
+        "text": "**AI & Full-Stack Engineer** with internships in AI automation and frontend engineering"
+      }
     ],
-    "summary": "I build **end-to-end systems** spanning LLM-powered automation pipelines, distributed backend infrastructure, and full-stack web applications. From serverless AI pipelines on **AWS** to real-time platforms serving thousands of concurrent users, I enjoy solving problems that combine **AI**, **scale**, and **reliability**.",
+    "summary": "I build complete systems: LLM automation pipelines, distributed backends and full-stack web apps. I've shipped serverless AI pipelines on **AWS** and real-time platforms serving thousands of concurrent users, and I like problems where **AI**, **scale** and **reliability** meet.",
     "favoriteTechnologies": ["Go", "Python", "Next.js", "LangChain", "Docker", "PostgreSQL", "AWS", "gRPC"],
-    "whatIDo": [
-      "Build **AI-powered pipelines and agents** with **LangChain**, **LangGraph**, **RAG**, and **MCP**",
-      "Develop **distributed and microservices backends** with **Go**, **gRPC**, and **Redis**",
-      "Ship **full-stack web applications** with **Next.js**, **React**, and **Node.js/Express**",
-      "Work with **databases** like **PostgreSQL**, **MongoDB**, and **Redis** for robust data modeling",
-      "Deploy and manage infrastructure on **AWS (Lambda, S3, EC2)** with **Docker** and **CI/CD**"
-    ],
-    "beyondTech": { "label": "Beyond tech:", "text": "I'm a die-hard web novel fan — Lord of the Mysteries and Reverend Insanity live rent-free in my head." }
+    "whatIDo": ["Build **AI pipelines and agents** with **LangChain**, **LangGraph**, **RAG** and **MCP**", "Write **distributed backends and microservices** in **Go**, with **gRPC** and **Redis**", "Ship **full-stack web apps** with **Next.js**, **React** and **Node.js/Express**", "Model data in **PostgreSQL**, **MongoDB** and **Redis**", "Deploy on **AWS (Lambda, S3, EC2)** with **Docker** and **CI/CD**"],
+    "beyondTech": {
+      "label": "Beyond tech:",
+      "text": "Die-hard web novel fan: Lord of the Mysteries and Reverend Insanity live rent-free in my head."
+    }
   },
-
   "skills": [
-    { "name": "Python", "icon": "python" },
-    { "name": "Go", "icon": "golang" },
-    { "name": "JavaScript/TypeScript", "icon": "typescript" },
-    { "name": "C++", "icon": "cplusplus" },
-    { "name": "Java", "icon": "java" },
-    { "name": "C#/.NET", "icon": "csharp" },
-    { "name": "LangChain", "icon": "langchain" },
-    { "name": "LangGraph", "icon": "" },
-    { "name": "MCP", "icon": "" },
-    { "name": "RAG", "icon": "" },
-    { "name": "Graph RAG", "icon": "" },
-    { "name": "LLM Agents", "icon": "" },
-    { "name": "Ollama", "icon": "ollama" },
-    { "name": "RAGAS", "icon": "" },
-    { "name": "TensorFlow", "icon": "tensorflow" },
-    { "name": "PyTorch", "icon": "pytorch" },
-    { "name": "scikit-learn", "icon": "scikitlearn" },
-    { "name": "Qdrant", "icon": "qdrant" },
-    { "name": "FAISS", "icon": "" },
-    { "name": "Pinecone", "icon": "" },
-    { "name": "React.js", "icon": "react" },
-    { "name": "Next.js", "icon": "nextjs" },
-    { "name": "Node.js", "icon": "nodejs" },
-    { "name": "Express.js", "icon": "express" },
-    { "name": "Flask", "icon": "flask" },
-    { "name": "PostgreSQL", "icon": "postgresql" },
-    { "name": "MongoDB", "icon": "mongodb" },
-    { "name": "Redis", "icon": "redis" },
-    { "name": "Firebase", "icon": "firebase" },
-    { "name": "Docker", "icon": "docker" },
-    { "name": "AWS (Lambda, S3, EC2)", "icon": "" },
-    { "name": "gRPC", "icon": "" },
-    { "name": "GitHub Actions", "icon": "githubactions" },
-    { "name": "CI/CD", "icon": "" }
+    {
+      "name": "Python",
+      "icon": "python"
+    },
+    {
+      "name": "Go",
+      "icon": "golang"
+    },
+    {
+      "name": "JavaScript/TypeScript",
+      "icon": "typescript"
+    },
+    {
+      "name": "C++",
+      "icon": "cplusplus"
+    },
+    {
+      "name": "Java",
+      "icon": "java"
+    },
+    {
+      "name": "C#/.NET",
+      "icon": "csharp"
+    },
+    {
+      "name": "LangChain",
+      "icon": "langchain"
+    },
+    {
+      "name": "LangGraph",
+      "icon": ""
+    },
+    {
+      "name": "MCP",
+      "icon": ""
+    },
+    {
+      "name": "RAG",
+      "icon": ""
+    },
+    {
+      "name": "Graph RAG",
+      "icon": ""
+    },
+    {
+      "name": "LLM Agents",
+      "icon": ""
+    },
+    {
+      "name": "Ollama",
+      "icon": "ollama"
+    },
+    {
+      "name": "RAGAS",
+      "icon": ""
+    },
+    {
+      "name": "TensorFlow",
+      "icon": "tensorflow"
+    },
+    {
+      "name": "PyTorch",
+      "icon": "pytorch"
+    },
+    {
+      "name": "scikit-learn",
+      "icon": "scikitlearn"
+    },
+    {
+      "name": "Qdrant",
+      "icon": "qdrant"
+    },
+    {
+      "name": "FAISS",
+      "icon": ""
+    },
+    {
+      "name": "Pinecone",
+      "icon": ""
+    },
+    {
+      "name": "React.js",
+      "icon": "react"
+    },
+    {
+      "name": "Next.js",
+      "icon": "nextjs"
+    },
+    {
+      "name": "Node.js",
+      "icon": "nodejs"
+    },
+    {
+      "name": "Express.js",
+      "icon": "express"
+    },
+    {
+      "name": "Flask",
+      "icon": "flask"
+    },
+    {
+      "name": "PostgreSQL",
+      "icon": "postgresql"
+    },
+    {
+      "name": "MongoDB",
+      "icon": "mongodb"
+    },
+    {
+      "name": "Redis",
+      "icon": "redis"
+    },
+    {
+      "name": "Firebase",
+      "icon": "firebase"
+    },
+    {
+      "name": "Docker",
+      "icon": "docker"
+    },
+    {
+      "name": "AWS (Lambda, S3, EC2)",
+      "icon": ""
+    },
+    {
+      "name": "gRPC",
+      "icon": ""
+    },
+    {
+      "name": "GitHub Actions",
+      "icon": "githubactions"
+    },
+    {
+      "name": "CI/CD",
+      "icon": ""
+    }
   ],
-
   "contact": {
     "email": "adhyanjain2006@gmail.com",
     "tel": "+91 8766269971",
     "social": {
-      "GitHub": { "name": "GitHub", "url": "https://github.com/adhyan-jain", "icon": "github", "navbar": true },
-      "LinkedIn": { "name": "LinkedIn", "url": "https://www.linkedin.com/in/adhyan-jain-5703411b8/", "icon": "linkedin", "navbar": true },
-      "email": { "name": "Send Email", "url": "mailto:adhyanjain2006@gmail.com", "icon": "email", "navbar": false }
+      "GitHub": {
+        "name": "GitHub",
+        "url": "https://github.com/adhyan-jain",
+        "icon": "github",
+        "navbar": true
+      },
+      "LinkedIn": {
+        "name": "LinkedIn",
+        "url": "https://www.linkedin.com/in/adhyan-jain-5703411b8/",
+        "icon": "linkedin",
+        "navbar": true
+      },
+      "email": {
+        "name": "Send Email",
+        "url": "mailto:adhyanjain2006@gmail.com",
+        "icon": "email",
+        "navbar": false
+      }
     }
   },
-
   "resumeUrl": "https://drive.google.com/file/d/1gnSHifxiO2dZuUMzlOA98T6JHnFi0rDB/view?usp=sharing",
-
   "work": [
     {
       "company": "Palni Pvt Ltd",
@@ -84,7 +199,7 @@
       "logoUrl": "/logos/palni.png",
       "start": "May 2026",
       "end": "Jul 2026",
-      "description": "SmartBots AI Division → Palnies Telecom Automation Team. Architected and deployed Hermes, a serverless email summarization pipeline on AWS Lambda and S3 with custom thread management and LLM-driven analysis. Enhanced an Outlook automation pipeline for telecom Pole Load Analysis with LLM-generated summaries across 160+ geographic areas, role-based notification routing, and S3 data migration. Developed an internal no-code flow builder — a customizable alternative to make.com/n8n — with email OTP auth, JSON/YAML flow export-import, and credential management. Engineered a workflow automation platform with LLM-integrated pipelines for enterprise AI service delivery, implementing cross-application session management with JWT across MACH Tool."
+      "description": "SmartBots AI Division, Palnies Telecom Automation team. Built and deployed Hermes, a serverless email summarization pipeline on AWS Lambda and S3 with its own thread management and LLM analysis. Extended an Outlook automation pipeline for telecom pole-load analysis with LLM summaries across 160+ geographic areas, role-based notification routing and an S3 data migration. Built an internal no-code flow builder, an alternative to make.com and n8n, with email OTP login, JSON/YAML flow import and export, and credential management. Also built a workflow automation platform with LLM pipelines for enterprise AI services, with JWT sessions shared across the applications in MACH Tool."
     },
     {
       "company": "RxGPT",
@@ -95,7 +210,7 @@
       "logoUrl": "/logos/rxgpt.png",
       "start": "Mar 2026",
       "end": "Jun 2026",
-      "description": "Delivered React development across HireX and DigiX, taking ownership of additional pages under deadline pressure to ensure on-time release. Re-architected an internal AI chatbot from static user-guide lookup to live database querying with role-aware data masking — organizations can query applicant pools and filter by criteria, while the LLM enforces field-level authorization, redacting personal details the requesting role is not permitted to access."
+      "description": "React development across HireX and DigiX, including extra pages I took on to keep a release on schedule. Rebuilt an internal AI chatbot to query the live database instead of a static user guide: organizations can search and filter applicant pools, and the model enforces field-level authorization, redacting personal details the requesting role may not see."
     },
     {
       "company": "Association for Computing Machinery (ACM VIT)",
@@ -106,10 +221,9 @@
       "logoUrl": "/logos/acmvit.png",
       "start": "Apr 2025",
       "end": "Present",
-      "description": "Spearheaded backend for Code2Create, a 1,200-participant 36-hour hackathon, owning real-time submission infrastructure end-to-end. Drove technical execution of the Chapter Recruitment Platform — coordinated across a mixed technical/non-technical team and personally authored the majority of server-side logic."
+      "description": "Led the backend for Code2Create, a 36-hour hackathon with 1,200 participants, and owned its real-time submission system. Ran technical execution of the Chapter Recruitment Platform with a mixed technical and non-technical team, and wrote most of its server-side code."
     }
   ],
-
   "education": [
     {
       "school": "Vellore Institute of Technology (VIT)",
@@ -120,33 +234,61 @@
       "end": "Present"
     }
   ],
-
   "projects": [
     {
-      "title": "Chapter Recruitment Platform",
-      "href": "https://explore.acmvit.in/",
+      "title": "EchoTales",
+      "href": "https://github.com/adhyan-jain/EchoTales",
       "dates": "",
       "active": true,
-      "description": "Co-led full-stack development of a multi-domain recruitment system with role-based auth, multi-stage candidate evaluation, and automated interview scheduling across 5 domains. Processed 1,100+ applications end-to-end through a 3-stage pipeline, streamlining chapter intake and increasing membership by 40%.",
-      "technologies": ["Next.js", "Server Actions", "MongoDB"],
+      "description": "Turns a translated web novel into a full-cast audiobook and manga-style panels. Underneath is a bitemporal narrative knowledge graph that tracks every character's aliases, attributes and relationships across a whole volume, so it can say who a name refers to at any point in the story, even when titles change hands, identities are faked and later retracted, or one chapter mixes present action with flashbacks. Voice casting, prosody, reference sheets and panel casting all read from that one query, and decisions it is unsure of go to a review queue whose size is reported as a metric. Built on Reverend Insanity Vol. 1 (199 chapters, about 21,000 audiobook spans), with spot checks on Lord of the Mysteries and Omniscient Reader's Viewpoint. It started as a DevJams finalist project.",
+      "technologies": ["Python", "Knowledge Graphs", "Coreference Resolution", "LLMs", "TTS", "React"],
       "links": [
-        { "type": "Website", "href": "https://explore.acmvit.in/", "icon": "globe" }
+        {
+          "type": "Source",
+          "href": "https://github.com/adhyan-jain/EchoTales",
+          "icon": "github"
+        }
       ],
-      "image": "/projects/chapter-recruitment-platform.png",
+      "image": "/projects/echotales.png",
       "video": ""
     },
     {
-      "title": "Shadow-Code",
-      "href": "https://shadow-code-delta.vercel.app",
+      "title": "ComputeHive",
+      "href": "https://github.com/adhyan-jain/ComputeHive",
       "dates": "",
       "active": true,
-      "description": "Java migration intelligence platform — parses repositories, builds dependency graphs, performs risk analysis, and converts source files to Go, Kotlin, or TypeScript via Gemini AI. Features AST parsing, cycle-detecting dependency graphs, a D3.js force-directed risk map, and side-by-side diffs of original vs. AI-converted code.",
-      "technologies": ["Java", "JavaParser", "Python", "Flask", "Gemini AI", "React", "TypeScript", "Vite", "D3.js", "Tailwind CSS"],
+      "description": "A self-hosted distributed task runner. Point it at a directory and it builds a container image, picks the best available machine, runs the job in a locked-down sandbox and returns the result. Workers can be servers or volunteers' laptops behind NAT, since they pull work over an outbound gRPC connection. The guarantees are tested rather than assumed: an atomic Lua queue in Redis gives each job to exactly one worker, a dead worker's jobs are requeued in under 15 seconds, per-attempt lease tokens stop a presumed-dead worker from committing a stale result, and a 1,000-job run with random worker kills loses nothing and commits nothing twice. A contributor's machine is never pushed past 90% of its RAM, CPU or disk. It ships with a CLI, a Tauri desktop app and Prometheus and Grafana dashboards.",
+      "technologies": ["Go", "gRPC", "Redis", "Docker", "Rust/Tauri", "Prometheus"],
       "links": [
-        { "type": "Website", "href": "https://shadow-code-delta.vercel.app", "icon": "globe" },
-        { "type": "Source", "href": "https://github.com/adhyan-jain/Shadow-Code", "icon": "github" }
+        {
+          "type": "Source",
+          "href": "https://github.com/adhyan-jain/ComputeHive",
+          "icon": "github"
+        }
       ],
-      "image": "/projects/shadow-code.png",
+      "image": "/projects/computehive.png",
+      "video": ""
+    },
+    {
+      "title": "Catalyst (LabTutor)",
+      "href": "https://github.com/adhyan-jain/lab-tutor",
+      "dates": "",
+      "active": true,
+      "description": "A learning-support system for VIT's Applied Chemistry Lab (BACHY105), built alongside a research paper on LLMs in undergraduate chemistry education. It catches mistakes while the student is still doing the experiment instead of days later at grading. No language model decides anything: every pass/fail verdict, expected value and error diagnosis is computed by deterministic Python from the lab manual's formulas, so a demonstrator can reproduce any diagnosis by hand, and models only phrase conclusions already reached. Socratic mode checks each step against the student's own readings with a hint ladder that never names the number, and the final answer is kept out of every model's context by data minimisation rather than by asking a model to keep a secret. It is sized for 70 concurrent students.",
+      "technologies": ["Python", "Next.js", "RAG", "LLM Guardrails", "Deterministic Validation"],
+      "links": [
+        {
+          "type": "Website",
+          "href": "https://catalystchem.vercel.app",
+          "icon": "globe"
+        },
+        {
+          "type": "Source",
+          "href": "https://github.com/adhyan-jain/lab-tutor",
+          "icon": "github"
+        }
+      ],
+      "image": "/projects/labtutor.png",
       "video": ""
     },
     {
@@ -154,91 +296,43 @@
       "href": "https://story-trace-psi.vercel.app",
       "dates": "",
       "active": true,
-      "description": "An agentic narrative continuity engine paired with a research benchmark. The engine turns screenplays and novels into a temporal model of story state in ClickHouse, flags candidate continuity errors with SQL window functions, and verifies them with an investigation agent using ClickHouse MCP tools. SSR-Bench V2 tests how well LLMs revise state after a single pivot event, using leak-free matched story pairs. Story-blind attackers score 0.000 pair-both while the replay oracle scores 1.000.",
+      "description": "An agentic continuity checker for screenplays and novels, paired with a research benchmark. StoryTrace turns documents into a temporal model of story state in ClickHouse (character presence, location, prop possession across every scene), finds suspicious state transitions with SQL window functions, and hands each one to an investigation agent that queries the database through ClickHouse MCP tools and returns a verdict with evidence. Re-uploading a revised draft compares its conflicts against the earlier version. SSR-Bench V2 measures how well LLMs revise story state after a single pivot event, using leak-free matched story pairs: a story-blind attacker scores 0.000 pair-both, while the replay oracle scores 1.000.",
       "technologies": ["Python", "ClickHouse", "MCP", "LLM Agents", "Benchmarking"],
       "links": [
-        { "type": "Website", "href": "https://story-trace-psi.vercel.app", "icon": "globe" },
-        { "type": "Source", "href": "https://github.com/adhyan-jain/StoryTrace", "icon": "github" }
+        {
+          "type": "Website",
+          "href": "https://story-trace-psi.vercel.app",
+          "icon": "globe"
+        },
+        {
+          "type": "Source",
+          "href": "https://github.com/adhyan-jain/StoryTrace",
+          "icon": "github"
+        }
       ],
       "image": "/projects/storytrace.png",
       "video": ""
     },
     {
-      "title": "Verity",
-      "href": "https://github.com/adhyan-jain/Verity",
+      "title": "Shadow-Code",
+      "href": "https://shadow-code-delta.vercel.app",
       "dates": "",
       "active": true,
-      "description": "Built for a hackathon: a financial-crime analyst workspace where card-fraud alerts and ledger account-risk feed a single case queue. Three detection engines (a SHAP-explained fraud model with split-conformal risk intervals, ledger anomaly detection, and FATF typology rules for structuring, round-tripping and rapid layering) sit behind a hand-rolled tool-calling agent with a grounding filter that investigates each case and can be questioned about its own reasoning live. Shared JSON-schema contracts and an 80-test suite keep the four services consistent.",
-      "technologies": ["Python", "FastAPI", "scikit-learn", "SHAP", "TanStack Start", "React"],
+      "description": "Java migration intelligence, built in a four-person team and Track Winner at DevSoc (CodeChef VIT, 1,200+ participants). It parses a Java repository into an AST, builds a dependency graph with cycle detection, and scores every file by complexity, coupling, blast radius and risky patterns on a D3 force-directed risk map. Before converting a file to Go, Kotlin or TypeScript with Gemini, it gives a SAFE, REVIEW or RISKY verdict, then shows the original and converted code side by side.",
+      "technologies": ["Java", "JavaParser", "Python", "Flask", "Gemini AI", "React", "TypeScript", "Vite", "D3.js", "Tailwind CSS"],
       "links": [
-        { "type": "Source", "href": "https://github.com/adhyan-jain/Verity", "icon": "github" }
+        {
+          "type": "Website",
+          "href": "https://shadow-code-delta.vercel.app",
+          "icon": "globe"
+        },
+        {
+          "type": "Source",
+          "href": "https://github.com/adhyan-jain/Shadow-Code",
+          "icon": "github"
+        }
       ],
-      "image": "/projects/verity.png",
-      "video": ""
-    },
-    {
-      "title": "Load & Stability Analyzer",
-      "href": "",
-      "dates": "",
-      "active": true,
-      "description": "Full-stack load testing and API stability analysis tool. Fires concurrent requests at any HTTP endpoint via a Go worker-pool engine with optional ramp-up, then computes a weighted stability score from error rate, P95 latency, and retry amplification, with automatic collapse detection when the system starts to fall over.",
-      "technologies": ["Go", "React", "React Router", "Tailwind CSS", "Vite", "Recharts"],
-      "links": [
-        { "type": "Source", "href": "https://github.com/adhyan-jain/Load-and-Stability-Analyzer", "icon": "github" }
-      ],
-      "image": "/projects/load-stability-analyzer.png",
-      "video": ""
-    },
-    {
-      "title": "FormSpace",
-      "href": "https://form-2025-tarun.vercel.app/",
-      "dates": "",
-      "active": true,
-      "description": "A Google Forms–style platform built for teams, with a visual workflow layer on top. Users compose multi-section forms from eight question types (text, email, URL, date, MCQ, dropdown, linear scale, file upload) via a drag-and-drop canvas, then wire sections into branching paths that route respondents based on nested AND/OR conditions on their answers. Teams organize forms into workspaces with a six-level role hierarchy, email invites, and per-form sharing; responses can be filtered, analyzed, and exported to Excel, with file uploads handled through presigned S3 URLs.",
-      "technologies": ["Next.js 16", "React 19", "TypeScript", "Prisma", "MongoDB", "Better Auth", "Tailwind CSS v4", "dnd-kit", "AWS S3", "Zod"],
-      "links": [
-        { "type": "Website", "href": "https://form-2025-tarun.vercel.app/", "icon": "globe" }
-      ],
-      "image": "/projects/formspace.png",
-      "video": ""
-    },
-    {
-      "title": "Cryptic Hunt Backend",
-      "href": "",
-      "dates": "",
-      "active": true,
-      "description": "Refactored a monolithic legacy codebase into a microservices architecture in Go, enabling the platform to serve 600+ concurrent users across a high-stakes 36-hour live event. Structured a normalized PostgreSQL schema and shipped a real-time admin dashboard for live monitoring, processing 70,000+ API requests with zero downtime under sustained load.",
-      "technologies": ["Go", "PostgreSQL", "Microservices"],
-      "links": [
-        { "type": "Website", "href": "https://play.google.com/store/apps/details?id=com.acmvit.cryptic_hunt", "icon": "globe" }
-      ],
-      "image": "",
-      "video": ""
-    },
-    {
-      "title": "LabTutor",
-      "href": "https://github.com/adhyan-jain/lab-tutor",
-      "dates": "",
-      "active": true,
-      "description": "Built for a research paper on how LLMs can be used in bachelor-level chemistry education, this is a learning-support system for VIT's Applied Chemistry Lab that catches student mistakes while they are still doing the experiment. Built on one rule: no LLM ever decides anything. Every pass/fail verdict and error classification is computed by deterministic Python from the lab manual's formulas, and models only phrase conclusions already reached. A Socratic mode verifies each step against the student's own data and gives graded hints, and an answer gate keeps the final value out of any model's context entirely, so there is nothing to extract.",
-      "technologies": ["Python", "RAG", "LLM Guardrails", "Deterministic Validation"],
-      "links": [
-        { "type": "Source", "href": "https://github.com/adhyan-jain/lab-tutor", "icon": "github" }
-      ],
-      "image": "/projects/labtutor.png",
-      "video": ""
-    },
-    {
-      "title": "ComputeHive",
-      "href": "",
-      "dates": "",
-      "active": true,
-      "description": "A self-hosted distributed task runner — users package workloads as Docker images via a Tauri desktop client, which uploads artifacts and submits jobs to a Go coordinator that schedules execution across registered worker nodes. The coordinator persists job and worker state in Redis with per-worker heartbeat monitoring; failed jobs are automatically requeued within 10–13s, and workers pull jobs via gRPC, execute containers, and stream results back.",
-      "technologies": ["Go", "gRPC", "Docker", "Redis", "Rust/Tauri"],
-      "links": [
-        { "type": "Source", "href": "https://github.com/adhyan-jain/ComputeHive", "icon": "github" }
-      ],
-      "image": "/projects/computehive.png",
+      "image": "/projects/shadow-code.png",
       "video": ""
     },
     {
@@ -246,10 +340,14 @@
       "href": "https://github.com/adhyan-jain/Metis",
       "dates": "",
       "active": true,
-      "description": "A cache-conscious, header-only C++ symbol table for embedded toolchains and language runtimes, with an IEEE-format paper. After finding that prefix compression cut RAM 20% but regressed lookup tail latency 2.4x, I redesigned it around 32-byte cache-line inline slots, Robin Hood hashing and recyclable scope arenas. On Zephyr RTOS's 228k symbols this cuts RAM 40.2% and p95 lookup latency 45.7%, and the ablation shows an 89.1% memory reduction against a heap-allocating baseline.",
+      "description": "A cache-conscious, header-only C++ symbol table for embedded toolchains and language runtimes, written up as an IEEE-format paper. Prefix compression cut RAM by 20% but made p95 lookup latency 2.4x worse, so I redesigned the table around 32-byte cache-line inline slots, Robin Hood hashing and recyclable scope arenas. On Zephyr RTOS's 228k symbols it uses 40.2% less RAM with 45.7% lower p95 lookup latency, and the ablation shows an 89.1% memory reduction against a heap-allocating baseline. A differential fuzzing suite checks it against the earlier implementations.",
       "technologies": ["C++", "Systems Programming", "Benchmarking", "LaTeX"],
       "links": [
-        { "type": "Source", "href": "https://github.com/adhyan-jain/Metis", "icon": "github" }
+        {
+          "type": "Source",
+          "href": "https://github.com/adhyan-jain/Metis",
+          "icon": "github"
+        }
       ],
       "image": "",
       "video": ""
@@ -259,36 +357,118 @@
       "href": "https://github.com/adhyan-jain/OS-Tutor-RAG",
       "dates": "",
       "active": true,
-      "description": "A retrieval-augmented Socratic tutor for operating systems, grounded in lecture decks, OSTEP chapters and lab handouts. It also carries a research project asking whether executable reasoning benchmarks are identifiable when the gold reference is an arbitrary valid solution. Across 1,152 model outputs on 24 OS tasks and 50,000 Monte Carlo draws, changing only the reference flipped pairwise model winners in 18.61% of draws.",
+      "description": "A Socratic tutor for operating systems that answers only from the course's own lecture decks, OSTEP chapters and lab handouts, shows its sources, then asks one short question to check the student understood, at ELI5, undergrad or exam-prep depth. The repo also holds a research project on whether executable reasoning benchmarks are identifiable when the gold reference is one of many valid solutions. Across 1,152 model outputs on 24 OS tasks and 50,000 Monte Carlo draws, changing only the reference flipped pairwise model winners in 18.61% of draws, and exact-match scoring recovered the true model ranking only 2.86% of the time.",
       "technologies": ["Python", "RAG", "LLM Evaluation", "Monte Carlo Simulation"],
       "links": [
-        { "type": "Source", "href": "https://github.com/adhyan-jain/OS-Tutor-RAG", "icon": "github" }
+        {
+          "type": "Source",
+          "href": "https://github.com/adhyan-jain/OS-Tutor-RAG",
+          "icon": "github"
+        }
       ],
       "image": "/projects/os-tutor.png",
       "video": ""
     },
     {
-      "title": "Proteus",
+      "title": "Verity",
+      "href": "https://github.com/adhyan-jain/Verity",
+      "dates": "",
+      "active": true,
+      "description": "A financial-crime analyst workspace built for a hackathon. Card-fraud alerts and ledger account risk feed one case queue, scored by three engines: a fraud model with SHAP explanations and split-conformal risk intervals, ledger anomaly detection, and FATF typology rules for structuring, round-tripping and rapid layering. A hand-rolled tool-calling agent with a grounding filter investigates each case, and the analyst can question it about its own reasoning live. Four services share JSON-schema contracts, kept consistent by an 80-test suite.",
+      "technologies": ["Python", "FastAPI", "scikit-learn", "SHAP", "TanStack Start", "React"],
+      "links": [
+        {
+          "type": "Source",
+          "href": "https://github.com/adhyan-jain/Verity",
+          "icon": "github"
+        }
+      ],
+      "image": "/projects/verity.png",
+      "video": ""
+    },
+    {
+      "title": "Chapter Recruitment Platform",
+      "href": "https://explore.acmvit.in/",
+      "dates": "",
+      "active": true,
+      "description": "ACM-VIT's recruitment system, which I co-led. Applicants move through a 3-stage pipeline across 5 domains, with role-based access, multi-stage candidate evaluation and automatic interview scheduling. It processed 1,100+ applications and increased chapter membership by 40%.",
+      "technologies": ["Next.js", "Server Actions", "MongoDB"],
+      "links": [
+        {
+          "type": "Website",
+          "href": "https://explore.acmvit.in/",
+          "icon": "globe"
+        }
+      ],
+      "image": "/projects/chapter-recruitment-platform.png",
+      "video": ""
+    },
+    {
+      "title": "Cryptic Hunt Backend",
       "href": "",
       "dates": "",
       "active": true,
-      "description": "Drift-aware intrusion detection for software-defined networks. A KS-test drift monitor triggers conditional WGAN-GP augmentation, an MMD fidelity gate filters synthetic samples, and a bounded-memory classifier retrains without memory growth. I then tested whether the augmentation actually helps under a leak-free, preregistered protocol, and it did not in the tested regime. I retracted my earlier headline result and documented the negative finding in a paper.",
-      "technologies": ["Python", "PyTorch", "WGAN-GP", "scikit-learn", "SDN"],
-      "links": [],
+      "description": "The backend for ACM-VIT's Cryptic Hunt, a 36-hour live event played through an Android app. I refactored a monolithic legacy codebase into Go microservices on a normalized PostgreSQL schema and built a real-time admin dashboard for live monitoring. It served 600+ concurrent users and 70,000+ API requests with zero downtime.",
+      "technologies": ["Go", "PostgreSQL", "Microservices"],
+      "links": [
+        {
+          "type": "Website",
+          "href": "https://play.google.com/store/apps/details?id=com.acmvit.cryptic_hunt",
+          "icon": "globe"
+        }
+      ],
       "image": "",
       "video": ""
     },
     {
-      "title": "EchoTales",
+      "title": "Proteus",
+      "href": "https://github.com/adhyan-jain/Proteus",
+      "dates": "",
+      "active": true,
+      "description": "Drift-aware intrusion detection for software-defined networks. A Random Forest scores flows; when a Kolmogorov-Smirnov test flags drift, a conditional WGAN-GP generates samples of the affected classes, an MMD fidelity gate filters them, and a bounded-memory classifier retrains. A daemon packages each candidate as a hashed release, hot-swaps it and rolls back on canary failure, while a Ryu controller feeds live OpenFlow statistics. I then tested whether the augmentation actually helps under a leak-free, preregistered protocol. It did not in the tested regime, so I retracted my earlier headline result and wrote up the negative finding in a paper.",
+      "technologies": ["Python", "PyTorch", "WGAN-GP", "scikit-learn", "SDN", "FastAPI"],
+      "links": [
+        {
+          "type": "Source",
+          "href": "https://github.com/adhyan-jain/Proteus",
+          "icon": "github"
+        }
+      ],
+      "image": "",
+      "video": ""
+    },
+    {
+      "title": "FormSpace",
+      "href": "https://form-2025-tarun.vercel.app/",
+      "dates": "",
+      "active": true,
+      "description": "A Google Forms-style platform for teams, with a visual workflow layer. Forms are built on a drag-and-drop canvas from eight question types, and sections wire into branching paths that route respondents on nested AND/OR conditions over their answers. Workspaces have a six-level role hierarchy, email invites and per-form sharing; responses can be filtered, analysed and exported to Excel, with file uploads through presigned S3 URLs.",
+      "technologies": ["Next.js 16", "React 19", "TypeScript", "Prisma", "MongoDB", "Better Auth", "Tailwind CSS v4", "dnd-kit", "AWS S3", "Zod"],
+      "links": [
+        {
+          "type": "Website",
+          "href": "https://form-2025-tarun.vercel.app/",
+          "icon": "globe"
+        }
+      ],
+      "image": "/projects/formspace.png",
+      "video": ""
+    },
+    {
+      "title": "Load & Stability Analyzer",
       "href": "",
       "dates": "",
       "active": true,
-      "description": "Advanced character analysis and voice generation — processes novels with BookNLP and custom pipelines to extract and merge characters, analyze personalities, and attribute dialogue. Supports reference-based voice cloning with emotion control for generating character audio.",
-      "technologies": ["Python", "BookNLP", "NLP", "Voice Cloning"],
+      "description": "A load-testing tool for HTTP APIs. A Go worker pool fires bounded concurrent requests, with an optional ramp-up of one worker per second, and the run comes back as latency percentiles, a weighted stability score (error rate, P95 latency, retry amplification and throughput) and a collapse flag when the error rate passes 20% or P95 exceeds five times the average latency. It also estimates the cloud cost of the run.",
+      "technologies": ["Go", "React", "React Router", "Tailwind CSS", "Vite", "Recharts"],
       "links": [
-        { "type": "Source", "href": "https://github.com/adhyan-jain/EchoTales-Models", "icon": "github" }
+        {
+          "type": "Source",
+          "href": "https://github.com/adhyan-jain/Load-and-Stability-Analyzer",
+          "icon": "github"
+        }
       ],
-      "image": "/projects/echotales.png",
+      "image": "/projects/load-stability-analyzer.png",
       "video": ""
     },
     {
@@ -296,35 +476,46 @@
       "href": "",
       "dates": "",
       "active": false,
-      "description": "Built to make development of the Chapter Recruitment Platform easier — a WhatsApp bot for issue management and team coordination, letting the team create, assign, and track issues directly in a WhatsApp group. Supports multi-user assignment, completion tracking, group-wide `$everyone` mentions, and owner-only admin commands.",
+      "description": "A WhatsApp bot built to coordinate development of the Chapter Recruitment Platform: the team creates, assigns and tracks issues directly in a WhatsApp group, with multi-user assignment, completion tracking, group-wide `$everyone` mentions and owner-only admin commands.",
       "technologies": ["Node.js", "whatsapp-web.js", "Puppeteer", "Express", "Docker"],
       "links": [
-        { "type": "Source", "href": "https://github.com/adhyan-jain/WhatsApp-Bot", "icon": "github" }
+        {
+          "type": "Source",
+          "href": "https://github.com/adhyan-jain/WhatsApp-Bot",
+          "icon": "github"
+        }
       ],
       "image": "",
       "video": ""
     }
   ],
-
   "hackathons": [
     {
       "title": "Track Winner, DevSoc",
       "dates": "Feb 2026",
       "location": "CodeChef VIT, 1,200+ participants",
-      "description": "Built Shadow-Code in a 4-person team (2 backend/ML devs, 1 frontend, 1 designer).",
+      "description": "Built Shadow-Code in a four-person team (two backend/ML devs, one frontend dev, one designer).",
       "image": "/logos/codechef.png",
       "links": [
-        { "title": "Source", "href": "https://github.com/adhyan-jain/Shadow-Code", "icon": "github" }
+        {
+          "title": "Source",
+          "href": "https://github.com/adhyan-jain/Shadow-Code",
+          "icon": "github"
+        }
       ]
     },
     {
       "title": "Finalist, DevJams",
       "dates": "Sep 2025",
       "location": "GDSC VIT, 2,000+ participants",
-      "description": "Built EchoTales in a 4-person team (myself as ML dev, 1 backend dev, 1 designer, 1 frontend dev).",
+      "description": "Built EchoTales in a four-person team (me as ML dev, plus a backend dev, a frontend dev and a designer).",
       "image": "/logos/gdg.svg",
       "links": [
-        { "title": "Source", "href": "https://github.com/adhyan-jain/EchoTales-Models", "icon": "github" }
+        {
+          "title": "Source",
+          "href": "https://github.com/adhyan-jain/EchoTales-Models",
+          "icon": "github"
+        }
       ]
     }
   ]

@@ -70,10 +70,8 @@ export default function Site({ data }: { data: SiteData }) {
   const [first, ...rest] = data.name.toUpperCase().split(" ");
   const [tagRole, tagBody] = data.tagline.split(/ (?=building)/);
   const tagRest = tagBody ? tagBody[0].toUpperCase() + tagBody.slice(1) : data.tagline;
-  const flagship = data.projects.find((p) => p.title === "Shadow-Code") ?? data.projects.find((p) => p.image);
-  const plates = data.projects.filter((p) => p.image && p !== flagship);
-  const matrix = data.projects.filter((p) => !p.image);
-  const award = flagship ? data.hackathons.find((h) => h.description.includes(flagship.title)) : undefined;
+  // projects arrive ranked (config order); every one gets the same card
+  const awardFor = (p: Project) => data.hackathons.find((h) => h.description.includes(p.title));
 
   const go = (id: string) => {
     const el = document.getElementById(id);
@@ -486,58 +484,30 @@ export default function Site({ data }: { data: SiteData }) {
           <div className="mx-auto max-w-[1400px]">
             <Head n="03" label="Projects" title="Selected work." />
 
-            {flagship && (
-              <button onClick={() => setOpen(flagship)} data-reveal data-hud="FLAGSHIP" className="plate card relative mb-6 grid w-full overflow-hidden text-left lg:grid-cols-12">
-                <div className="relative aspect-[16/10] lg:col-span-7 lg:aspect-auto">
-                  <img src={flagship.image} alt={`${flagship.title} screenshot`} className="size-full object-cover object-top" />
-                </div>
-                <div className="flex flex-col justify-between gap-8 p-6 md:p-10 lg:col-span-5">
-                  <div>
-                    <p className="label mb-3">Flagship</p>
-                    <h3 className="display text-5xl md:text-6xl">{flagship.title}</h3>
-                    <p className="mt-4 line-clamp-5 text-muted">{flagship.description}</p>
-                  </div>
-                  <div className="grid grid-cols-3 gap-2">
-                    {[
-                      ["Award", award?.title ?? "—"],
-                      ["Scale", award?.location.match(/[\d,]+\+? participants/)?.[0] ?? "—"],
-                      ["Stack", `${flagship.tech.length} tools`],
-                    ].map(([k, v]) => (
-                      <div key={k} className="border border-line p-3">
-                        <p className="mono text-[10px] uppercase tracking-[.14em] text-accent">{k}</p>
-                        <p className="mt-1 text-sm leading-tight">{v}</p>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </button>
-            )}
-
             <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
-              {plates.map((p) => (
-                <button key={p.title} onClick={() => setOpen(p)} data-reveal data-hud={p.title.toUpperCase()} className="plate card relative overflow-hidden text-left">
-                  <div className="relative aspect-[16/10] overflow-hidden">
-                    <img src={p.image} alt={`${p.title} screenshot`} className="size-full object-cover object-top" />
-                  </div>
-                  <div className="p-5">
-                    <h3 className="display text-3xl">{p.title}</h3>
-                    <p className="mt-2 line-clamp-2 text-sm text-muted">{p.description}</p>
-                    <div className="mt-4 flex flex-wrap gap-1.5">{p.tech.slice(0, 4).map((t) => <span key={t} className="chip">{t}</span>)}</div>
-                  </div>
-                </button>
-              ))}
-            </div>
-
-            <p className="label mb-5 mt-20" data-reveal>{"//"} more work</p>
-            <div className="grid gap-px border border-line bg-line md:grid-cols-2 xl:grid-cols-3">
-              {matrix.map((p, i) => (
-                <button key={p.title} onClick={() => setOpen(p)} data-reveal data-hud={p.title.toUpperCase()} className="group bg-bg/90 p-6 text-left transition-colors hover:bg-surface">
-                  <span className="mono text-xs text-accent">{String(i + 1).padStart(2, "0")}</span>
-                  <h3 className="display mt-3 text-3xl transition-colors group-hover:text-accent">{p.title}</h3>
-                  <p className="mt-3 line-clamp-3 text-sm text-muted">{p.description}</p>
-                  <div className="mt-4 flex flex-wrap gap-1.5">{p.tech.slice(0, 3).map((t) => <span key={t} className="chip">{t}</span>)}</div>
-                </button>
-              ))}
+              {data.projects.map((p, i) => {
+                const award = awardFor(p);
+                return (
+                  <button key={p.title} onClick={() => setOpen(p)} data-reveal data-hud={p.title.toUpperCase()} className="plate card relative flex flex-col overflow-hidden text-left">
+                    <div className="relative aspect-[16/10] overflow-hidden">
+                      {p.image ? (
+                        <img src={p.image} alt={`${p.title} screenshot`} className="size-full object-cover object-top" />
+                      ) : (
+                        <div aria-hidden className="plate-blank grid size-full place-items-center p-6 text-center">
+                          <span className="display outline-text text-[clamp(3rem,7vw,5.5rem)] leading-none">{p.title}</span>
+                        </div>
+                      )}
+                      <span className="mono absolute left-3 top-3 bg-bg/85 px-2 py-1 text-[10px] tracking-[.16em] text-accent">{String(i + 1).padStart(2, "0")}</span>
+                    </div>
+                    <div className="flex flex-1 flex-col p-5">
+                      {award && <p className="label mb-2">{award.title}</p>}
+                      <h3 className="display text-3xl">{p.title}</h3>
+                      <p className="mt-2 line-clamp-3 text-sm text-muted">{p.description}</p>
+                      <div className="mt-auto flex flex-wrap gap-1.5 pt-4">{p.tech.slice(0, 4).map((t) => <span key={t} className="chip">{t}</span>)}</div>
+                    </div>
+                  </button>
+                );
+              })}
             </div>
           </div>
         </section>
