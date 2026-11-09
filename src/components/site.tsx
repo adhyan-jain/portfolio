@@ -9,7 +9,7 @@ import { startSwarm } from "@/lib/swarm";
 
 type Link = { type: string; href: string };
 type Spec = { label: string; value: string };
-type Project = { title: string; description: string; tech: string[]; links: Link[]; image: string; status: string; specs: Spec[] };
+type Project = { title: string; description: string; tech: string[]; links: Link[]; image: string; specs: Spec[] };
 export type SiteData = {
   name: string;
   tagline: string;
@@ -34,8 +34,6 @@ const SHEETS: [id: string, title: string][] = [
   ["revisions", "Revision history"],
   ["contact", "Contact"],
 ];
-const AGENTS = ["ag-07", "ag-03", "ag-11", "ag-05", "ag-14", "ag-09"];
-const dwg = (i: number) => `DWG-${String(i + 1).padStart(3, "0")}`;
 const MONTHS = ["jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "sep", "oct", "nov", "dec"];
 const when = (s: string) => {
   const [m, y] = s.toLowerCase().split(" ");
@@ -57,29 +55,7 @@ function Zones() {
   );
 }
 
-function TitleBlock({ n, rev, print, extra, build }: { n: number; rev: string; print: string; extra?: [string, string]; build?: boolean }) {
-  const fields: [string, string, boolean?][] = [
-    ["Drawing", SHEETS[n][1], true],
-    ["Sheet", `${n + 1} of ${SHEETS.length}`],
-    ["Scale", "1 : 1"],
-    ["Drawn", AGENTS[n]],
-    ["Checked", "A. Jain"],
-    ["Rev", rev],
-    extra ?? ["Print", print === "light" ? "Light" : "Dark"],
-  ];
-  return (
-    <dl {...(build ? { "data-build": "TITLE BLOCK", "data-late": "" } : { "data-reveal": "", "data-hud": "TITLE BLOCK" })} className="tblock ml-auto w-full max-w-[560px]">
-      {fields.map(([k, v, wide]) => (
-        <div key={k} className={wide ? "wide" : ""}>
-          <dt>{k}</dt>
-          <dd className="tab">{v}</dd>
-        </div>
-      ))}
-    </dl>
-  );
-}
-
-function Sheet({ n, rev, print, children, head }: { n: number; rev: string; print: string; children: ReactNode; head?: ReactNode }) {
+function Sheet({ n, children, head }: { n: number; children: ReactNode; head?: ReactNode }) {
   const [id, title] = SHEETS[n];
   return (
     <section id={id} data-sheet={n} aria-labelledby={`${id}-title`} className="px-4 py-20 sm:px-5 md:px-14 md:py-28">
@@ -91,9 +67,6 @@ function Sheet({ n, rev, print, children, head }: { n: number; rev: string; prin
           </div>
         )}
         {children}
-        <div className="mt-14">
-          <TitleBlock n={n} rev={rev} print={print} />
-        </div>
       </div>
     </section>
   );
@@ -171,16 +144,6 @@ export default function Site({ data }: { data: SiteData }) {
   const tagRest = tagBody ? tagBody[0].toUpperCase() + tagBody.slice(1) : data.tagline;
   const projects = data.projects;
   const awardFor = (p: Project) => data.hackathons.find((h) => h.description.includes(p.title));
-  const internships = data.work.filter((w) => /intern/i.test(w.title)).length;
-  // "B.Tech in Computer Science and Engineering (CGPA: 8.83)" at "Vellore Institute of Technology (VIT)" -> "B.Tech CSE, VIT, CGPA 8.83"
-  const edu = data.education[0];
-  const degreeLine = edu
-    ? [
-        edu.degree.replace(/ in Computer Science and Engineering/, " CSE").replace(/\s*\(CGPA:.*\)/, ""),
-        edu.school.match(/\((\w+)\)/)?.[1] ?? edu.school,
-        edu.degree.match(/CGPA:\s*([\d.]+)/)?.[1] ? `CGPA ${edu.degree.match(/CGPA:\s*([\d.]+)/)?.[1]}` : "",
-      ].filter(Boolean).join(", ")
-    : "";
 
   // revision history: roles, awards and education, oldest = rev A
   const revisions = useMemo(() => {
@@ -191,7 +154,6 @@ export default function Site({ data }: { data: SiteData }) {
     ].sort((a, b) => a.at - b.at);
     return rows.map((r, i) => ({ ...r, rev: String.fromCharCode(65 + i) })).reverse();
   }, [data]);
-  const latestRev = revisions[0]?.rev ?? "A";
 
   const go = (id: string) => {
     const el = document.getElementById(id);
@@ -374,7 +336,6 @@ export default function Site({ data }: { data: SiteData }) {
       setCopied(true);
       setTimeout(() => setCopied(false), 1800);
     });
-  const statusTone = (s: string) => (/winner|finalist/i.test(s) ? "award" : "markup");
 
   return (
     <div ref={root} data-building="">
@@ -427,10 +388,6 @@ export default function Site({ data }: { data: SiteData }) {
                   <span aria-hidden className="block">{first}</span>
                   <span aria-hidden className="block">{rest.join(" ")}</span>
                 </h1>
-                <div data-build="DIMENSIONS" className="mt-5 max-w-[520px] space-y-3">
-                  <p className="dim dim-ends"><span className="tab">{degreeLine}</span></p>
-                  <p className="dim dim-ends"><span className="tab">{internships} internships, {projects.length} projects, {data.hackathons.length} hackathon results</span></p>
-                </div>
                 <p data-build="ROLE" data-fx="type" className="mt-8 text-2xl md:text-3xl">{tagRole}</p>
                 <p data-build="TAGLINE" data-fx="type" className="measure mt-3 text-lg leading-relaxed text-muted">{tagRest}.</p>
                 <div data-build="ACTIONS" className="mt-8 flex flex-wrap gap-3">
@@ -461,14 +418,11 @@ export default function Site({ data }: { data: SiteData }) {
                 </div>
               </div>
             </div>
-            <div className="mt-10">
-              <TitleBlock n={0} rev={latestRev} print={print} build extra={["Location", data.location.split(",")[0]]} />
-            </div>
           </div>
         </section>
 
         {/* SHEET 2: general notes */}
-        <Sheet n={1} rev={latestRev} print={print}>
+        <Sheet n={1}>
           <div className="grid gap-12 lg:grid-cols-12">
             <ol className="space-y-8 lg:col-span-7">
               {[data.about.summary, ...data.about.whatIDo].map((note, i) => (
@@ -490,16 +444,12 @@ export default function Site({ data }: { data: SiteData }) {
         </Sheet>
 
         {/* SHEET 3: detail drawings, in rank order */}
-        <Sheet n={2} rev={latestRev} print={print}>
+        <Sheet n={2}>
           <div className="grid gap-6 lg:grid-cols-2">
             {projects.map((p, i) => {
               const award = awardFor(p);
               return (
-                <button key={p.title} onClick={() => openProject(i)} data-reveal data-hud={dwg(i)} className="group flex flex-col border border-line-strong bg-bg/60 text-left transition-colors hover:border-accent">
-                  <div className="flex items-center justify-between border-b border-line px-4 py-2.5 text-[12px] text-muted">
-                    <span className="tab">{dwg(i)}</span>
-                    <span className="stamp" data-tone={statusTone(p.status)}>{p.status}</span>
-                  </div>
+                <button key={p.title} onClick={() => openProject(i)} data-reveal data-hud={p.title.toUpperCase()} className="group flex flex-col border border-line-strong bg-bg/60 text-left transition-colors hover:border-accent">
                   <div className={`relative aspect-[16/9] ${p.image ? "cyano" : "blank-plate grid place-items-center p-6"}`}>
                     {p.image ? (
                       <img src={p.image} alt={`${p.title} screenshot`} className="size-full object-cover object-top" />
@@ -529,7 +479,7 @@ export default function Site({ data }: { data: SiteData }) {
         </Sheet>
 
         {/* SHEET 4: revision history */}
-        <Sheet n={3} rev={latestRev} print={print}>
+        <Sheet n={3}>
           <div className="border-t border-line-strong">
             <div className="hidden grid-cols-[4rem_10rem_1fr_7rem] gap-6 border-b border-line-strong px-3 py-2.5 text-[12px] text-muted md:grid">
               <span>Rev</span><span>Date</span><span>Change</span><span className="text-right">Type</span>
@@ -550,7 +500,7 @@ export default function Site({ data }: { data: SiteData }) {
         </Sheet>
 
         {/* SHEET 5: contact */}
-        <Sheet n={4} rev={latestRev} print={print}>
+        <Sheet n={4}>
           <div className="grid gap-10 lg:grid-cols-12">
             <div data-reveal data-hud="EMAIL" className="min-w-0 lg:col-span-7">
               <p className="measure text-xl leading-relaxed md:text-2xl">Email is the quickest way to reach me. I usually reply within a day.</p>
@@ -601,16 +551,12 @@ export default function Site({ data }: { data: SiteData }) {
       >
         {open && (
           <div>
-            <div className="flex items-center justify-between border-b border-line px-5 py-3 text-sm text-muted">
-              <span className="tab">{dwg(projects.indexOf(open))}</span>
+            <div className="flex items-center justify-end border-b border-line px-5 py-3 text-sm text-muted">
               <button onClick={() => dialogRef.current?.close()} className="border border-line-strong px-3 py-1 text-text hover:border-accent">Close</button>
             </div>
             {open.image && <img src={open.image} alt={`${open.title} screenshot`} className="aspect-[16/9] w-full object-cover object-top" />}
             <div className="space-y-6 p-6 md:p-10">
-              <div className="flex flex-wrap items-start justify-between gap-4">
-                <h3 className="stencil text-5xl md:text-6xl">{open.title}</h3>
-                <span className="stamp" data-tone={statusTone(open.status)}>{open.status}</span>
-              </div>
+              <h3 className="stencil text-5xl md:text-6xl">{open.title}</h3>
               <p className="measure leading-relaxed text-muted">{open.description}</p>
               <dl className="max-w-xl space-y-2 text-sm">
                 {open.specs.map((s) => (

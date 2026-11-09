@@ -251,7 +251,6 @@
       ],
       "image": "/projects/echotales.png",
       "video": "",
-      "status": "Finalist",
       "specs": [
         {
           "label": "Primary volume",
@@ -283,7 +282,6 @@
       ],
       "image": "/projects/computehive.png",
       "video": "",
-      "status": "Tested",
       "specs": [
         {
           "label": "Dead-worker requeue",
@@ -320,7 +318,6 @@
       ],
       "image": "/projects/labtutor.png",
       "video": "",
-      "status": "Deployed",
       "specs": [
         {
           "label": "Verdicts decided by an LLM",
@@ -357,7 +354,6 @@
       ],
       "image": "/projects/storytrace.png",
       "video": "",
-      "status": "Benchmarked",
       "specs": [
         {
           "label": "Story-blind attacker",
@@ -394,7 +390,6 @@
       ],
       "image": "/projects/shadow-code.png",
       "video": "",
-      "status": "Winner",
       "specs": [
         {
           "label": "DevSoc participants",
@@ -426,7 +421,6 @@
       ],
       "image": "",
       "video": "",
-      "status": "Measured",
       "specs": [
         {
           "label": "RAM on Zephyr RTOS",
@@ -458,7 +452,6 @@
       ],
       "image": "/projects/os-tutor.png",
       "video": "",
-      "status": "Research",
       "specs": [
         {
           "label": "Model outputs scored",
@@ -490,7 +483,6 @@
       ],
       "image": "/projects/verity.png",
       "video": "",
-      "status": "Tested",
       "specs": [
         {
           "label": "Detection engines",
@@ -522,7 +514,6 @@
       ],
       "image": "/projects/chapter-recruitment-platform.png",
       "video": "",
-      "status": "Shipped",
       "specs": [
         {
           "label": "Applications processed",
@@ -554,7 +545,6 @@
       ],
       "image": "",
       "video": "",
-      "status": "Shipped",
       "specs": [
         {
           "label": "Concurrent users",
@@ -586,7 +576,6 @@
       ],
       "image": "",
       "video": "",
-      "status": "Retracted",
       "specs": [
         {
           "label": "Drift test",
@@ -618,7 +607,6 @@
       ],
       "image": "/projects/formspace.png",
       "video": "",
-      "status": "Shipped",
       "specs": [
         {
           "label": "Question types",
@@ -650,7 +638,6 @@
       ],
       "image": "/projects/load-stability-analyzer.png",
       "video": "",
-      "status": "Built",
       "specs": [
         {
           "label": "Collapse flag",
@@ -682,7 +669,6 @@
       ],
       "image": "",
       "video": "",
-      "status": "Retired",
       "specs": [
         {
           "label": "Interface",

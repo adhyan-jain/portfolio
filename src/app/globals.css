@@ -99,22 +99,6 @@ body::after {
 .zones span { position: relative; }
 .zones-x span::before { content: ""; position: absolute; left: 50%; top: -4px; height: 3px; width: 1px; background: var(--line-strong); }
 
-.tblock { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); border: 1px solid var(--line-strong); font-size: 11px; }
-.tblock > div { border-left: 1px solid var(--line); border-top: 1px solid var(--line); padding: 6px 9px; min-width: 0; }
-.tblock > div:nth-child(-n + 4) { border-top: 0; }
-.tblock > div:nth-child(4n + 1) { border-left: 0; }
-.tblock dt { color: var(--graphite); font-size: 9.5px; }
-.tblock dd { margin-top: 2px; color: var(--ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.tblock .wide { grid-column: span 2; }
-
-/* dimension line: |<-- label -->| */
-.dim { display: flex; align-items: center; gap: 10px; color: var(--graphite); font-size: 12px; }
-.dim::before, .dim::after { content: ""; flex: 1; height: 1px; background: currentColor; opacity: .7; }
-.dim > span { color: var(--ink); text-align: center; }
-@media (min-width: 768px) { .dim > span { white-space: nowrap; } }
-/* extension ticks at both ends of the dimension */
-.dim-ends { border-inline: 1px solid var(--graphite); padding-inline: 1px; }
-
 /* rubber stamp in the accent; awards and approvals in bone */
 .stamp { display: inline-block; border: 2px solid currentColor; padding: 3px 9px 2px; color: var(--redline); font-family: var(--font-stencil), sans-serif; font-size: 15px; letter-spacing: .08em; text-transform: uppercase; rotate: -5deg; opacity: .92; mix-blend-mode: normal; }
 .stamp[data-tone="award"] { color: var(--ink); }
@@ -178,11 +162,6 @@ dialog[open] { animation: unroll .45s cubic-bezier(.2,.8,.2,1); }
 @media (max-width: 767px) {
   .zones-y { display: none; }
   .zones-x.top { top: -20px; } .zones-x.bottom { bottom: -20px; }
-  .tblock { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  .tblock > div:nth-child(-n + 4) { border-top: 1px solid var(--line); }
-  .tblock > div:nth-child(-n + 2) { border-top: 0; }
-  .tblock > div:nth-child(4n + 1) { border-left: 1px solid var(--line); }
-  .tblock > div:nth-child(2n + 1) { border-left: 0; }
 }
 
 @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; } }
