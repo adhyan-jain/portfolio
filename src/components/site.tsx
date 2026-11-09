@@ -31,7 +31,7 @@ const SHEETS: [id: string, title: string][] = [
   ["top", "General arrangement"],
   ["notes", "General notes"],
   ["drawings", "Detail drawings"],
-  ["revisions", "Revision history"],
+  ["experience", "Experience"],
   ["contact", "Contact"],
 ];
 const MONTHS = ["jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "sep", "oct", "nov", "dec"];
@@ -145,14 +145,14 @@ export default function Site({ data }: { data: SiteData }) {
   const projects = data.projects;
   const awardFor = (p: Project) => data.hackathons.find((h) => h.description.includes(p.title));
 
-  // revision history: roles, awards and education, oldest = rev A
-  const revisions = useMemo(() => {
+  // experience: roles, awards and education, newest first
+  const experience = useMemo(() => {
     const rows = [
       ...data.work.map((w) => ({ kind: "Role", date: `${w.start} to ${w.end}`, at: when(w.start), title: w.title, org: w.company, body: w.description, award: false })),
       ...data.hackathons.map((h) => ({ kind: "Award", date: h.dates, at: when(h.dates), title: h.title, org: h.location, body: h.description, award: true })),
       ...data.education.map((e) => ({ kind: "Education", date: `${e.start} to ${e.end}`, at: when(e.start), title: e.degree, org: e.school, body: "", award: false })),
-    ].sort((a, b) => a.at - b.at);
-    return rows.map((r, i) => ({ ...r, rev: String.fromCharCode(65 + i) })).reverse();
+    ];
+    return rows.sort((a, b) => b.at - a.at);
   }, [data]);
 
   const go = (id: string) => {
@@ -478,22 +478,18 @@ export default function Site({ data }: { data: SiteData }) {
           </div>
         </Sheet>
 
-        {/* SHEET 4: revision history */}
+        {/* SHEET 4: experience */}
         <Sheet n={3}>
           <div className="border-t border-line-strong">
-            <div className="hidden grid-cols-[4rem_10rem_1fr_7rem] gap-6 border-b border-line-strong px-3 py-2.5 text-[12px] text-muted md:grid">
-              <span>Rev</span><span>Date</span><span>Change</span><span className="text-right">Type</span>
-            </div>
-            {revisions.map((r) => (
-              <article key={r.rev} data-reveal data-hud={`REV ${r.rev}`} className="grid gap-2 border-b border-line px-3 py-6 md:grid-cols-[4rem_10rem_1fr_7rem] md:gap-6">
-                <span className="stencil text-3xl">{r.rev}</span>
+            {experience.map((r) => (
+              <article key={`${r.title}-${r.date}`} data-reveal data-hud={r.org.toUpperCase()} className="grid gap-2 border-b border-line px-3 py-6 md:grid-cols-[10rem_1fr_6rem] md:gap-6">
                 <span className="tab pt-1 text-sm text-muted">{r.date}</span>
                 <div>
                   <h3 className="text-lg">{r.title}</h3>
                   <p className="text-sm text-muted">{r.org}</p>
                   {r.body && <p className="measure mt-3 text-[15px] leading-relaxed text-muted">{r.body}</p>}
                 </div>
-                <span className="md:text-right">{r.award ? <span className="stamp" data-tone="award">Approved</span> : <span className="text-sm text-muted">{r.kind}</span>}</span>
+                <span className={`text-sm md:pt-1 md:text-right ${r.award ? "text-accent" : "text-muted"}`}>{r.kind}</span>
               </article>
             ))}
           </div>

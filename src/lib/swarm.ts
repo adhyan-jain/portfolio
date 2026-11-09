@@ -621,15 +621,19 @@ export function startSwarm(o: SwarmOpts): () => void {
         await twFrom(el, { opacity: 0 }, { opacity: 1, duration: 0.35, ease: "steps(4)" });
       }
     };
-    // triggered a little before the block enters: park the agent at the bottom edge where it will
-    // come in, and start drawing the moment it is actually on screen
+    // triggered a little before the block enters. The block stays blank until its top has risen into
+    // the reading area (above 60% of the screen), so the build happens in front of the reader; at the
+    // very end of the page, where blocks may never rise that far, it starts once scrolling stops.
+    // Meanwhile the agent waits at the block's corner (or at the bottom edge while it is below the screen)
     look(a, "cross");
+    const atEnd = () => scrollY + innerHeight >= document.documentElement.scrollHeight - 4;
+    const ready = (b: DOMRect) => b.top <= innerHeight * 0.6 || (b.top < innerHeight && atEnd());
     let r = el.getBoundingClientRect();
-    while (!dead && r.top >= innerHeight - 4 && r.top <= innerHeight * 1.6) {
+    while (!dead && !ready(r) && r.bottom > 0 && r.top <= innerHeight * 1.6) {
       a.mode = "seek";
       a.sk = 140;
-      a.tx = Math.min(innerWidth - 12, Math.max(12, r.left));
-      a.ty = innerHeight - 14;
+      a.tx = Math.min(innerWidth - 12, Math.max(12, r.left - 5));
+      a.ty = Math.min(innerHeight - 14, r.top - 5);
       await wait(0.05);
       r = el.getBoundingClientRect();
     }

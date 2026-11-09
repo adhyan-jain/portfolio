@@ -3,7 +3,7 @@
 /* ---------------------------------------------------------------------------
    The Drafting Room: every section is an engineering drawing sheet that the
    cursor agents draft live. Three colours only: pine and bone are the pair the
-   whole page is drawn in, tangerine is reserved for buttons, stamps, the
+   whole page is drawn in, tangerine is reserved for buttons, links, the
    agents' tags and anything that wants attention. Every other tone is mixed
    from pine and bone. The light print is the same pair swapped.
    --------------------------------------------------------------------------- */
@@ -99,9 +99,6 @@ body::after {
 .zones span { position: relative; }
 .zones-x span::before { content: ""; position: absolute; left: 50%; top: -4px; height: 3px; width: 1px; background: var(--line-strong); }
 
-/* rubber stamp in the accent; awards and approvals in bone */
-.stamp { display: inline-block; border: 2px solid currentColor; padding: 3px 9px 2px; color: var(--redline); font-family: var(--font-stencil), sans-serif; font-size: 15px; letter-spacing: .08em; text-transform: uppercase; rotate: -5deg; opacity: .92; mix-blend-mode: normal; }
-.stamp[data-tone="award"] { color: var(--ink); }
 
 /* screenshots print tinted to the pine print and develop into colour once an agent inks them */
 .cyano { background: var(--print); overflow: hidden; }
