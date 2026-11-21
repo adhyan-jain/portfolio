@@ -366,12 +366,12 @@
       ]
     },
     {
-      "title": "StoryTrace & SSR-Bench V2",
+      "title": "StoryTrace",
       "href": "https://story-trace-psi.vercel.app",
       "dates": "",
       "active": true,
-      "description": "An agentic continuity checker for screenplays and novels, paired with a research benchmark. StoryTrace turns documents into a temporal model of story state in ClickHouse (character presence, location, prop possession across every scene), finds suspicious state transitions with SQL window functions, and hands each one to an investigation agent that queries the database through ClickHouse MCP tools and returns a verdict with evidence. Re-uploading a revised draft compares its conflicts against the earlier version. SSR-Bench V2 measures how well LLMs revise story state after a single pivot event, using leak-free matched story pairs: a story-blind attacker scores 0.000 pair-both, while the replay oracle scores 1.000 (300 of 300 test pairs). Across 4 local models and 17 conditions, state exact match stays between 0.000 and 0.020, mostly because models edit state the event never touched. The continuity engine itself is checked against 989 verified conflicts across 10 films.",
-      "technologies": ["Python", "ClickHouse", "MCP", "LLM Agents", "Benchmarking"],
+      "description": "A tool that finds inconsistencies in stories. It reads screenplays and novels (PDF, EPUB, TXT or Fountain) and turns them into a timeline of story state in ClickHouse: where each character is, what they hold, what has happened to them, scene by scene. SQL window functions flag suspicious changes, such as a prop that vanishes or a character who is somewhere impossible. Each flag goes to an investigation agent that queries the database through ClickHouse MCP tools and returns a verdict with evidence. Re-uploading a revised draft compares its conflicts against the earlier version. It was checked against 989 verified continuity conflicts across 10 films, and ships with login and a Docker Compose deployment.",
+      "technologies": ["Python", "FastAPI", "ClickHouse", "MCP", "Next.js", "Gemini"],
       "links": [
         {
           "type": "Website",
@@ -388,16 +388,16 @@
       "video": "",
       "specs": [
         {
-          "label": "Story-blind attacker (8 classifiers)",
-          "value": "0.000"
-        },
-        {
-          "label": "Replay oracle",
-          "value": "1.000"
-        },
-        {
           "label": "Verified conflicts, 10 films",
           "value": "989"
+        },
+        {
+          "label": "Pipeline stages",
+          "value": "7"
+        },
+        {
+          "label": "Input formats",
+          "value": "PDF, EPUB, TXT, Fountain"
         }
       ]
     },
