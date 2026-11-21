@@ -18,6 +18,7 @@ export default function Page() {
 
   const data: SiteData = {
     name: DATA.name,
+    role: DATA.role,
     tagline: clean(DATA.description),
     location: DATA.location,
     about: {

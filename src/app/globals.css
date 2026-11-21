@@ -97,6 +97,9 @@ body::after {
 .zones-y { top: 0; bottom: 0; width: 18px; flex-direction: column; align-items: center; }
 .zones-y.left { left: -26px; } .zones-y.right { right: -26px; }
 .zones span { position: relative; }
+/* ruler labels are drawn by CSS from data-n, so they are not in the page text and cannot be selected */
+.zones { user-select: none; -webkit-user-select: none; }
+.zones span::after { content: attr(data-n); }
 .zones-x span::before { content: ""; position: absolute; left: 50%; top: -4px; height: 3px; width: 1px; background: var(--line-strong); }
 
 

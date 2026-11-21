@@ -50,7 +50,7 @@ const CROSS = `<svg class="crs" viewBox="0 0 15 15" aria-hidden="true"><path d="
 const rand = (a: number, b: number) => a + Math.random() * (b - a);
 
 export function startSwarm(o: SwarmOpts): () => void {
-  const n = innerWidth < 768 ? 12 : 18;
+  const n = 6;
   const mouse = { x: innerWidth / 2, y: innerHeight / 2, seen: false };
   const orbit = { cx: innerWidth / 2, cy: innerHeight / 2, follow: !o.build };
   const agents: Agent[] = [];
@@ -313,7 +313,7 @@ export function startSwarm(o: SwarmOpts): () => void {
       },
     });
     a.anchor = undefined;
-    if (stop()) return null;
+    if (stop() || !a.drag) return null;
     ({ W, H } = a.drag);
     a.drag = undefined;
     b.style.width = `${W}px`;
@@ -460,7 +460,7 @@ export function startSwarm(o: SwarmOpts): () => void {
 
   const run = async () => {
     // 1. scan: agents orbit the empty page
-    say("Plotting sheet 1…");
+    say("Loading…");
     progress(0.16, 1.1);
     await wait(1.2);
     if (finished) return;
@@ -490,10 +490,10 @@ export function startSwarm(o: SwarmOpts): () => void {
     let done = 0;
     const tick = () => {
       done++;
-      say(`${n} agents drafting, ${done} of ${total} layers`);
+      say("Loading…");
       progress(0.16 + (done / total) * 0.84);
     };
-    say(`${n} agents drafting, 0 of ${total} layers`);
+    say("Loading…");
     const boxes: HTMLElement[] = [];
     const keep = (b: HTMLElement | null) => b && boxes.push(b);
 
@@ -525,7 +525,7 @@ export function startSwarm(o: SwarmOpts): () => void {
     );
     await Promise.all([small, big]);
     if (finished) return;
-    say("Inking…");
+    say("Loading…");
     // late agents head for their corners while the fills render, so they're in place at the clear
     late.forEach((el, i) => {
       const r = el.getBoundingClientRect();
@@ -581,7 +581,7 @@ export function startSwarm(o: SwarmOpts): () => void {
       }),
     );
     if (finished) return;
-    say("Sheet issued");
+    say("Done");
     progress(1);
     // free agents drift back toward the pointer before the build wraps up
     await wait(0.3);

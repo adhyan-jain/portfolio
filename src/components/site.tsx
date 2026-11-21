@@ -12,6 +12,7 @@ type Spec = { label: string; value: string };
 type Project = { title: string; description: string; tech: string[]; links: Link[]; image: string; specs: Spec[] };
 export type SiteData = {
   name: string;
+  role: string;
   tagline: string;
   location: string;
   about: { summary: string; highlights: string[]; whatIDo: string[]; favorites: string[]; beyond: string };
@@ -26,11 +27,11 @@ export type SiteData = {
   resume: string;
 };
 
-/** The drawing set: one sheet per section, numbered in reading order. */
+/** The page sections, numbered in reading order. */
 const SHEETS: [id: string, title: string][] = [
-  ["top", "General arrangement"],
-  ["notes", "General notes"],
-  ["drawings", "Detail drawings"],
+  ["top", "Home"],
+  ["about", "About"],
+  ["projects", "Projects"],
   ["experience", "Experience"],
   ["contact", "Contact"],
 ];
@@ -46,10 +47,10 @@ function Zones() {
   return (
     <>
       {(["top", "bottom"] as const).map((p) => (
-        <div key={p} aria-hidden className={`zones zones-x ${p}`}>{cols.map((c) => <span key={c}>{c}</span>)}</div>
+        <div key={p} aria-hidden className={`zones zones-x ${p}`}>{cols.map((c) => <span key={c} data-n={c} />)}</div>
       ))}
       {(["left", "right"] as const).map((p) => (
-        <div key={p} aria-hidden className={`zones zones-y ${p}`}>{rows.map((r) => <span key={r}>{r}</span>)}</div>
+        <div key={p} aria-hidden className={`zones zones-y ${p}`}>{rows.map((r) => <span key={r} data-n={r} />)}</div>
       ))}
     </>
   );
@@ -72,7 +73,7 @@ function Sheet({ n, children, head }: { n: number; children: ReactNode; head?: R
   );
 }
 
-/** Exploded axonometric of the stack: five isometric plates, each labelled with the projects that live on it. */
+/** Exploded view of the stack: five skill groups, each labelled with the projects that use it. */
 const LAYERS: [name: string, tools: string, where: string][] = [
   ["Interfaces", "Next.js, React, Tauri", "Catalyst, EchoTales, ComputeHive"],
   ["Agents and retrieval", "MCP, RAG, tool calling", "StoryTrace, OS-Tutor, Verity"],
@@ -83,19 +84,29 @@ const LAYERS: [name: string, tools: string, where: string][] = [
 function Axo({ labels, hot, onHot }: { labels: boolean; hot: number; onHot: (i: number) => void }) {
   const cx = 190, w = 168, h = 84, t = 14, gap = 92, top = 92;
   return (
-    <svg viewBox={labels ? "0 0 640 580" : "0 0 380 580"} className="axo h-auto w-full" role="img" aria-label="Exploded drawing of the stack, five layers from interfaces down to infrastructure">
+    <svg viewBox={labels ? "0 0 640 580" : "0 0 380 580"} className="axo h-auto w-full" role="img" aria-label="Diagram of the tech stack in five groups, from interfaces down to infrastructure">
       {/* hidden-line connectors between the plates */}
       {[-w, w, 0].map((dx) => (
         <line key={dx} x1={cx + dx} y1={top + (dx === 0 ? h : 0)} x2={cx + dx} y2={top + gap * 4 + (dx === 0 ? h : 0)} stroke="var(--graphite)" strokeDasharray="5 6" strokeWidth={1} pathLength={1} />
       ))}
-      {LAYERS.map(([name, tools], i) => {
+      {LAYERS.map(([name, tools, where], i) => {
         const cy = top + i * gap;
         const face = `${cx},${cy - h} ${cx + w},${cy} ${cx},${cy + h} ${cx - w},${cy}`;
         const right = `${cx + w},${cy} ${cx},${cy + h} ${cx},${cy + h + t} ${cx + w},${cy + t}`;
         const left = `${cx - w},${cy} ${cx},${cy + h} ${cx},${cy + h + t} ${cx - w},${cy + t}`;
         const on = hot === i;
         return (
-          <g key={name} onPointerEnter={() => onHot(i)} onPointerLeave={() => onHot(-1)} style={{ cursor: "default" }}>
+          <g
+            key={name}
+            tabIndex={0}
+            aria-label={`${name}: used by ${where}`}
+            onPointerEnter={(e) => e.pointerType !== "touch" && onHot(i)}
+            onPointerLeave={(e) => e.pointerType !== "touch" && onHot(-1)}
+            onClick={() => onHot(on ? -1 : i)}
+            onFocus={() => onHot(i)}
+            onBlur={() => onHot(-1)}
+            style={{ cursor: "pointer", outline: "none" }}
+          >
             <polygon points={left} fill="var(--surface)" stroke="var(--ink)" strokeWidth={1.2} pathLength={1} />
             <polygon points={right} fill="var(--print)" stroke="var(--ink)" strokeWidth={1.2} pathLength={1} />
             <polygon points={face} fill={on ? "color-mix(in oklab, var(--hilite) 30%, var(--paper))" : "color-mix(in oklab, var(--print) 55%, var(--paper))"} stroke="var(--ink)" strokeWidth={1.4} pathLength={1} style={{ transition: "fill .3s" }} />
@@ -140,10 +151,8 @@ export default function Site({ data }: { data: SiteData }) {
   const [print, setPrint] = useState<"dark" | "light">("dark");
 
   const [first, ...rest] = data.name.toUpperCase().split(" ");
-  const [tagRole, tagBody] = data.tagline.split(/ (?=building)/);
-  const tagRest = tagBody ? tagBody[0].toUpperCase() + tagBody.slice(1) : data.tagline;
-  const projects = data.projects;
-  const awardFor = (p: Project) => data.hackathons.find((h) => h.description.includes(p.title));
+    const projects = data.projects;
+  const awardsFor = (p: Project) => data.hackathons.filter((h) => h.description.includes(p.title));
 
   // experience: roles, awards and education, newest first
   const experience = useMemo(() => {
@@ -163,13 +172,13 @@ export default function Site({ data }: { data: SiteData }) {
   };
   const openProject = (i: number) => setOpen(projects[i]);
 
-  // print (theme): dark by default, light on request; remembered per browser
+  // theme: dark by default, light on request; remembered per browser
   useEffect(() => {
     let saved: string | null = null;
     try {
       saved = localStorage.getItem("print");
     } catch {}
-    // eslint-disable-next-line react-hooks/set-state-in-effect -- the saved print is only readable in the browser
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- the saved theme is only readable in the browser
     if (saved === "light") setPrint("light");
   }, []);
   useEffect(() => {
@@ -227,7 +236,8 @@ export default function Site({ data }: { data: SiteData }) {
 
       // cursor agents + the hard-reload build
       const nav = performance.getEntriesByType("navigation")[0] as PerformanceNavigationTiming | undefined;
-      const build = !reduce && nav?.type !== "back_forward";
+      const swarm = fine && !reduce;
+      const build = swarm && nav?.type !== "back_forward";
       if (!build) {
         root.current!.removeAttribute("data-building");
         gsap.set([overlayRef.current, statusRef.current], { autoAlpha: 0 });
@@ -237,7 +247,7 @@ export default function Site({ data }: { data: SiteData }) {
         lenisRef.current?.scrollTo(0, { immediate: true });
         lenisRef.current?.stop();
       }
-      if (!reduce) {
+      if (swarm) {
         cleanups.push(
           startSwarm({
             root: root.current!,
@@ -248,7 +258,7 @@ export default function Site({ data }: { data: SiteData }) {
             bg: null,
             build,
             fine,
-            scrollBuild: fine,
+            scrollBuild: true,
             onDone: () => lenisRef.current?.start(),
           }),
         );
@@ -271,8 +281,8 @@ export default function Site({ data }: { data: SiteData }) {
               const r = sheet.getBoundingClientRect();
               const col = Math.min(8, Math.max(1, Math.ceil(((x - r.left) / r.width) * 8)));
               const row = "ABCDEF"[Math.min(5, Math.max(0, Math.floor(((y - r.top) / r.height) * 6)))];
-              coordRef.current.textContent = `Sheet ${Number(sheet.dataset.sheet) + 1}, zone ${row}${col}`;
-            } else coordRef.current.textContent = "Off sheet";
+              coordRef.current.textContent = `${SHEETS[Number(sheet.dataset.sheet)][1]}, ${row}${col}`;
+            } else coordRef.current.textContent = "Between sections";
           }
           if (tiltRef.current && !reduce) {
             const nx = x / innerWidth - 0.5;
@@ -339,16 +349,16 @@ export default function Site({ data }: { data: SiteData }) {
 
   return (
     <div ref={root} data-building="">
-      {/* build: a blank sheet the agents scan before they start drafting */}
+      {/* loader: a blank page the cursor arrows scan before they start building */}
       <div id="build" ref={overlayRef} aria-hidden className="fixed inset-0 z-[85] grid place-items-center bg-bg">
         <span className="stencil grid size-10 place-items-center border border-line-strong text-sm text-muted">AJ</span>
       </div>
       <div id="build-status" ref={statusRef} role="status" className="fixed bottom-5 left-1/2 z-[95] flex -translate-x-1/2 items-center gap-3 whitespace-nowrap border border-line-strong bg-bg/90 px-3 py-2 text-[11px] text-muted backdrop-blur">
-        <span className="tab" data-status-text>Plotting sheet 1…</span>
+        <span className="tab" data-status-text>Loading…</span>
         <span aria-hidden className="relative h-[3px] w-12 bg-line md:w-28">
           <i data-status-bar className="absolute inset-0 origin-left scale-x-0 bg-hud" />
         </span>
-        <button data-skip type="button" className="text-text transition-colors hover:text-accent">Skip the plot</button>
+        <button data-skip type="button" className="text-text transition-colors hover:text-accent">Skip</button>
       </div>
       <noscript>
         <style>{`#build,#build-status{display:none}[data-building] [data-build]{opacity:1}`}</style>
@@ -357,42 +367,42 @@ export default function Site({ data }: { data: SiteData }) {
       <div data-bar aria-hidden className="fixed left-0 top-0 z-[70] h-[2px] w-full origin-left scale-x-0 bg-hud" />
       <div ref={boxesRef} aria-hidden className="pointer-events-none fixed inset-0 z-[5]" />
 
-      {/* title strip */}
-      <header data-build-bg="TITLE STRIP" className="fixed inset-x-0 top-0 z-50 border-b border-line bg-bg/85 backdrop-blur">
+      {/* header */}
+      <header data-build-bg="HEADER" className="fixed inset-x-0 top-0 z-50 border-b border-line bg-bg/85 backdrop-blur">
         <div className="mx-auto flex max-w-[1500px] items-center justify-between gap-4 px-5 py-3 md:px-10">
-          <button onClick={() => go("top")} aria-label="Back to the first sheet" data-hud="MARK" data-build="MARK" className="stencil grid size-9 place-items-center border border-line-strong text-lg">AJ</button>
-          <nav aria-label="Sheets" data-build="SHEET INDEX" className="hidden items-center gap-6 text-[13px] text-muted lg:flex">
+          <button onClick={() => go("top")} aria-label="Back to top" data-hud="LOGO" data-build="LOGO" className="stencil grid size-9 place-items-center border border-line-strong text-lg">AJ</button>
+          <nav aria-label="Sections" data-build="MENU" className="hidden items-center gap-6 text-[13px] text-muted lg:flex">
             {SHEETS.map(([id, t], i) => (
               <a key={id} href={`#${id}`} onClick={(e) => { e.preventDefault(); go(id); }} aria-current={active === i ? "true" : undefined} className={`transition-colors hover:text-text ${active === i ? "text-text" : ""}`}>
                 <span className="tab mr-1.5 text-[11px] text-muted">{i + 1}</span>{t}
               </a>
             ))}
           </nav>
-          <div data-build="READOUT" className="flex items-center gap-4 text-[12px] text-muted">
-            <span ref={coordRef} aria-hidden className="tab hidden md:inline">Off sheet</span>
-            <button type="button" onClick={() => setPrint((p) => (p === "dark" ? "light" : "dark"))} className="border border-line-strong px-2.5 py-1 text-text transition-colors hover:border-accent" aria-label={`Switch to the ${print === "dark" ? "light" : "dark"} print`}>
-              Print: {print}
+          <div data-build="TOOLS" className="flex items-center gap-4 text-[12px] text-muted">
+            <span ref={coordRef} aria-hidden className="tab hidden md:inline">Between sections</span>
+            <button type="button" onClick={() => setPrint((p) => (p === "dark" ? "light" : "dark"))} className="border border-line-strong px-2.5 py-1 text-text transition-colors hover:border-accent" aria-label={`Switch to the ${print === "dark" ? "light" : "dark"} theme`}>
+              Theme: {print}
             </button>
           </div>
         </div>
       </header>
 
       <main className="relative z-10">
-        {/* SHEET 1: general arrangement */}
+        {/* home */}
         <section id="top" data-sheet={0} className="flex min-h-screen items-center px-5 pb-16 pt-24 md:px-14">
           <div className="sheet mx-auto w-full max-w-[1360px] px-5 pb-6 pt-10 md:px-12 md:pt-12">
             <Zones />
             <div className="grid items-center gap-10 lg:grid-cols-12">
-              <div data-build-bg="ELEVATION" className="lg:col-span-6">
+              <div data-build-bg="INTRO" className="lg:col-span-6">
                 <h1 data-build="NAME" data-fx="wipe" aria-label={data.name} className="stencil text-[clamp(4.6rem,13vw,10.5rem)]">
                   <span aria-hidden className="block">{first}</span>
                   <span aria-hidden className="block">{rest.join(" ")}</span>
                 </h1>
-                <p data-build="ROLE" data-fx="type" className="mt-8 text-2xl md:text-3xl">{tagRole}</p>
-                <p data-build="TAGLINE" data-fx="type" className="measure mt-3 text-lg leading-relaxed text-muted">{tagRest}.</p>
+                <p data-build="ROLE" data-fx="type" className="mt-8 text-2xl md:text-3xl">{data.role}</p>
+                <p data-build="TAGLINE" data-fx="type" className="measure mt-3 text-lg leading-relaxed text-muted">{data.tagline}</p>
                 <div data-build="ACTIONS" className="mt-8 flex flex-wrap gap-3">
-                  <button onClick={() => go("drawings")} data-hud="DRAWINGS" className="bg-accent px-5 py-3 text-sm font-medium text-bg transition-transform hover:-translate-y-0.5">
-                    See the drawings
+                  <button onClick={() => go("projects")} data-hud="PROJECTS" className="bg-accent px-5 py-3 text-sm font-medium text-bg transition-transform hover:-translate-y-0.5">
+                    See projects
                   </button>
                   {data.resume && (
                     <a href={data.resume} target="_blank" rel="noreferrer" data-hud="RESUME" className="border border-line-strong px-5 py-3 text-sm transition-colors hover:border-accent">
@@ -401,8 +411,8 @@ export default function Site({ data }: { data: SiteData }) {
                   )}
                 </div>
               </div>
-              <div data-build-bg="ISOMETRIC" className="lg:col-span-6">
-                <div data-build="ISOMETRIC" data-fx="plot" data-late className="relative">
+              <div data-build-bg="SKILLS" className="lg:col-span-6">
+                <div data-build="SKILLS" data-fx="plot" data-late className="relative">
                   <div ref={tiltRef} className="axo-tilt">
                     <div className="hidden md:block"><Axo labels hot={hot} onHot={setHot} /></div>
                     <div className="md:hidden"><Axo labels={false} hot={hot} onHot={setHot} /></div>
@@ -413,7 +423,7 @@ export default function Site({ data }: { data: SiteData }) {
                     ))}
                   </ol>
                   <p className="casual mt-3 text-sm text-accent md:absolute md:bottom-2 md:right-2 md:mt-0" aria-live="polite">
-                    {hot >= 0 ? `Used by ${LAYERS[hot][2]}` : "Hover a plate to see which projects sit on it"}
+                    {hot >= 0 ? `Used by ${LAYERS[hot][2]}` : "Hover or tap a skill group to see the projects that use it"}
                   </p>
                 </div>
               </div>
@@ -421,7 +431,7 @@ export default function Site({ data }: { data: SiteData }) {
           </div>
         </section>
 
-        {/* SHEET 2: general notes */}
+        {/* about */}
         <Sheet n={1}>
           <div className="grid gap-12 lg:grid-cols-12">
             <ol className="space-y-8 lg:col-span-7">
@@ -434,7 +444,7 @@ export default function Site({ data }: { data: SiteData }) {
             </ol>
             <div className="space-y-4 lg:col-span-5">
               {data.about.highlights.map((h) => (
-                <p key={h} data-reveal data-hud="SPEC" className="border border-line-strong p-5 text-sm leading-relaxed">{h}</p>
+                <p key={h} data-reveal data-hud="FACT" className="border border-line-strong p-5 text-sm leading-relaxed">{h}</p>
               ))}
               <p data-reveal className="casual pt-4 text-lg leading-snug text-accent">
                 <span aria-hidden className="mr-2">↳</span>{data.about.beyond}
@@ -443,11 +453,11 @@ export default function Site({ data }: { data: SiteData }) {
           </div>
         </Sheet>
 
-        {/* SHEET 3: detail drawings, in rank order */}
+        {/* projects */}
         <Sheet n={2}>
           <div className="grid gap-6 lg:grid-cols-2">
             {projects.map((p, i) => {
-              const award = awardFor(p);
+              const awards = awardsFor(p);
               return (
                 <button key={p.title} onClick={() => openProject(i)} data-reveal data-hud={p.title.toUpperCase()} className="group flex flex-col border border-line-strong bg-bg/60 text-left transition-colors hover:border-accent">
                   <div className={`relative aspect-[16/9] ${p.image ? "cyano" : "blank-plate grid place-items-center p-6"}`}>
@@ -458,7 +468,7 @@ export default function Site({ data }: { data: SiteData }) {
                     )}
                   </div>
                   <div className="flex flex-1 flex-col p-5">
-                    {award && <p className="mb-1 text-sm text-hud">{award.title}</p>}
+                    {awards.map((a) => <p key={a.title} className="mb-1 text-sm text-hud">{a.title}</p>)}
                     <h3 className="stencil text-[2.1rem]">{p.title}</h3>
                     <p className="mt-2 line-clamp-3 text-[15px] leading-relaxed text-muted">{p.description}</p>
                     <dl className="mt-4 space-y-1.5 text-[13px]">
@@ -478,7 +488,7 @@ export default function Site({ data }: { data: SiteData }) {
           </div>
         </Sheet>
 
-        {/* SHEET 4: experience */}
+        {/* experience */}
         <Sheet n={3}>
           <div className="border-t border-line-strong">
             {experience.map((r) => (
@@ -486,7 +496,7 @@ export default function Site({ data }: { data: SiteData }) {
                 <span className="tab pt-1 text-sm text-muted">{r.date}</span>
                 <div>
                   <h3 className="text-lg">{r.title}</h3>
-                  <p className="text-sm text-muted">{r.org}</p>
+                  <p className="text-sm text-muted">{r.org.startsWith("ACM") ? <><strong className="font-semibold text-accent">ACM</strong>{r.org.slice(3)}</> : r.org}</p>
                   {r.body && <p className="measure mt-3 text-[15px] leading-relaxed text-muted">{r.body}</p>}
                 </div>
                 <span className={`text-sm md:pt-1 md:text-right ${r.award ? "text-accent" : "text-muted"}`}>{r.kind}</span>
@@ -495,7 +505,7 @@ export default function Site({ data }: { data: SiteData }) {
           </div>
         </Sheet>
 
-        {/* SHEET 5: contact */}
+        {/* contact */}
         <Sheet n={4}>
           <div className="grid gap-10 lg:grid-cols-12">
             <div data-reveal data-hud="EMAIL" className="min-w-0 lg:col-span-7">
@@ -535,7 +545,7 @@ export default function Site({ data }: { data: SiteData }) {
 
       <div ref={agentsRef} aria-hidden className="pointer-events-none fixed inset-0 z-[90]" />
 
-      {/* a project opened as its full drawing */}
+      {/* a project opened in full */}
       <dialog
         ref={dialogRef}
         onClose={() => setOpen(null)}
