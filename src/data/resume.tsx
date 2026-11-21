@@ -27,9 +27,10 @@ type AnyIcon = ComponentType<any>;
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function imageIcon(src: string): AnyIcon {
   // eslint-disable-next-line @next/next/no-img-element
-  return (props: { className?: string }) => (
-    <img src={src} alt="" className={props.className} />
-  );
+  function ImageIcon(props: { className?: string }) {
+    return <img src={src} alt="" className={props.className} />;
+  }
+  return ImageIcon;
 }
 
 const SKILL_ICONS: Record<string, AnyIcon> = {
@@ -164,6 +165,7 @@ export const DATA = {
   url: data.url,
   location: data.location,
   locationLink: data.locationLink,
+  role: data.role,
   description: data.description,
   quote: data.quote,
   avatarUrl: data.avatarUrl,

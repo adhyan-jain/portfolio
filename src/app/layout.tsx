@@ -9,21 +9,24 @@ import "./globals.css";
 const stencil = Big_Shoulders_Stencil({ subsets: ["latin"], variable: "--font-stencil", axes: ["opsz"] });
 const recursive = Recursive({ subsets: ["latin"], variable: "--font-rec", axes: ["CASL", "MONO", "slnt"] });
 
+const title = `${DATA.name}, ${DATA.role}`;
+const description = `${DATA.role}. ${DATA.description}`;
+
 export const metadata: Metadata = {
   // `url` is blank until configured, and new URL("") throws.
   ...(DATA.url ? { metadataBase: new URL(DATA.url) } : {}),
-  title: { default: DATA.name, template: `%s | ${DATA.name}` },
-  description: DATA.description,
+  title: { default: title, template: `%s | ${DATA.name}` },
+  description,
   openGraph: {
-    title: DATA.name,
-    description: DATA.description,
+    title,
+    description,
     url: DATA.url,
     siteName: DATA.name,
     locale: "en_US",
     type: "website",
   },
   robots: { index: true, follow: true },
-  twitter: { title: DATA.name, card: "summary_large_image" },
+  twitter: { title, description, card: "summary_large_image" },
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {

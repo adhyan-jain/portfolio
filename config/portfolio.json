@@ -4,21 +4,22 @@
   "url": "https://adhyan-jain.vercel.app",
   "location": "Vellore, Tamil Nadu, India",
   "locationLink": "https://www.google.com/maps/place/Vellore",
-  "description": "AI & Full-Stack Engineer building distributed backends and LLM-powered products",
+  "role": "Applied AI Engineer",
+  "description": "I build applications on top of LLMs, and the tests that show when they're wrong.",
   "quote": "Code with purpose, build with passion.",
   "avatarUrl": "https://avatars.githubusercontent.com/u/71976554?v=4",
   "about": {
     "highlights": [
       {
         "icon": "🎓",
-        "text": "**CSE student at VIT Vellore** (B.Tech in Computer Science and Engineering, CGPA 8.83, Aug 2024 to present)"
+        "text": "**CSE student at VIT Vellore** (B.Tech in Computer Science and Engineering, CGPA 8.84, Aug 2024 to present)"
       },
       {
         "icon": "💻",
         "text": "**AI & Full-Stack Engineer** with internships in AI automation and frontend engineering"
       }
     ],
-    "summary": "I build complete systems: LLM automation pipelines, distributed backends and full-stack web apps. I've shipped serverless AI pipelines on **AWS** and real-time platforms serving thousands of concurrent users, and I like problems where **AI**, **scale** and **reliability** meet.",
+    "summary": "I build complete systems: LLM automation pipelines, distributed backends and full-stack web apps. I've shipped serverless AI pipelines on **AWS** and a real-time event backend that served 600+ concurrent users, and I like problems where **AI**, **scale** and **reliability** meet.",
     "favoriteTechnologies": ["Go", "Python", "Next.js", "LangChain", "Docker", "PostgreSQL", "AWS", "gRPC"],
     "whatIDo": ["Build **AI pipelines and agents** with **LangChain**, **LangGraph**, **RAG** and **MCP**", "Write **distributed backends and microservices** in **Go**, with **gRPC** and **Redis**", "Ship **full-stack web apps** with **Next.js**, **React** and **Node.js/Express**", "Model data in **PostgreSQL**, **MongoDB** and **Redis**", "Deploy on **AWS (Lambda, S3, EC2)** with **Docker** and **CI/CD**"],
     "beyondTech": {
@@ -213,7 +214,7 @@
       "description": "React development across HireX and DigiX, including extra pages I took on to keep a release on schedule. Rebuilt an internal AI chatbot to query the live database instead of a static user guide: organizations can search and filter applicant pools, and the model enforces field-level authorization, redacting personal details the requesting role may not see."
     },
     {
-      "company": "Association for Computing Machinery (ACM VIT)",
+      "company": "ACM (Club), VIT Vellore",
       "href": "https://github.com/ACM-VIT",
       "badges": [],
       "location": "VIT Vellore",
@@ -221,14 +222,14 @@
       "logoUrl": "/logos/acmvit.png",
       "start": "Apr 2025",
       "end": "Present",
-      "description": "Led the backend for Code2Create, a 36-hour hackathon with 1,200 participants, and owned its real-time submission system. Ran technical execution of the Chapter Recruitment Platform with a mixed technical and non-technical team, and wrote most of its server-side code."
+      "description": "Led the backend for Code2Create, a 36-hour hackathon with 1,200 participants, and owned its real-time submission system. Led technical execution of the Chapter Recruitment Platform and wrote most of its server-side code."
     }
   ],
   "education": [
     {
       "school": "Vellore Institute of Technology (VIT)",
       "href": "https://vit.ac.in",
-      "degree": "B.Tech in Computer Science and Engineering (CGPA: 8.83)",
+      "degree": "B.Tech in Computer Science and Engineering (CGPA: 8.84)",
       "logoUrl": "/logos/vit.png",
       "start": "Aug 2024",
       "end": "Present"
@@ -237,15 +238,15 @@
   "projects": [
     {
       "title": "EchoTales",
-      "href": "https://github.com/adhyan-jain/EchoTales",
+      "href": "https://github.com/adhyan-jain/Echotales",
       "dates": "",
       "active": true,
-      "description": "Turns a translated web novel into a full-cast audiobook and manga-style panels. Underneath is a bitemporal narrative knowledge graph that tracks every character's aliases, attributes and relationships across a whole volume, so it can say who a name refers to at any point in the story, even when titles change hands, identities are faked and later retracted, or one chapter mixes present action with flashbacks. Voice casting, prosody, reference sheets and panel casting all read from that one query, and decisions it is unsure of go to a review queue whose size is reported as a metric. Built on Reverend Insanity Vol. 1 (199 chapters, about 21,000 audiobook spans), with spot checks on Lord of the Mysteries and Omniscient Reader's Viewpoint. It started as a DevJams finalist project.",
+      "description": "Turns a translated web novel into a full-cast audiobook and manga-style panels. Underneath is a bitemporal narrative knowledge graph that tracks every character's aliases, attributes and relationships across a whole volume, so it can say who a name refers to at any point in the story, even when titles change hands, identities are faked and later retracted, or one chapter mixes present action with flashbacks. Voice casting, prosody, reference sheets and panel casting all read from that one query, and decisions it is unsure of go to a review queue whose size is reported as a metric. Built on Reverend Insanity Vol. 1 (199 chapters, about 21,000 audiobook spans), with spot checks on Lord of the Mysteries and Omniscient Reader's Viewpoint. It runs locally as a Studio web app that takes an EPUB and produces the audiobook with local models. It started as a DevJams finalist project.",
       "technologies": ["Python", "Knowledge Graphs", "Coreference Resolution", "LLMs", "TTS", "React"],
       "links": [
         {
           "type": "Source",
-          "href": "https://github.com/adhyan-jain/EchoTales",
+          "href": "https://github.com/adhyan-jain/Echotales",
           "icon": "github"
         }
       ],
@@ -261,39 +262,8 @@
           "value": "about 21,000"
         },
         {
-          "label": "Novels covered",
-          "value": "3"
-        }
-      ]
-    },
-    {
-      "title": "ComputeHive",
-      "href": "https://github.com/adhyan-jain/ComputeHive",
-      "dates": "",
-      "active": true,
-      "description": "A self-hosted distributed task runner. Point it at a directory and it builds a container image, picks the best available machine, runs the job in a locked-down sandbox and returns the result. Workers can be servers or volunteers' laptops behind NAT, since they pull work over an outbound gRPC connection. The guarantees are tested rather than assumed: an atomic Lua queue in Redis gives each job to exactly one worker, a dead worker's jobs are requeued in under 15 seconds, per-attempt lease tokens stop a presumed-dead worker from committing a stale result, and a 1,000-job run with random worker kills loses nothing and commits nothing twice. A contributor's machine is never pushed past 90% of its RAM, CPU or disk. It ships with a CLI, a Tauri desktop app and Prometheus and Grafana dashboards.",
-      "technologies": ["Go", "gRPC", "Redis", "Docker", "Rust/Tauri", "Prometheus"],
-      "links": [
-        {
-          "type": "Source",
-          "href": "https://github.com/adhyan-jain/ComputeHive",
-          "icon": "github"
-        }
-      ],
-      "image": "/projects/computehive.png",
-      "video": "",
-      "specs": [
-        {
-          "label": "Dead-worker requeue",
-          "value": "under 15 s"
-        },
-        {
-          "label": "Chaos run, random kills",
-          "value": "1,000 jobs, 0 lost"
-        },
-        {
-          "label": "Contributor load cap",
-          "value": "90% RAM, CPU, disk"
+          "label": "Tests passing",
+          "value": "1,663"
         }
       ]
     },
@@ -302,7 +272,7 @@
       "href": "https://github.com/adhyan-jain/lab-tutor",
       "dates": "",
       "active": true,
-      "description": "A learning-support system for VIT's Applied Chemistry Lab (BACHY105), built alongside a research paper on LLMs in undergraduate chemistry education. It catches mistakes while the student is still doing the experiment instead of days later at grading. No language model decides anything: every pass/fail verdict, expected value and error diagnosis is computed by deterministic Python from the lab manual's formulas, so a demonstrator can reproduce any diagnosis by hand, and models only phrase conclusions already reached. Socratic mode checks each step against the student's own readings with a hint ladder that never names the number, and the final answer is kept out of every model's context by data minimisation rather than by asking a model to keep a secret. It is sized for 70 concurrent students.",
+      "description": "A learning-support system for VIT's Applied Chemistry Lab (BACHY105), built alongside a research paper on LLMs in undergraduate chemistry education. It catches mistakes while the student is still doing the experiment instead of days later at grading. No language model decides anything: every pass/fail verdict, expected value and error diagnosis is computed by deterministic Python from the lab manual's formulas, so a demonstrator can reproduce any diagnosis by hand, and models only phrase conclusions already reached. Socratic mode checks each step against the student's own readings with a hint ladder that never names the number, and the final answer is kept out of every model's context by data minimisation rather than by asking a model to keep a secret. It was tested in a lab class of 70 students to collect metrics and feedback for the research paper.",
       "technologies": ["Python", "Next.js", "RAG", "LLM Guardrails", "Deterministic Validation"],
       "links": [
         {
@@ -324,12 +294,74 @@
           "value": "0"
         },
         {
-          "label": "Concurrent students",
-          "value": "70"
+          "label": "Class study",
+          "value": "70 students"
         },
         {
           "label": "Course",
           "value": "BACHY105"
+        }
+      ]
+    },
+    {
+      "title": "Griffin",
+      "href": "https://github.com/adhyan-jain/griffin",
+      "dates": "",
+      "active": true,
+      "description": "A personal agent platform that runs across my laptop and phone. A manager agent plans the work and hands steps to specialist agents, and every outward action waits for my approval. Each approval is bound to that exact action, so editing a draft needs a new one. Underneath is a Go task engine that runs work as a dependency graph, with workers leasing tasks from PostgreSQL using SKIP LOCKED and every table under row-level security. It has a laptop agent for browser and desktop control, an Android voice assistant with an on-device wake word and a Next.js web app, and runs on AWS Lambda with an EC2 worker that scales to zero. In active development.",
+      "technologies": ["Go", "PostgreSQL", "Next.js", "Kotlin", "AWS"],
+      "links": [
+        {
+          "type": "Source",
+          "href": "https://github.com/adhyan-jain/griffin",
+          "icon": "github"
+        }
+      ],
+      "image": "",
+      "video": "",
+      "specs": [
+        {
+          "label": "Go test functions",
+          "value": "731"
+        },
+        {
+          "label": "Android unit tests",
+          "value": "104"
+        },
+        {
+          "label": "Design decisions recorded",
+          "value": "144"
+        }
+      ]
+    },
+    {
+      "title": "ComputeHive",
+      "href": "https://github.com/adhyan-jain/ComputeHive",
+      "dates": "",
+      "active": true,
+      "description": "A self-hosted distributed task runner. Point it at a directory and it builds a container image, picks the best available machine, runs the job in a locked-down sandbox and returns the result. Workers can be servers or volunteers' laptops behind NAT, since they pull work over an outbound gRPC connection. The guarantees are tested rather than assumed: an atomic Lua queue in Redis gives each job to exactly one worker, a dead worker's jobs are requeued in 4.7-6.7 s, per-attempt lease tokens stop a presumed-dead worker from committing a stale result, and a 1,000-job run with random worker kills loses nothing and commits nothing twice, with 0 double assignments across 3,000 jobs and 48 competing claimers. A contributor's machine is never pushed past 90% of its RAM, CPU or disk. It ships with a CLI, a Tauri desktop app and Prometheus and Grafana dashboards.",
+      "technologies": ["Go", "gRPC", "Redis", "Docker", "Rust/Tauri", "Prometheus"],
+      "links": [
+        {
+          "type": "Source",
+          "href": "https://github.com/adhyan-jain/ComputeHive",
+          "icon": "github"
+        }
+      ],
+      "image": "/projects/computehive.png",
+      "video": "",
+      "specs": [
+        {
+          "label": "Dead-worker requeue",
+          "value": "4.7-6.7 s"
+        },
+        {
+          "label": "Chaos run, random kills",
+          "value": "5,000 jobs, 805 worker kills, 0 lost"
+        },
+        {
+          "label": "Contributor load cap",
+          "value": "90% RAM, CPU, disk"
         }
       ]
     },
@@ -366,73 +398,6 @@
         {
           "label": "State store",
           "value": "ClickHouse + MCP"
-        }
-      ]
-    },
-    {
-      "title": "Shadow-Code",
-      "href": "https://shadow-code-delta.vercel.app",
-      "dates": "",
-      "active": true,
-      "description": "Java migration intelligence, built in a four-person team and Track Winner at DevSoc (CodeChef VIT, 1,200+ participants). It parses a Java repository into an AST, builds a dependency graph with cycle detection, and scores every file by complexity, coupling, blast radius and risky patterns on a D3 force-directed risk map. Before converting a file to Go, Kotlin or TypeScript with Gemini, it gives a SAFE, REVIEW or RISKY verdict, then shows the original and converted code side by side.",
-      "technologies": ["Java", "JavaParser", "Python", "Flask", "Gemini AI", "React", "TypeScript", "Vite", "D3.js", "Tailwind CSS"],
-      "links": [
-        {
-          "type": "Website",
-          "href": "https://shadow-code-delta.vercel.app",
-          "icon": "globe"
-        },
-        {
-          "type": "Source",
-          "href": "https://github.com/adhyan-jain/Shadow-Code",
-          "icon": "github"
-        }
-      ],
-      "image": "/projects/shadow-code.png",
-      "video": "",
-      "specs": [
-        {
-          "label": "DevSoc participants",
-          "value": "1,200+"
-        },
-        {
-          "label": "Target languages",
-          "value": "Go, Kotlin, TypeScript"
-        },
-        {
-          "label": "Pre-conversion verdict",
-          "value": "Safe, review, risky"
-        }
-      ]
-    },
-    {
-      "title": "METIS-X",
-      "href": "https://github.com/adhyan-jain/Metis",
-      "dates": "",
-      "active": true,
-      "description": "A cache-conscious, header-only C++ symbol table for embedded toolchains and language runtimes, written up as an IEEE-format paper. Prefix compression cut RAM by 20% but made p95 lookup latency 2.4x worse, so I redesigned the table around 32-byte cache-line inline slots, Robin Hood hashing and recyclable scope arenas. On Zephyr RTOS's 228k symbols it uses 40.2% less RAM with 45.7% lower p95 lookup latency, and the ablation shows an 89.1% memory reduction against a heap-allocating baseline. A differential fuzzing suite checks it against the earlier implementations.",
-      "technologies": ["C++", "Systems Programming", "Benchmarking", "LaTeX"],
-      "links": [
-        {
-          "type": "Source",
-          "href": "https://github.com/adhyan-jain/Metis",
-          "icon": "github"
-        }
-      ],
-      "image": "",
-      "video": "",
-      "specs": [
-        {
-          "label": "RAM on Zephyr RTOS",
-          "value": "40.2% less"
-        },
-        {
-          "label": "p95 lookup latency",
-          "value": "45.7% lower"
-        },
-        {
-          "label": "Symbols benchmarked",
-          "value": "228k"
         }
       ]
     },
@@ -499,64 +464,38 @@
       ]
     },
     {
-      "title": "Chapter Recruitment Platform",
-      "href": "https://explore.acmvit.in/",
+      "title": "Shadow-Code",
+      "href": "https://shadow-code-delta.vercel.app",
       "dates": "",
       "active": true,
-      "description": "ACM-VIT's recruitment system, which I co-led. Applicants move through a 3-stage pipeline across 5 domains, with role-based access, multi-stage candidate evaluation and automatic interview scheduling. It processed 1,100+ applications and increased chapter membership by 40%.",
-      "technologies": ["Next.js", "Server Actions", "MongoDB"],
+      "description": "Java migration intelligence, built in a four-person team and Track Winner at DevSoc (CodeChef VIT, 1,200+ participants). It parses a Java repository into an AST, builds a dependency graph with cycle detection, and scores every file by complexity, coupling, blast radius and risky patterns on a D3 force-directed risk map. Before converting a file to Go, Kotlin or TypeScript with Gemini, it gives a SAFE, REVIEW or RISKY verdict, then shows the original and converted code side by side.",
+      "technologies": ["Java", "JavaParser", "Python", "Flask", "Gemini AI", "React", "TypeScript", "Vite", "D3.js", "Tailwind CSS"],
       "links": [
         {
           "type": "Website",
-          "href": "https://explore.acmvit.in/",
+          "href": "https://shadow-code-delta.vercel.app",
           "icon": "globe"
+        },
+        {
+          "type": "Source",
+          "href": "https://github.com/adhyan-jain/Shadow-Code",
+          "icon": "github"
         }
       ],
-      "image": "/projects/chapter-recruitment-platform.png",
+      "image": "/projects/shadow-code.png",
       "video": "",
       "specs": [
         {
-          "label": "Applications processed",
-          "value": "1,100+"
+          "label": "DevSoc participants",
+          "value": "1,200+"
         },
         {
-          "label": "Domains",
-          "value": "5"
+          "label": "Target languages",
+          "value": "Go, Kotlin, TypeScript"
         },
         {
-          "label": "Membership growth",
-          "value": "40%"
-        }
-      ]
-    },
-    {
-      "title": "Cryptic Hunt Backend",
-      "href": "",
-      "dates": "",
-      "active": true,
-      "description": "The backend for ACM-VIT's Cryptic Hunt, a 36-hour live event played through an Android app. I refactored a monolithic legacy codebase into Go microservices on a normalized PostgreSQL schema and built a real-time admin dashboard for live monitoring. It served 600+ concurrent users and 70,000+ API requests with zero downtime.",
-      "technologies": ["Go", "PostgreSQL", "Microservices"],
-      "links": [
-        {
-          "type": "Website",
-          "href": "https://play.google.com/store/apps/details?id=com.acmvit.cryptic_hunt",
-          "icon": "globe"
-        }
-      ],
-      "image": "",
-      "video": "",
-      "specs": [
-        {
-          "label": "Concurrent users",
-          "value": "600+"
-        },
-        {
-          "label": "API requests",
-          "value": "70,000+"
-        },
-        {
-          "label": "Downtime",
-          "value": "0"
+          "label": "Pre-conversion verdict",
+          "value": "Safe, review, risky"
         }
       ]
     },
@@ -592,95 +531,33 @@
       ]
     },
     {
-      "title": "FormSpace",
-      "href": "https://form-2025-tarun.vercel.app/",
+      "title": "Cryptic Hunt Backend",
+      "href": "",
       "dates": "",
       "active": true,
-      "description": "A Google Forms-style platform for teams, with a visual workflow layer. Forms are built on a drag-and-drop canvas from eight question types, and sections wire into branching paths that route respondents on nested AND/OR conditions over their answers. Workspaces have a six-level role hierarchy, email invites and per-form sharing; responses can be filtered, analysed and exported to Excel, with file uploads through presigned S3 URLs.",
-      "technologies": ["Next.js 16", "React 19", "TypeScript", "Prisma", "MongoDB", "Better Auth", "Tailwind CSS v4", "dnd-kit", "AWS S3", "Zod"],
+      "description": "The backend for ACM-VIT's Cryptic Hunt, a 36-hour live event played through an Android app. I refactored a monolithic legacy codebase into Go microservices on a normalized PostgreSQL schema and built a real-time admin dashboard for live monitoring. It served 600+ concurrent users and 70,000+ API requests with zero downtime.",
+      "technologies": ["Go", "PostgreSQL", "Microservices"],
       "links": [
         {
           "type": "Website",
-          "href": "https://form-2025-tarun.vercel.app/",
+          "href": "https://play.google.com/store/apps/details?id=com.acmvit.cryptic_hunt",
           "icon": "globe"
-        }
-      ],
-      "image": "/projects/formspace.png",
-      "video": "",
-      "specs": [
-        {
-          "label": "Question types",
-          "value": "8"
-        },
-        {
-          "label": "Role levels",
-          "value": "6"
-        },
-        {
-          "label": "Branching",
-          "value": "nested AND/OR"
-        }
-      ]
-    },
-    {
-      "title": "Load & Stability Analyzer",
-      "href": "",
-      "dates": "",
-      "active": true,
-      "description": "A load-testing tool for HTTP APIs. A Go worker pool fires bounded concurrent requests, with an optional ramp-up of one worker per second, and the run comes back as latency percentiles, a weighted stability score (error rate, P95 latency, retry amplification and throughput) and a collapse flag when the error rate passes 20% or P95 exceeds five times the average latency. It also estimates the cloud cost of the run.",
-      "technologies": ["Go", "React", "React Router", "Tailwind CSS", "Vite", "Recharts"],
-      "links": [
-        {
-          "type": "Source",
-          "href": "https://github.com/adhyan-jain/Load-and-Stability-Analyzer",
-          "icon": "github"
-        }
-      ],
-      "image": "/projects/load-stability-analyzer.png",
-      "video": "",
-      "specs": [
-        {
-          "label": "Collapse flag",
-          "value": "errors over 20% or P95 over 5x avg"
-        },
-        {
-          "label": "Ramp-up",
-          "value": "1 worker per second"
-        },
-        {
-          "label": "Stability score inputs",
-          "value": "4"
-        }
-      ]
-    },
-    {
-      "title": "WhatsApp Issue Tracker Bot",
-      "href": "",
-      "dates": "",
-      "active": false,
-      "description": "A WhatsApp bot built to coordinate development of the Chapter Recruitment Platform: the team creates, assigns and tracks issues directly in a WhatsApp group, with multi-user assignment, completion tracking, group-wide `$everyone` mentions and owner-only admin commands.",
-      "technologies": ["Node.js", "whatsapp-web.js", "Puppeteer", "Express", "Docker"],
-      "links": [
-        {
-          "type": "Source",
-          "href": "https://github.com/adhyan-jain/WhatsApp-Bot",
-          "icon": "github"
         }
       ],
       "image": "",
       "video": "",
       "specs": [
         {
-          "label": "Interface",
-          "value": "WhatsApp group"
+          "label": "Concurrent users",
+          "value": "600+"
         },
         {
-          "label": "Admin commands",
-          "value": "owner only"
+          "label": "API requests",
+          "value": "70,000+"
         },
         {
-          "label": "Deploy",
-          "value": "Docker"
+          "label": "Downtime",
+          "value": "0"
         }
       ]
     }
@@ -701,10 +578,24 @@
       ]
     },
     {
+      "title": "Finalist, DevSpace",
+      "dates": "Feb 2026",
+      "location": "1,200+ participants",
+      "description": "Finalist with Shadow-Code.",
+      "image": "",
+      "links": [
+        {
+          "title": "Source",
+          "href": "https://github.com/adhyan-jain/Shadow-Code",
+          "icon": "github"
+        }
+      ]
+    },
+    {
       "title": "Finalist, DevJams",
       "dates": "Sep 2025",
       "location": "GDSC VIT, 2,000+ participants",
-      "description": "Built EchoTales in a four-person team (me as ML dev, plus a backend dev, a frontend dev and a designer).",
+      "description": "Finalist with EchoTales.",
       "image": "/logos/gdg.svg",
       "links": [
         {
