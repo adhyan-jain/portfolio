@@ -272,7 +272,7 @@
       "href": "https://github.com/adhyan-jain/lab-tutor",
       "dates": "",
       "active": true,
-      "description": "A learning-support system for VIT's Applied Chemistry Lab (BACHY105), built alongside a research paper on LLMs in undergraduate chemistry education. It catches mistakes while the student is still doing the experiment instead of days later at grading. No language model decides anything: every pass/fail verdict, expected value and error diagnosis is computed by deterministic Python from the lab manual's formulas, so a demonstrator can reproduce any diagnosis by hand, and models only phrase conclusions already reached. Socratic mode checks each step against the student's own readings with a hint ladder that never names the number, and the final answer is kept out of every model's context by data minimisation rather than by asking a model to keep a secret. It was tested in a lab class of 70 students to collect metrics and feedback for the research paper.",
+      "description": "A learning-support system for VIT's Applied Chemistry Lab (BCHY105), built alongside a research paper on LLMs in undergraduate chemistry education. It catches mistakes while the student is still doing the experiment instead of days later at grading. No language model decides anything: every pass/fail verdict, expected value and error diagnosis is computed by deterministic Python from the lab manual's formulas, so a demonstrator can reproduce any diagnosis by hand, and models only phrase conclusions already reached. Socratic mode checks each step against the student's own readings with a hint ladder that never names the number, and the final answer is kept out of every model's context by data minimisation rather than by asking a model to keep a secret. It was tested in a lab class of 70 students to collect metrics and feedback for the research paper.",
       "technologies": ["Python", "Next.js", "RAG", "LLM Guardrails", "Deterministic Validation"],
       "links": [
         {
@@ -299,7 +299,7 @@
         },
         {
           "label": "Course",
-          "value": "BACHY105"
+          "value": "BCHY105"
         }
       ]
     },
@@ -370,7 +370,7 @@
       "href": "https://story-trace-psi.vercel.app",
       "dates": "",
       "active": true,
-      "description": "An agentic continuity checker for screenplays and novels, paired with a research benchmark. StoryTrace turns documents into a temporal model of story state in ClickHouse (character presence, location, prop possession across every scene), finds suspicious state transitions with SQL window functions, and hands each one to an investigation agent that queries the database through ClickHouse MCP tools and returns a verdict with evidence. Re-uploading a revised draft compares its conflicts against the earlier version. SSR-Bench V2 measures how well LLMs revise story state after a single pivot event, using leak-free matched story pairs: a story-blind attacker scores 0.000 pair-both, while the replay oracle scores 1.000.",
+      "description": "An agentic continuity checker for screenplays and novels, paired with a research benchmark. StoryTrace turns documents into a temporal model of story state in ClickHouse (character presence, location, prop possession across every scene), finds suspicious state transitions with SQL window functions, and hands each one to an investigation agent that queries the database through ClickHouse MCP tools and returns a verdict with evidence. Re-uploading a revised draft compares its conflicts against the earlier version. SSR-Bench V2 measures how well LLMs revise story state after a single pivot event, using leak-free matched story pairs: a story-blind attacker scores 0.000 pair-both, while the replay oracle scores 1.000 (300 of 300 test pairs). Across 4 local models and 17 conditions, state exact match stays between 0.000 and 0.020, mostly because models edit state the event never touched. The continuity engine itself is checked against 989 verified conflicts across 10 films.",
       "technologies": ["Python", "ClickHouse", "MCP", "LLM Agents", "Benchmarking"],
       "links": [
         {
@@ -388,7 +388,7 @@
       "video": "",
       "specs": [
         {
-          "label": "Story-blind attacker",
+          "label": "Story-blind attacker (8 classifiers)",
           "value": "0.000"
         },
         {
@@ -396,8 +396,8 @@
           "value": "1.000"
         },
         {
-          "label": "State store",
-          "value": "ClickHouse + MCP"
+          "label": "Verified conflicts, 10 films",
+          "value": "989"
         }
       ]
     },
@@ -594,7 +594,7 @@
     {
       "title": "Finalist, DevJams",
       "dates": "Sep 2025",
-      "location": "GDSC VIT, 2,000+ participants",
+      "location": "GDG VIT, 2,000+ participants",
       "description": "Finalist with EchoTales.",
       "image": "/logos/gdg.svg",
       "links": [
